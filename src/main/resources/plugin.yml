@@ -1,0 +1,6 @@
+name: Lootin
+version: ${project.version}
+main: com.github.sachin.lootin.Lootin
+api-version: 1.17
+authors: [ sachingorkar ]
+description: Loot per player
