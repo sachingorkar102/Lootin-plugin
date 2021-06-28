@@ -1,6 +1,13 @@
 name: Lootin
 version: ${project.version}
 main: com.github.sachin.lootin.Lootin
-api-version: 1.17
+api-version: 1.16
 authors: [ sachingorkar ]
 description: Loot per player
+
+
+permissions:
+  lootin.breakchest.bypass:
+    default: op
+  lootin.command.reload:
+    default: op  
