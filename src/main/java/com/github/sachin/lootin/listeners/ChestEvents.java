@@ -3,11 +3,9 @@ package com.github.sachin.lootin.listeners;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
-import com.github.sachin.lootin.utils.ItemSerializer;
 import com.github.sachin.lootin.utils.LConstants;
 
 import org.bukkit.Material;
@@ -21,7 +19,6 @@ import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
@@ -41,7 +38,7 @@ public class ChestEvents extends BaseListener{
             Chest chest = (Chest) block.getState();
             if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
                 if(plugin.currentChestviewers.contains(chest.getLocation())){
-                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED));
+                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED,player));
                     e.setCancelled(true);
                     return;
                 }
@@ -61,13 +58,13 @@ public class ChestEvents extends BaseListener{
                         }
                     }
                     else{
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP));
+                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP,player));
                         e.setCancelled(true);
                     }
                 }
                 else{
                     e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP));
+                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP,player));
                 }
             }
         }
@@ -75,7 +72,7 @@ public class ChestEvents extends BaseListener{
             Barrel barrel = (Barrel) block.getState();
             if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL)){
                 if(plugin.currentChestviewers.contains(barrel.getLocation())){
-                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED));
+                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED,player));
                     e.setCancelled(true);
                     return;
                 }
@@ -95,13 +92,13 @@ public class ChestEvents extends BaseListener{
                         }
                     }
                     else{
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP));
+                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP,player));
                         e.setCancelled(true);
                     }
                 }
                 else{
                     e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP));
+                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP,player));
                 }
             }
         }
@@ -189,13 +186,13 @@ public class ChestEvents extends BaseListener{
                         }
                     }
                     else{
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP));
+                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP,player));
                         e.setCancelled(true);
                     }
                 }
                 else{
                     e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP));
+                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP,player));
                 }
             }
             else {

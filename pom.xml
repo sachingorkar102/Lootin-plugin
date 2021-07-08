@@ -87,6 +87,10 @@
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
         </repository>
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -108,6 +112,7 @@
             <version>0.5.0-SNAPSHOT</version> 
         </dependency>
 
+        <!-- CustomStructures -->
         <dependency>
             <groupId>CustomStructures</groupId>
             <artifactId>customstructures</artifactId>
@@ -115,12 +120,22 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/CustomStructures.jar</systemPath>
         </dependency>
+
+        <!-- Oh the dungeons you all go -->
         <dependency>
             <groupId>OhTheDungeon</groupId>
             <artifactId>ohthedungeon</artifactId>
             <version>2.0.27</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/OhTheDungeon.jar</systemPath>
+        </dependency>
+
+        <!-- PlaceHolderApi -->
+        <dependency>
+            <groupId>me.clip</groupId>
+             <artifactId>placeholderapi</artifactId>
+             <version>2.10.9</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

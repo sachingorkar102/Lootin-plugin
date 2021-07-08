@@ -22,12 +22,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTables;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 
 
@@ -74,9 +76,13 @@ public final class Lootin extends JavaPlugin {
         return new NamespacedKey(plugin, key);
     }
 
-    public String getMessage(String key){
-        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")+getConfig().getString(key,""));
-    }
+    public String getMessage(String key,Player player){
+        String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")+getConfig().getString(key,""));
+        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null){
+            return PlaceholderAPI.setPlaceholders(player, message);
+        }
+        return message;
+    } 
 
     public String getTitle(String key){
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString(key,"Error"));

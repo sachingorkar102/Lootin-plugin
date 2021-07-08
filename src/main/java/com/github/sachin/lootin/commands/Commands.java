@@ -24,10 +24,10 @@ public class Commands extends BaseCommand{
     public void onCommand(CommandSender sender){
         if(sender.hasPermission("lootin.command.reload")){
             plugin.reloadConfigs();
-            sender.sendMessage(plugin.getMessage(LConstants.RELOADED));
+            sender.sendMessage(plugin.getMessage(LConstants.RELOADED,null));
         }
         else{
-            sender.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION));
+            sender.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION,null));
         }
     }
     

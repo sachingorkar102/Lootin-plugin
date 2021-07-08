@@ -1,6 +1,11 @@
 package com.github.sachin.lootin.utils;
 
+import com.github.sachin.lootin.Lootin;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import me.clip.placeholderapi.PlaceholderAPI;
 
 public enum ContainerType {
     
@@ -15,7 +20,13 @@ public enum ContainerType {
     private int slots;
     private String title;
 
-    public String getTitle() {
+    public String getTitle(Player player) {
+        Lootin plugin = Lootin.getPlugin();
+        String t = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString(title));
+
+        if(plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null){
+            return PlaceholderAPI.setPlaceholders(player, t);
+        }
         return title;
     }
 
