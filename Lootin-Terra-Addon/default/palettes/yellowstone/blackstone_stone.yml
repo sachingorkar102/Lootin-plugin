@@ -1,6 +1,0 @@
-layers:
-  - materials: "minecraft:blackstone"
-    layers: 1
-  - materials: "minecraft:stone"
-    layers: 1
-id: "Y_BLACKSTONE"

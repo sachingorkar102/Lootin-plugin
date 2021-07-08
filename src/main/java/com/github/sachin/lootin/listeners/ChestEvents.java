@@ -71,6 +71,40 @@ public class ChestEvents extends BaseListener{
                 }
             }
         }
+        else if(block.getType() == Material.BARREL){
+            Barrel barrel = (Barrel) block.getState();
+            if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL)){
+                if(plugin.currentChestviewers.contains(barrel.getLocation())){
+                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED));
+                    e.setCancelled(true);
+                    return;
+                }
+                if(player.hasPermission("lootin.breakchest.bypass")){
+                    if(player.isSneaking()){
+                        barrel.getInventory().clear();
+
+                        if(!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) && ChestUtils.hasPlayerLoot(null, barrel, player, ContainerType.BARREL)){
+                            List<ItemStack> items = ChestUtils.getContainerItems(null, barrel, ContainerType.BARREL, player);
+                            if(items != null){
+                                items.forEach(i -> {
+                                    if(i != null){
+                                        player.getWorld().dropItemNaturally(block.getLocation(), i);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    else{
+                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP));
+                        e.setCancelled(true);
+                    }
+                }
+                else{
+                    e.setCancelled(true);
+                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP));
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -87,13 +121,18 @@ public class ChestEvents extends BaseListener{
                     e.setCancelled(true);
                 }
             }
-            if(h1 instanceof Chest){
+            else if(h1 instanceof Chest){
                 if(ChestUtils.isLootinContainer(null, ((Chest)h1), ContainerType.CHEST)){
                     e.setCancelled(true);
                 }
             }
             else if(h1 instanceof StorageMinecart){
                 if(ChestUtils.isLootinContainer(((StorageMinecart)h1), null, ContainerType.MINECART)){
+                    e.setCancelled(true);
+                }
+            }
+            else if(h1 instanceof Barrel){
+                if(ChestUtils.isLootinContainer(null, ((Barrel)h1), ContainerType.BARREL)){
                     e.setCancelled(true);
                 }
             }

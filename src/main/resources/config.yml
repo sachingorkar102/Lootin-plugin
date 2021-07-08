@@ -6,7 +6,11 @@ gui-titles:
   chest: "&6Chest"
   double-chest: "&6Large Chest"
   minecart: "&6Minecart with Chest"
+  barrel: "&6Barrel"
 
+ 
+# Its bstats 
+metrics: true
 
 messages:
   prefix: "&e[&6Lootin&e] "
@@ -25,6 +29,15 @@ prevent-explosions: true
 # list of worlds where lootin will not modify loot chests
 black-list-worlds: []
 
-# list of structures where lootin will not modify loot chests
+# list of vanilla structures where lootin will not modify loot chests
 # valid structure names can be found here https://www.spigotmc.org/resources/90453/
 black-list-structures: []
+
+
+# list of CustomStructures where lootin will not modify loot chests.
+# only applicable if CustomStructures is installed.
+black-list-customstructures: []
+
+# list of OhTheDungeon structure names where lootin will not modify loot chests.
+# only applicable if OhTheDungeon is installed.
+black-list-otd-structures: []

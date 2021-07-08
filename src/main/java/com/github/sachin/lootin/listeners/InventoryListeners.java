@@ -1,5 +1,6 @@
 package com.github.sachin.lootin.listeners;
 
+import com.github.sachin.lootin.gui.BarrelGui;
 import com.github.sachin.lootin.gui.ChestGui;
 import com.github.sachin.lootin.gui.DoubleChestGui;
 import com.github.sachin.lootin.gui.GuiHolder;
@@ -7,6 +8,7 @@ import com.github.sachin.lootin.gui.MinecartGui;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.block.Barrel;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -50,6 +52,15 @@ public class InventoryListeners extends BaseListener{
                 e.setCancelled(true);
                 if(plugin.currentMinecartviewers.contains(minecart)) return;
                 MinecartGui gui = new MinecartGui(player, minecart);
+                gui.open();
+            }
+        }
+        else if(holder instanceof Barrel){
+            Barrel barrel = (Barrel) holder;
+            if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL)){
+                e.setCancelled(true);
+                if(plugin.currentChestviewers.contains(barrel.getLocation())) return;
+                BarrelGui gui = new BarrelGui(player, barrel);
                 gui.open();
             }
         }

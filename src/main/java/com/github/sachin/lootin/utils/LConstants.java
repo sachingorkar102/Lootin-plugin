@@ -14,10 +14,13 @@ public class LConstants {
     public static final String TITLE_CHEST = "gui-titles.chest";
     public static final String TITLE_DOUBLE_CHEST = "gui-titles.double-chest";
     public static final String TITLE_MINECART = "gui-titles.minecart";
+    public static final String TITLE_BARREL = "gui-titles.barrel";
 
     public static final String DELETE_ITEMS_CONFIG = "delete-items-on-break";
     public static final String PREVENT_EXPLOSIONS = "prevent-explosions";
     public static final String BLACK_LIST_STRUCTURES = "black-list-structures";
+    public static final String BLACK_LIST_CUSTOM_STRUCTURES = "black-list-customstructures";
+    public static final String BLACK_LIST_OTD_STRUCTURES = "black-list-otd-structures";
 
     public static final String BLOCK_BREAK_WITHP = "messages.chestbreak-with-permission";
     public static final String BLOCK_BREAK_WITHOUTP = "messages.chestbreak-without-permission";

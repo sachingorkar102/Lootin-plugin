@@ -12,8 +12,11 @@ import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.listeners.ChestEvents;
 import com.github.sachin.lootin.listeners.ChunkLoadListener;
 import com.github.sachin.lootin.listeners.InventoryListeners;
+import com.github.sachin.lootin.listeners.integration.CustomStructuresLootPopulateEvent;
+import com.github.sachin.lootin.listeners.integration.OTDLootListener;
 import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
+import com.github.sachin.lootin.utils.Metrics;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,6 +28,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
+
 
 
 public final class Lootin extends JavaPlugin {
@@ -46,7 +50,19 @@ public final class Lootin extends JavaPlugin {
         pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
-        
+        if(pm.isPluginEnabled("CustomStructures")){
+            getLogger().info("Found custom structures, registering listeners...");
+
+            pm.registerEvents(new CustomStructuresLootPopulateEvent(), plugin);
+        }
+        if(pm.isPluginEnabled("Oh_the_dungeons_youll_go")){
+            getLogger().info("Found OhTheDungeons, registering listeners...");
+            pm.registerEvents(new OTDLootListener(), plugin);
+        }
+        if(getConfig().getBoolean("metrics",true)){
+            getLogger().info("Enabling bstats...");
+            Metrics metrics = new Metrics(this, 11877);
+        }
         
     }
 

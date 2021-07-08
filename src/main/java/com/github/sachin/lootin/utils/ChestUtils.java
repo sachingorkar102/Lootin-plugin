@@ -109,6 +109,12 @@ public class ChestUtils{
             setLootinContainer(null, c1, ContainerType.CHEST);
             setLootinContainer(null, c2, ContainerType.CHEST);
         }
+        else if(type == ContainerType.BARREL){
+            Barrel barrel = (Barrel) block;
+            PersistentDataContainer data = barrel.getPersistentDataContainer();
+            data.set(LConstants.IDENTITY_KEY,PersistentDataType.STRING,"");
+            barrel.update();
+        }
     }
 
     /**
@@ -132,6 +138,11 @@ public class ChestUtils{
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
             inventory = tileCart.getInventory();
+        }
+        else if(type == ContainerType.BARREL){
+            Barrel barrel = (Barrel) block;
+            data = barrel.getPersistentDataContainer();
+            inventory = barrel.getInventory();
         }
         else if(type == ContainerType.DOUBLE_CHEST && block instanceof Chest){
             DoubleChest doubleChest = getDoubleChest(block);
@@ -185,6 +196,12 @@ public class ChestUtils{
             data = tileCart.getPersistentDataContainer();
             data.set(Lootin.getKey(key), PersistentDataType.STRING, ItemSerializer.serialize(items));
             
+        }
+        else if(type == ContainerType.BARREL){
+            Barrel barrel = (Barrel) block;
+            data = barrel.getPersistentDataContainer();
+            data.set(Lootin.getKey(key),PersistentDataType.STRING,ItemSerializer.serialize(items));
+            barrel.update();
         }
         else if(type == ContainerType.DOUBLE_CHEST && block instanceof Chest){
             DoubleChest doubleChest = getDoubleChest(block);

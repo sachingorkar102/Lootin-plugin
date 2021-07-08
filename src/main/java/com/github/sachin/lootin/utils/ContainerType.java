@@ -5,7 +5,7 @@ package com.github.sachin.lootin.utils;
 public enum ContainerType {
     
 
-    CHEST(27,LConstants.TITLE_CHEST) ,DOUBLE_CHEST(54,LConstants.TITLE_DOUBLE_CHEST),MINECART(27,LConstants.TITLE_MINECART),BARREL(27,null);
+    CHEST(27,LConstants.TITLE_CHEST) ,DOUBLE_CHEST(54,LConstants.TITLE_DOUBLE_CHEST),MINECART(27,LConstants.TITLE_MINECART),BARREL(27,LConstants.TITLE_BARREL);
 
     private ContainerType(int slots,String title){
         this.slots = slots;
