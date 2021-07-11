@@ -20,7 +20,7 @@ public class GuiHolder implements InventoryHolder{
         this.player = player;
         this.type = type;
         this.plugin = Lootin.getPlugin();
-        this.inventory = Bukkit.createInventory(this, type.getSlots(),plugin.getTitle(type.getTitle(player)));
+        this.inventory = Bukkit.createInventory(this, type.getSlots(),type.getTitle(player));
     }
 
 

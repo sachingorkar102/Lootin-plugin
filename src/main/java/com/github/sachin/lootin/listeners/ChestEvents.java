@@ -8,9 +8,11 @@ import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -18,14 +20,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class ChestEvents extends BaseListener{
     
@@ -201,5 +207,31 @@ public class ChestEvents extends BaseListener{
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onChestPlace(PlayerInteractEvent e){
+        if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if(e.getItem() == null) return;
+        if(e.getItem().getType() != Material.CHEST) return;
+        Block b = e.getClickedBlock().getRelative(e.getBlockFace());
+        Player player = e.getPlayer();
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                for(BlockFace face : Arrays.asList(BlockFace.EAST,BlockFace.WEST,BlockFace.SOUTH,BlockFace.NORTH)){
+                    Block block = b.getRelative(face);
+                    if(block.getState() instanceof Chest){
+                        Chest chest = (Chest) block.getState();
+                        if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
+                            b.setType(Material.AIR);
+                            player.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.CHEST));
+                            player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_DCHEST, player));
+                            break;
+                        }
+                    }
+                }
+            }
+        }.runTaskLater(plugin, 1);
     }
 }

@@ -19,6 +19,7 @@ messages:
   chestbreak-without-permission: "&cYou dont have permission to break loot chests"
   chest-edited: "&cChest is being edited, cant break it"
   reloaded: "&aConfig file reloaded"
+  cant-place-double-chest: "&cCant place normal chest near loot chest"
 
 # weather or not to delete items when player breaks loot chest successfully
 delete-items-on-break: true  

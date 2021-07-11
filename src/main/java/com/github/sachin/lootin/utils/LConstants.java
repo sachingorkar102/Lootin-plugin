@@ -27,5 +27,6 @@ public class LConstants {
     public static final String CHEST_EDITED = "messages.chest-edited";
     public static final String NO_PERMISSION = "messages.no-permission";
     public static final String RELOADED = "messages.reloaded";
+    public static final String CANT_PLACE_DCHEST = "messages.cant-place-double-chest";
     
 }
