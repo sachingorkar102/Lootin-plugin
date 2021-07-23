@@ -8,6 +8,9 @@ import com.github.sachin.lootin.gui.MinecartGui;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
@@ -50,6 +53,7 @@ public class InventoryListeners extends BaseListener{
             StorageMinecart minecart = (StorageMinecart) holder;
             if(ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
                 e.setCancelled(true);
+                player.stopSound(Sound.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS);
                 if(plugin.currentMinecartviewers.contains(minecart)) return;
                 MinecartGui gui = new MinecartGui(player, minecart);
                 gui.open();

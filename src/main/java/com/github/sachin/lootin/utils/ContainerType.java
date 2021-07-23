@@ -27,7 +27,7 @@ public enum ContainerType {
         if(plugin.getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null){
             return PlaceholderAPI.setPlaceholders(player, t);
         }
-        return title;
+        return t;
     }
 
     public int getSlots() {
