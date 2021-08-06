@@ -1,6 +1,5 @@
 package com.github.sachin.lootin.listeners;
 
-import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
@@ -18,13 +17,14 @@ public class ChunkLoadListener extends BaseListener{
     public void onChunkLoad(ChunkLoadEvent e){
         // if(!e.isNewChunk()) return;
         Chunk chunk = e.getChunk();
-        
+        if(!chunk.isLoaded()) return;
         if(plugin.getBlackListWorlds().contains(chunk.getWorld().getName())) return;
         for(BlockState tile : chunk.getTileEntities()){
             if(tile instanceof Chest){
                 if(((Chest)tile).getLootTable() != null){
                     if(!plugin.getBlackListStructures().contains(((Chest)tile).getLootTable().getKey())){
                         ChestUtils.setLootinContainer(null, tile, ContainerType.CHEST);
+                        
                     }
                 }
             }

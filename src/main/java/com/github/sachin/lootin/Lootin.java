@@ -3,10 +3,7 @@ package com.github.sachin.lootin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.listeners.ChestEvents;
@@ -18,7 +15,6 @@ import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -50,6 +46,7 @@ public final class Lootin extends JavaPlugin {
         // register listeners
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new ChunkLoadListener(), plugin);
+        
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         if(pm.isPluginEnabled("CustomStructures")){
