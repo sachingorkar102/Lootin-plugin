@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.sachin.lootin.commands.Commands;
+import com.github.sachin.lootin.integration.rwg.LootinAddon;
 import com.github.sachin.lootin.listeners.ChestEvents;
 import com.github.sachin.lootin.listeners.ChunkLoadListener;
 import com.github.sachin.lootin.listeners.InventoryListeners;
@@ -21,11 +22,13 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTables;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.sourcewriters.spigot.rwg.legacy.api.RealisticWorldGenerator;
 
 
 
@@ -58,11 +61,39 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Found OhTheDungeons, registering listeners...");
             pm.registerEvents(new OTDLootListener(), plugin);
         }
+        if(pm.isPluginEnabled("Realistic_World")){
+            getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
+            if (enableRwgSupport(pm.getPlugin("Realistic_World"))) {
+                getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
+            } else {
+                getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
+            }
+        }
         if(getConfig().getBoolean("metrics",true)){
             getLogger().info("Enabling bstats...");
             Metrics metrics = new Metrics(this, 11877);
         }
         
+    }
+
+    private boolean enableRwgSupport(Plugin plugin) {
+        if(plugin == null) {
+            return false; // No rwg plugin????
+        }
+        String[] version = plugin.getDescription().getVersion().split("\\.", 2);
+        if(version.length < 2) {
+            return false; // Even supported?
+        }
+        try {
+            int major = Integer.parseInt(version[0]);
+            int minor = Integer.parseInt(version[1]);
+            if(major != 4 || minor < 30) {
+                return false;
+            }
+        } catch(NumberFormatException exp) {
+            return false;
+        }
+        return RealisticWorldGenerator.get().getCompatibilityManager().register(this, LootinAddon.class, getName());
     }
 
     public static Lootin getPlugin() {
