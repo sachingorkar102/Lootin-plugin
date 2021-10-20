@@ -4,6 +4,7 @@ import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
 import org.bukkit.Chunk;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Entity;
@@ -24,6 +25,14 @@ public class ChunkLoadListener extends BaseListener{
                 if(((Chest)tile).getLootTable() != null){
                     if(!plugin.getBlackListStructures().contains(((Chest)tile).getLootTable().getKey())){
                         ChestUtils.setLootinContainer(null, tile, ContainerType.CHEST);
+                        
+                    }
+                }
+            }
+            if(tile instanceof Barrel){
+                if(((Barrel)tile).getLootTable() != null){
+                    if(!plugin.getBlackListStructures().contains(((Barrel)tile).getLootTable().getKey())){
+                        ChestUtils.setLootinContainer(null, tile, ContainerType.BARREL);
                         
                     }
                 }

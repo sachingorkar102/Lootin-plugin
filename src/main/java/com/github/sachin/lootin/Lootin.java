@@ -19,6 +19,8 @@ import com.github.sachin.lootin.utils.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTables;
@@ -38,11 +40,18 @@ public final class Lootin extends JavaPlugin {
     private PaperCommandManager commandManager;
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
+    public boolean isRunningPurpur;
 
     @Override
     public void onEnable() {
             
         plugin = this;
+        try {
+            Class.forName("net.pl3x.purpur.event.PlayerAFKEvent");
+            this.isRunningPurpur = true;
+        } catch (ClassNotFoundException e) {
+            this.isRunningPurpur = false;
+        }
         this.commandManager = new PaperCommandManager(plugin);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
@@ -141,6 +150,15 @@ public final class Lootin extends JavaPlugin {
         } catch (Exception e) {
             return keyList;
         }
+    }
+
+    public int getBarrelRowCount(){
+        if(isRunningPurpur){
+            File file = new File("purpur.yml");
+            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+            return config.getInt("settings.blocks.barrel.rows",3)*9;
+        }
+        return 27;
     }
 
     public void reloadConfigs(){

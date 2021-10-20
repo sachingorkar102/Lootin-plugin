@@ -18,9 +18,7 @@ public class LootinParser extends CompatibilityBlockParser {
 
   @Override
   public IBlockData parse(IBlockAccess access, NbtCompound compound) {
-    // 
-    // TODO: Add id validation - does id exist?
-    //
+    
     CustomBlockData data = new CustomBlockData(LootinAddon.NAMESPACE, compound.getString("id"));
     if(compound.hasKey("properties", NbtType.COMPOUND)) {
       NbtCompound properties = compound.getCompound("properties");
