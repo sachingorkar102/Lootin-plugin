@@ -74,7 +74,7 @@ public class ChestUtils{
             if(type == ContainerType.BARREL){
                 return hasKey(((Barrel)block).getPersistentDataContainer());
             }
-            if(type == ContainerType.DOUBLE_CHEST && block instanceof Chest){
+            if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
                 DoubleChest doubleChest = getDoubleChest(block);
                 PersistentDataContainer d1 = ((Chest)doubleChest.getLeftSide()).getPersistentDataContainer();
                 PersistentDataContainer d2 = ((Chest)doubleChest.getRightSide()).getPersistentDataContainer();
@@ -102,7 +102,7 @@ public class ChestUtils{
             minecart.getPersistentDataContainer().set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
 
         }
-        else if(type == ContainerType.DOUBLE_CHEST && block instanceof Chest){
+        else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
             Chest c1 = ((Chest)doubleChest.getLeftSide());
             Chest c2 = ((Chest)doubleChest.getRightSide());
@@ -144,7 +144,7 @@ public class ChestUtils{
             data = barrel.getPersistentDataContainer();
             inventory = barrel.getInventory();
         }
-        else if(type == ContainerType.DOUBLE_CHEST && block instanceof Chest){
+        else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
             Chest c1 = ((Chest)doubleChest.getLeftSide());
             Chest c2 = ((Chest)doubleChest.getRightSide());
@@ -203,7 +203,7 @@ public class ChestUtils{
             data.set(Lootin.getKey(key),PersistentDataType.STRING,ItemSerializer.serialize(items));
             barrel.update();
         }
-        else if(type == ContainerType.DOUBLE_CHEST && block instanceof Chest){
+        else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
             Chest c1 = ((Chest)doubleChest.getLeftSide());
             Chest c2 = ((Chest)doubleChest.getRightSide());
@@ -216,6 +216,10 @@ public class ChestUtils{
         Chest chest = (Chest) block;
         return ((DoubleChest)chest.getInventory().getHolder());
     }
+
+    public static boolean isDoubleChest(BlockState block){
+        return (block instanceof Chest) && (((Chest)block).getInventory().getHolder() instanceof DoubleChest);
+     }
 
 
     private static boolean hasKey(PersistentDataContainer data){
