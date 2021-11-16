@@ -20,7 +20,8 @@ messages:
   chest-edited: "&cChest is being edited, cant break it"
   reloaded: "&aConfig file reloaded"
   cant-place-double-chest: "&cCant place normal chest near loot chest"
-  elytra-for-other-player: "&cThe Elytra is for next player!!"
+  elytra-itemframe-break-with-permission: "&cLeft click with stick in main hand to break the special elytra item frame."
+  elytra-itemframe-break-without-permission: "&cCan't break elytra item frame!"
   elytra-item-frame-removed: "&aElytra ItemFrame removed."
 
 # weather or not to delete items when player breaks loot chest successfully

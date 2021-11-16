@@ -52,13 +52,19 @@ public class ChunkLoadListener extends BaseListener{
                 Player player = (Player) e.getDamager();
                 String uuid = player.getUniqueId().toString();
                 NamespacedKey playerKey = Lootin.getKey(uuid);
-                if(player.hasPermission("lootin.breakelytraitemframe.bypass") && player.getInventory().getItemInMainHand().getType()==Material.STICK){
-                    framea.remove();
-                    player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_REMOVED, player));
-                    return;
-                }
                 if(framea.getPersistentDataContainer().has(playerKey, PersistentDataType.INTEGER)){
-                    player.sendMessage(plugin.getMessage(LConstants.ELYTRA_FOR_OTHER_PLAYER, player));
+                    if(player.hasPermission("lootin.breakelytraitemframe.bypass")){
+                        if(player.getInventory().getItemInMainHand().getType()==Material.STICK){
+                            framea.remove();
+                            player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_REMOVED, player));
+                        }
+                        else{
+                            player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_BREAK_WITHPERM, player));
+                        }
+                    }
+                    else{
+                        player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_BREAK_WITHOUTPERM, player));
+                    }
                     return;
                 }
                 

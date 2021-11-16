@@ -30,7 +30,8 @@ public class LConstants {
     public static final String NO_PERMISSION = "messages.no-permission";
     public static final String RELOADED = "messages.reloaded";
     public static final String CANT_PLACE_DCHEST = "messages.cant-place-double-chest";
-    public static final String ELYTRA_FOR_OTHER_PLAYER = "messages.elytra-for-other-player";
+    public static final String ELYTRA_IF_BREAK_WITHPERM = "messages.elytra-itemframe-break-with-permission";
+    public static final String ELYTRA_IF_BREAK_WITHOUTPERM = "messages.elytra-itemframe-break-without-permission";
     public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
     
 }
