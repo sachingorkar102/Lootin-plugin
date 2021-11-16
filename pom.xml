@@ -16,6 +16,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <server.version>1.17.1</server.version>
     </properties>
 
     <build>
@@ -54,7 +55,7 @@
                         </relocation>
                         <relocation>
                             <pattern>com.syntaxphoenix.syntaxapi</pattern>
-                            <shadedPattern>net.sourcewriters.spigot.rwg.legacy.shaded.syntaxapi</shadedPattern>
+                            <shadedPattern>net.sourcewriters.spigot.rwg.legacy.shaded.synapi</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -78,6 +79,25 @@
                   <outputDirectory>/home/sachin/Desktop/Test-Server-1.16/plugins</outputDirectory>
                 </configuration>
             </plugin> -->
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<copy
+									file="${project.build.directory}/${project.build.finalName}.jar"
+									tofile="${basedir}/../../Java - Jar/TestServers/${server.version}/plugins/${project.build.finalName}.jar" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
         </plugins>
         <resources>
             <resource>
@@ -103,6 +123,10 @@
         <repository>
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io/</url>
         </repository>
     </repositories>
 
