@@ -13,3 +13,5 @@ permissions:
     default: op
   lootin.command.reload:
     default: op  
+  lootin.breakelytraitemframe.bypass:
+    default: op  

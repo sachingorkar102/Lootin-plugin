@@ -10,6 +10,7 @@ public class LConstants {
     public static final String DATA_KEY_STRING = "loot-container";
     public static final NamespacedKey IDENTITY_KEY = new NamespacedKey(Lootin.getPlugin(), IDENTITY_KEY_STRING);
     public static final NamespacedKey DATA_KEY = new NamespacedKey(Lootin.getPlugin(), DATA_KEY_STRING);
+    public static final NamespacedKey ITEM_FRAME_ELYTRA_KEY = Lootin.getKey("item-frame-elytra-key");
 
     public static final String TITLE_CHEST = "gui-titles.chest";
     public static final String TITLE_DOUBLE_CHEST = "gui-titles.double-chest";
@@ -21,6 +22,7 @@ public class LConstants {
     public static final String BLACK_LIST_STRUCTURES = "black-list-structures";
     public static final String BLACK_LIST_CUSTOM_STRUCTURES = "black-list-customstructures";
     public static final String BLACK_LIST_OTD_STRUCTURES = "black-list-otd-structures";
+    public static final String PER_PLAYER_ELYTRA_ITEM_FRAME = "per-player-elytra-item-frame";
 
     public static final String BLOCK_BREAK_WITHP = "messages.chestbreak-with-permission";
     public static final String BLOCK_BREAK_WITHOUTP = "messages.chestbreak-without-permission";
@@ -28,5 +30,7 @@ public class LConstants {
     public static final String NO_PERMISSION = "messages.no-permission";
     public static final String RELOADED = "messages.reloaded";
     public static final String CANT_PLACE_DCHEST = "messages.cant-place-double-chest";
+    public static final String ELYTRA_FOR_OTHER_PLAYER = "messages.elytra-for-other-player";
+    public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
     
 }

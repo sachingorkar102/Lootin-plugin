@@ -20,6 +20,8 @@ messages:
   chest-edited: "&cChest is being edited, cant break it"
   reloaded: "&aConfig file reloaded"
   cant-place-double-chest: "&cCant place normal chest near loot chest"
+  elytra-for-other-player: "&cThe Elytra is for next player!!"
+  elytra-item-frame-removed: "&aElytra ItemFrame removed."
 
 # weather or not to delete items when player breaks loot chest successfully
 delete-items-on-break: true  
@@ -33,6 +35,11 @@ black-list-worlds: []
 # list of vanilla structures where lootin will not modify loot chests
 # valid structure names can be found here https://www.spigotmc.org/resources/90453/
 black-list-structures: []
+
+# Note: does not work with already looted end ships
+# if set to true, the elytra present in item frame in end city ships will be per player
+# these item frames are special and cant be broken, players with lootin.breakelytraitemframe.bypass permission and a stick in main hand can only break them
+per-player-elytra-item-frame: true
 
 
 # list of CustomStructures where lootin will not modify loot chests.
