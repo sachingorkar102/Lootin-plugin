@@ -52,27 +52,29 @@ public class ChunkLoadListener extends BaseListener{
                 Player player = (Player) e.getDamager();
                 String uuid = player.getUniqueId().toString();
                 NamespacedKey playerKey = Lootin.getKey(uuid);
-                if(player.hasPermission("lootin.breakelytraitemframe.bypass") && player.getInventory().getItemInMainHand().getType()==Material.STICK){
-                    framea.remove();
-                    player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_REMOVED, player));
-                    return;
-                }
                 if(framea.getPersistentDataContainer().has(playerKey, PersistentDataType.INTEGER)){
-                    player.sendMessage(plugin.getMessage(LConstants.ELYTRA_FOR_OTHER_PLAYER, player));
+                    if(player.hasPermission("lootin.breakelytraitemframe.bypass")){
+                        if(player.getInventory().getItemInMainHand().getType()==Material.STICK){
+                            framea.remove();
+                            player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_REMOVED, player));
+                        }
+                        else{
+                            player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_BREAK_WITHPERM, player));
+                        }
+                    }
+                    else{
+                        player.sendMessage(plugin.getMessage(LConstants.ELYTRA_IF_BREAK_WITHOUTPERM, player));
+                    }
                     return;
                 }
                 
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        ItemFrame frame = (ItemFrame) e.getEntity();
-                        frame.getPersistentDataContainer().set(playerKey,PersistentDataType.INTEGER,1);
-                        Location loc = frame.getLocation();
-                        BlockFace face = frame.getFacing();
-                        frame.getWorld().dropItemNaturally(new Location(frame.getWorld(), loc.getX()+(face.getModX()*0.15F), loc.getY()+0.15F, loc.getZ()+(face.getModZ()*0.15F)), new ItemStack(Material.ELYTRA));
-                        
-                    }
-                }.runTaskLater(plugin, 2);
+                framea.getPersistentDataContainer().set(playerKey,PersistentDataType.INTEGER,1);
+                Location loc = framea.getLocation().getBlock().getLocation();
+                BlockFace face = framea.getFacing();
+                framea.getWorld().dropItemNaturally(new Location(framea.getWorld(), loc.getX()+(face.getModX()*0.15F), loc.getY()+0.15F, loc.getZ()+(face.getModZ()*0.15F)), new ItemStack(Material.ELYTRA));
+                if(plugin.isRunningProtocolLib){
+                    framea.setItem(new ItemStack(Material.ELYTRA));
+                }
                 
             }
         }
