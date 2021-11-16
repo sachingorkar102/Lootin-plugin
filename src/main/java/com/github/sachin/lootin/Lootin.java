@@ -9,6 +9,7 @@ import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.integration.rwg.LootinAddon;
 import com.github.sachin.lootin.listeners.ChestEvents;
 import com.github.sachin.lootin.listeners.ChunkLoadListener;
+import com.github.sachin.lootin.listeners.EntityMetaDataPacketListener;
 import com.github.sachin.lootin.listeners.InventoryListeners;
 import com.github.sachin.lootin.listeners.integration.CustomStructuresLootPopulateEvent;
 import com.github.sachin.lootin.listeners.integration.OTDLootListener;
@@ -41,6 +42,7 @@ public final class Lootin extends JavaPlugin {
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
     public boolean isRunningPurpur;
+    public boolean isRunningProtocolLib;
 
     @Override
     public void onEnable() {
@@ -52,6 +54,8 @@ public final class Lootin extends JavaPlugin {
         } catch (ClassNotFoundException e) {
             this.isRunningPurpur = false;
         }
+
+        this.isRunningProtocolLib = getServer().getPluginManager().getPlugin("ProtocolLib") != null;
         this.commandManager = new PaperCommandManager(plugin);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
@@ -77,6 +81,10 @@ public final class Lootin extends JavaPlugin {
             } else {
                 getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
             }
+        }
+        if(isRunningProtocolLib){
+            getLogger().info("Found ProtocolLib, registering meta data packet listener...");
+            new EntityMetaDataPacketListener();
         }
         if(getConfig().getBoolean("metrics",true)){
             getLogger().info("Enabling bstats...");

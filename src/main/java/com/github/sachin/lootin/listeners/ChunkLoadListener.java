@@ -62,17 +62,13 @@ public class ChunkLoadListener extends BaseListener{
                     return;
                 }
                 
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        ItemFrame frame = (ItemFrame) e.getEntity();
-                        frame.getPersistentDataContainer().set(playerKey,PersistentDataType.INTEGER,1);
-                        Location loc = frame.getLocation();
-                        BlockFace face = frame.getFacing();
-                        frame.getWorld().dropItemNaturally(new Location(frame.getWorld(), loc.getX()+(face.getModX()*0.15F), loc.getY()+0.15F, loc.getZ()+(face.getModZ()*0.15F)), new ItemStack(Material.ELYTRA));
-                        
-                    }
-                }.runTaskLater(plugin, 2);
+                framea.getPersistentDataContainer().set(playerKey,PersistentDataType.INTEGER,1);
+                Location loc = framea.getLocation().getBlock().getLocation();
+                BlockFace face = framea.getFacing();
+                framea.getWorld().dropItemNaturally(new Location(framea.getWorld(), loc.getX()+(face.getModX()*0.15F), loc.getY()+0.15F, loc.getZ()+(face.getModZ()*0.15F)), new ItemStack(Material.ELYTRA));
+                if(plugin.isRunningProtocolLib){
+                    framea.setItem(new ItemStack(Material.ELYTRA));
+                }
                 
             }
         }
