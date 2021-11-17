@@ -16,6 +16,7 @@ import com.github.sachin.lootin.listeners.integration.OTDLootListener;
 import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
+import com.syntaxphoenix.syntaxapi.utils.java.Exceptions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -32,6 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import co.aikar.commands.PaperCommandManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.sourcewriters.spigot.rwg.legacy.api.RealisticWorldGenerator;
+import net.sourcewriters.spigot.rwg.legacy.api.compatibility.AddonInitializationException;
 
 
 
@@ -76,10 +78,15 @@ public final class Lootin extends JavaPlugin {
         }
         if(pm.isPluginEnabled("Realistic_World")){
             getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
-            if (enableRwgSupport(pm.getPlugin("Realistic_World"))) {
-                getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
-            } else {
-                getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
+            try {
+                if (enableRwgSupport(pm.getPlugin("Realistic_World"))) {
+                    getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
+                } else {
+                    getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
+                }
+            } catch(AddonInitializationException exp) {
+                getLogger().warning("Failed to install RealisticWorldGenerator addon");
+                getLogger().warning(Exceptions.stackTraceToString(exp));
             }
         }
         if(isRunningProtocolLib){
@@ -97,14 +104,14 @@ public final class Lootin extends JavaPlugin {
         if(plugin == null) {
             return false; // No rwg plugin????
         }
-        String[] version = plugin.getDescription().getVersion().split("\\.", 2);
+        String[] version = plugin.getDescription().getVersion().split("\\.", 3);
         if(version.length < 2) {
             return false; // Even supported?
         }
         try {
             int major = Integer.parseInt(version[0]);
             int minor = Integer.parseInt(version[1]);
-            if(major != 4 || minor < 30) {
+            if(major < 4 || (major == 4 && minor < 30)) {
                 return false;
             }
         } catch(NumberFormatException exp) {
