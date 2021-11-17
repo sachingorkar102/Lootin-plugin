@@ -111,7 +111,7 @@ public final class Lootin extends JavaPlugin {
         try {
             int major = Integer.parseInt(version[0]);
             int minor = Integer.parseInt(version[1]);
-            if(major < 4 || (major == 4 && minor < 30)) {
+            if(major < 4 || (major == 4 && minor < 35)) {
                 return false;
             }
         } catch(NumberFormatException exp) {

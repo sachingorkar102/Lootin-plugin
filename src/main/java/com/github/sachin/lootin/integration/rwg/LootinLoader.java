@@ -3,7 +3,6 @@ package com.github.sachin.lootin.integration.rwg;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
-import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 
@@ -22,14 +21,13 @@ public class LootinLoader extends CompatibilityBlockLoader {
   }
 
   @Override
-  public IBlockData load(IBlockAccess access, Block block, BlockData data) {
+  public IBlockData load(IBlockAccess access, BlockState blockState, BlockData data) {
     BlockStateEditor editor = BlockStateEditor.of(data.getAsString());
-    BlockState state = block.getState();
-    if(editor.getId().equalsIgnoreCase("barrel") && ChestUtils.isLootinContainer(null, state, ContainerType.BARREL)) {
+    if(editor.getId().equalsIgnoreCase("barrel") && ChestUtils.isLootinContainer(null, blockState, ContainerType.BARREL)) {
       // TODO: Load loottable
       return new CustomBlockData(LootinAddon.NAMESPACE, editor.getId());
     }
-    if(editor.getId().equalsIgnoreCase("chest") && ChestUtils.isLootinContainer(null, state, ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST)) {
+    if(editor.getId().equalsIgnoreCase("chest") && ChestUtils.isLootinContainer(null, blockState, ChestUtils.isDoubleChest(blockState) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST)) {
       // TODO: Load loottable
       // TODO: Load direction and double chest side
       return new CustomBlockData(LootinAddon.NAMESPACE, editor.getId());
