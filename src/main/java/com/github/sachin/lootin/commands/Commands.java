@@ -48,7 +48,14 @@ public class Commands extends BaseCommand{
     @Subcommand("rwggive")
     @CommandCompletion("CHEST|BARREL|MINECART @rwgloottables")
     public void onRwgChestCommand(Player player,String[] args){
-        if(plugin.rwgCompat == null) return;
+        if(!player.hasPermission("lootin.command.rwggive")){
+            player.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION,null));
+            return;
+        }
+        if(plugin.rwgCompat == null){
+            player.sendMessage(plugin.getPrefix()+ChatColor.RED+"You need Realistic World Generator plugin installed to use this command");
+            return;
+        }
         if(args.length < 2){
             player.sendMessage(plugin.getPrefix()+ ChatColor.RED+"Invalid args");
             player.sendMessage(plugin.getPrefix()+ChatColor.GREEN+"Command Syntax: "+ChatColor.YELLOW+"/lootin rwgchest [CHEST|BARREL|MINECART] [LootTable Name] (Amount)");

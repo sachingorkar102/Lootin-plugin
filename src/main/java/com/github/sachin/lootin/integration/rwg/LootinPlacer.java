@@ -82,7 +82,6 @@ public class LootinPlacer extends CompatibilityBlockPlacer {
       IProperties properties = data.getProperties();
       String shape = properties.find("shape").cast(String.class).getValueOr("east_west");
       Material rail = Enums.getIfPresent(Material.class, properties.find("rail_type").cast(String.class).getValueOr("RAIL").toUpperCase()).get();
-      block.setType(rail);
       BlockStateEditor editor = BlockStateEditor.of("minecraft:" + rail.toString().toLowerCase());
       editor.put("shape", shape);
       block.setBlockData(blockAccess.dataOf(editor.asBlockData()).asBukkit());

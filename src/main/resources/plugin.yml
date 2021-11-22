@@ -15,3 +15,5 @@ permissions:
     default: op  
   lootin.breakelytraitemframe.bypass:
     default: op  
+  lootin.command.rwggive:
+    default: op 
