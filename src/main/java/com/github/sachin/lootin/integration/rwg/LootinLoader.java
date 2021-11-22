@@ -50,7 +50,6 @@ public class LootinLoader extends CompatibilityBlockLoader {
       }
     }
     if(editor.getId().equalsIgnoreCase("chest")) {
-      customData = new CustomBlockData(LootinAddon.NAMESPACE, editor.getId());
       Chest chest = (Chest) state;
       PersistentDataContainer persistent = chest.getPersistentDataContainer();
 
@@ -58,11 +57,13 @@ public class LootinLoader extends CompatibilityBlockLoader {
         String loottable = persistent.get(LConstants.RWG_LOOTTABLE_KEY, PersistentDataType.STRING);
         String containerType = persistent.get(LConstants.RWG_CONTAINER_KEY, PersistentDataType.STRING);
         String facing = editor.get("facing");
-        customData.getProperties().set(IProperty.of("type", editor.get("type")));
         if(containerType.equals("CHEST")){
+          customData = new CustomBlockData(LootinAddon.NAMESPACE, editor.getId());
+          customData.getProperties().set(IProperty.of("type", editor.get("type")));
           customData.getProperties().set(IProperty.of("facing", facing));
         }
         if(containerType.equals("MINECART")){
+          customData = new CustomBlockData(LootinAddon.NAMESPACE, "minecart");
           String rail = Material.RAIL.toString();
           Inventory inv = chest.getBlockInventory();
           for(Material r : VALID_RAILS){

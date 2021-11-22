@@ -67,31 +67,29 @@ public class LootinPlacer extends CompatibilityBlockPlacer {
       BlockStateEditor editor = BlockStateEditor.of("minecraft:" + id);
       IProperties properties = data.getProperties();
       ChestSide side = Enums.getIfPresent(ChestSide.class, properties.find("type").cast(String.class).getValueOr("SINGLE").toUpperCase()).get();
-      if(properties.has("shape") && side==ChestSide.SINGLE){
-        String shape = properties.find("shape").cast(String.class).getValueOr("east_west");
-        Material rail = Enums.getIfPresent(Material.class, properties.find("rail_type").cast(String.class).getValueOr("RAIL").toUpperCase()).get();
-        block.setType(rail);
-        editor.put("shape", shape);
-        block.setBlockData(blockAccess.dataOf(editor.asBlockData()).asBukkit());
-        block.getState().update(true);
-        StorageMinecart minecart = block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), StorageMinecart.class);
-        inventory = minecart.getInventory();
-        ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+      BlockFace facing = Enums.getIfPresent(BlockFace.class, properties.find("facing").cast(String.class).getValueOr("WEST").toUpperCase()).get();
+      editor.put("type", side.name().toLowerCase());
+      editor.put("facing", facing.name().toLowerCase());
+      block.setBlockData(blockAccess.dataOf(editor.asBlockData()).asBukkit());
+      block.getState().update(true);
+      BlockState state = block.getState();
+      if(state instanceof Chest) {
+        inventory = ((org.bukkit.block.Chest) state).getBlockInventory();
       }
-      else{
-        BlockFace facing = Enums.getIfPresent(BlockFace.class, properties.find("facing").cast(String.class).getValueOr("WEST").toUpperCase()).get();
-        editor.put("type", side.name().toLowerCase());
-        editor.put("facing", facing.name().toLowerCase());
-        block.setBlockData(blockAccess.dataOf(editor.asBlockData()).asBukkit());
-  
-  
-        block.getState().update(true);
-        BlockState state = block.getState();
-        if(state instanceof Chest) {
-          inventory = ((org.bukkit.block.Chest) state).getBlockInventory();
-        }
-        ChestUtils.setLootinContainer(null, state, side != ChestSide.SINGLE ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST);
-      }
+      ChestUtils.setLootinContainer(null, state, side != ChestSide.SINGLE ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST);
+    }
+    if(id.equalsIgnoreCase("minecart")){
+      IProperties properties = data.getProperties();
+      String shape = properties.find("shape").cast(String.class).getValueOr("east_west");
+      Material rail = Enums.getIfPresent(Material.class, properties.find("rail_type").cast(String.class).getValueOr("RAIL").toUpperCase()).get();
+      block.setType(rail);
+      BlockStateEditor editor = BlockStateEditor.of("minecraft:" + rail.toString().toLowerCase());
+      editor.put("shape", shape);
+      block.setBlockData(blockAccess.dataOf(editor.asBlockData()).asBukkit());
+      block.getState().update(true);
+      StorageMinecart minecart = block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), StorageMinecart.class);
+      inventory = minecart.getInventory();
+      ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
     }
 
     if(inventory == null) {
