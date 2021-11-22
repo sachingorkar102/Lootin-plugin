@@ -1,6 +1,7 @@
 package com.github.sachin.lootin.integration.rwg;
 
 import com.github.sachin.lootin.integration.rwg.util.ChestSide;
+import com.google.common.base.Enums;
 import com.syntaxphoenix.syntaxapi.nbt.NbtCompound;
 import com.syntaxphoenix.syntaxapi.nbt.NbtType;
 
@@ -32,14 +33,18 @@ public class LootinParser extends CompatibilityBlockParser {
       return data;
     }
     if(id.equalsIgnoreCase("chest")) {
+      
       CustomBlockData data = new CustomBlockData(LootinAddon.NAMESPACE, compound.getString("id"));
       if(compound.hasKey("properties", NbtType.COMPOUND)) {
         NbtCompound properties = compound.getCompound("properties");
         if(properties.hasKey("loottable", NbtType.STRING)) {
           data.getProperties().set(IProperty.of("loottable", properties.getString("loottable")));
         }
-        if(properties.hasKey("side", NbtType.BYTE)) {
-          data.getProperties().set(IProperty.of("side", ChestSide.of(properties.getByte("side"))));
+        if(properties.hasKey("type", NbtType.STRING)) {
+          data.getProperties().set(IProperty.of("type", properties.getString("type")));
+        }
+        if(properties.hasKey("facing",NbtType.STRING)){
+          data.getProperties().set(IProperty.of("facing", properties.get("facing")));
         }
       }
       return data;

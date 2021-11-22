@@ -15,12 +15,14 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.block.TileState;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -203,6 +205,22 @@ public class ChestEvents extends BaseListener{
                 if(plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS)){
                     e.setCancelled(true);
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void blockPlaceEvent(BlockPlaceEvent e){
+        ItemStack item = e.getItemInHand();
+        if(item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(LConstants.RWG_LOOTTABLE_KEY, PersistentDataType.STRING)){
+            String loottable = item.getItemMeta().getPersistentDataContainer().get(LConstants.RWG_LOOTTABLE_KEY, PersistentDataType.STRING);
+            String containerType = item.getItemMeta().getPersistentDataContainer().get(LConstants.RWG_CONTAINER_KEY, PersistentDataType.STRING);
+            
+            if(e.getBlockPlaced().getState() instanceof TileState){
+                TileState state = (TileState) e.getBlockPlaced().getState();
+                state.getPersistentDataContainer().set(LConstants.RWG_LOOTTABLE_KEY,PersistentDataType.STRING, loottable);
+                state.getPersistentDataContainer().set(LConstants.RWG_CONTAINER_KEY,PersistentDataType.STRING, containerType);
+                state.update();
             }
         }
     }

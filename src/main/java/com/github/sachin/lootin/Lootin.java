@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.integration.rwg.LootinAddon;
+import com.github.sachin.lootin.integration.rwg.RWGCompat;
 import com.github.sachin.lootin.listeners.ChestEvents;
 import com.github.sachin.lootin.listeners.ChunkLoadListener;
 import com.github.sachin.lootin.listeners.EntityMetaDataPacketListener;
@@ -32,8 +33,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.sourcewriters.spigot.rwg.legacy.api.RealisticWorldGenerator;
-import net.sourcewriters.spigot.rwg.legacy.api.compatibility.AddonInitializationException;
 
 
 
@@ -41,6 +40,7 @@ public final class Lootin extends JavaPlugin {
 
     private static Lootin plugin;
     private PaperCommandManager commandManager;
+    public RWGCompat rwgCompat;
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
     public boolean isRunningPurpur;
@@ -78,15 +78,12 @@ public final class Lootin extends JavaPlugin {
         }
         if(pm.isPluginEnabled("Realistic_World")){
             getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
-            try {
-                if (enableRwgSupport(pm.getPlugin("Realistic_World"))) {
-                    getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
-                } else {
-                    getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
-                }
-            } catch(AddonInitializationException exp) {
-                getLogger().warning("Failed to install RealisticWorldGenerator addon");
-                getLogger().warning(Exceptions.stackTraceToString(exp));
+            this.rwgCompat = new RWGCompat();
+            if (rwgCompat.enableRwgSupport(pm.getPlugin("Realistic_World"))) {
+                rwgCompat.reloadCompletions();
+                getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
+            } else {
+                getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
             }
         }
         if(isRunningProtocolLib){
@@ -95,29 +92,9 @@ public final class Lootin extends JavaPlugin {
         }
         if(getConfig().getBoolean("metrics",true)){
             getLogger().info("Enabling bstats...");
-            Metrics metrics = new Metrics(this, 11877);
+            new Metrics(this, 11877);
         }
         
-    }
-
-    private boolean enableRwgSupport(Plugin plugin) {
-        if(plugin == null) {
-            return false; // No rwg plugin????
-        }
-        String[] version = plugin.getDescription().getVersion().split("\\.", 3);
-        if(version.length < 2) {
-            return false; // Even supported?
-        }
-        try {
-            int major = Integer.parseInt(version[0]);
-            int minor = Integer.parseInt(version[1]);
-            if(major < 4 || (major == 4 && minor < 30)) {
-                return false;
-            }
-        } catch(NumberFormatException exp) {
-            return false;
-        }
-        return RealisticWorldGenerator.get().getCompatibilityManager().register(this, LootinAddon.class, getName());
     }
 
     public static Lootin getPlugin() {
@@ -135,6 +112,10 @@ public final class Lootin extends JavaPlugin {
         }
         return message;
     } 
+
+    public String getPrefix(){
+        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix"));
+    }
 
     public String getTitle(String key){
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString(key,"Error"));
@@ -183,7 +164,14 @@ public final class Lootin extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if(rwgCompat != null){
+            rwgCompat.reloadCompletions();
+        }
         reloadConfig();
         getLogger().info("Config file reloaded");
+    }
+
+    public PaperCommandManager getCommandManager() {
+        return commandManager;
     }
 }

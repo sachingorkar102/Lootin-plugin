@@ -1,5 +1,9 @@
 package com.github.sachin.lootin.integration.rwg;
 
+import java.util.Arrays;
+
+import com.github.sachin.lootin.Lootin;
+
 import org.bukkit.plugin.Plugin;
 
 import net.sourcewriters.spigot.rwg.legacy.api.RealisticWorldGenerator;
@@ -10,6 +14,7 @@ import net.sourcewriters.spigot.rwg.legacy.api.compatibility.IPluginPackage;
 public final class LootinAddon extends CompatibilityAddon {
 
   public static final String NAMESPACE = "lootin";
+
 
   public LootinAddon(ICompatibilityManager manager, Plugin owner, IPluginPackage target) {
     super(manager, owner, target);
