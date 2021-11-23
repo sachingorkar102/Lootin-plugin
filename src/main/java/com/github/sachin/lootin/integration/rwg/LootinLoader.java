@@ -82,10 +82,10 @@ public class LootinLoader extends CompatibilityBlockLoader {
         }
         customData.getProperties().set(IProperty.of("loottable", loottable));
         return customData;
-      } 
+      }
     }
     return null;
   }
 
-  
+
 }

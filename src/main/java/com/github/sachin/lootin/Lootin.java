@@ -48,7 +48,7 @@ public final class Lootin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-            
+
         plugin = this;
         try {
             Class.forName("net.pl3x.purpur.event.PlayerAFKEvent");
@@ -64,7 +64,7 @@ public final class Lootin extends JavaPlugin {
         // register listeners
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new ChunkLoadListener(), plugin);
-        
+
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         if(pm.isPluginEnabled("CustomStructures")){
@@ -94,9 +94,9 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Enabling bstats...");
             new Metrics(this, 11877);
         }
-        
-    }
 
+    }
+    
     public static Lootin getPlugin() {
         return plugin;
     }
@@ -111,7 +111,7 @@ public final class Lootin extends JavaPlugin {
             return PlaceholderAPI.setPlaceholders(player, message);
         }
         return message;
-    } 
+    }
 
     public String getPrefix(){
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix"));
