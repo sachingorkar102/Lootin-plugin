@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.sachin.lootin.commands.Commands;
-import com.github.sachin.lootin.integration.rwg.LootinAddon;
 import com.github.sachin.lootin.integration.rwg.RWGCompat;
 import com.github.sachin.lootin.listeners.ChestEvents;
 import com.github.sachin.lootin.listeners.ChunkLoadListener;
@@ -17,7 +16,6 @@ import com.github.sachin.lootin.listeners.integration.OTDLootListener;
 import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
-import com.syntaxphoenix.syntaxapi.utils.java.Exceptions;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -27,7 +25,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTables;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -80,7 +77,7 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Found RealisticWorldGenerator, trying to register compatibility addon...");
             this.rwgCompat = new RWGCompat();
             if (rwgCompat.enableRwgSupport(pm.getPlugin("Realistic_World"))) {
-                rwgCompat.reloadCompletions();
+                rwgCompat.setup();
                 getLogger().info("RealisticWorldGenerator addon successfully registered and installed");
             } else {
                 getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
@@ -163,9 +160,6 @@ public final class Lootin extends JavaPlugin {
             ConfigUpdater.update(plugin, "config.yml", new File(getDataFolder(), "config.yml"), new ArrayList<>());
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        if(rwgCompat != null){
-            rwgCompat.reloadCompletions();
         }
         reloadConfig();
         getLogger().info("Config file reloaded");

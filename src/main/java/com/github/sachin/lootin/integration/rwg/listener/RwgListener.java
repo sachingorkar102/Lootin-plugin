@@ -1,13 +1,32 @@
 package com.github.sachin.lootin.integration.rwg.listener;
 
 import com.github.sachin.lootin.integration.rwg.util.inventory.RwgInventory;
+import com.github.sachin.lootin.utils.LConstants;
 
+import org.bukkit.block.Container;
+import org.bukkit.block.TileState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
-public class RwgInventoryListener implements Listener {
+public class RwgListener implements Listener {
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e){
+        ItemStack item = e.getItemInHand();
+        if(item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(LConstants.RWG_IDENTITY_KEY, PersistentDataType.BYTE) && e.getBlockPlaced().getState() instanceof TileState){
+            TileState state = (TileState) e.getBlockPlaced().getState();
+            if(state instanceof Container && item.getItemMeta().getPersistentDataContainer().has(LConstants.RWG_LOOTTABLE_KEY, PersistentDataType.STRING)) {
+                state.getPersistentDataContainer().set(LConstants.RWG_LOOTTABLE_KEY,PersistentDataType.STRING, item.getItemMeta().getPersistentDataContainer().get(LConstants.RWG_LOOTTABLE_KEY, PersistentDataType.STRING));
+            }
+            state.getPersistentDataContainer().set(LConstants.RWG_IDENTITY_KEY,PersistentDataType.BYTE, (byte) 0);
+            state.update();
+        }
+    }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
@@ -44,6 +63,8 @@ public class RwgInventoryListener implements Listener {
                 event.setCancelled(true);
                 select(event.getWhoClicked().getInventory(), rwgInventory, event.getSlot());
                 return;
+            case CLONE_STACK:
+                return;
             default:
                 event.setCancelled(true);
                 return;
@@ -52,7 +73,7 @@ public class RwgInventoryListener implements Listener {
 
     private void select(Inventory inventory, RwgInventory rwgInventory, int slot) {
         if(rwgInventory.isType()) {
-            if(slot == 44) {
+            if(slot == 40) {
                 rwgInventory.selectItem(-1);
                 rwgInventory.populate();
                 return;
@@ -72,6 +93,7 @@ public class RwgInventoryListener implements Listener {
             return;
         }
         rwgInventory.selectItem(slot);
+        rwgInventory.populate();
     }
     
 }
