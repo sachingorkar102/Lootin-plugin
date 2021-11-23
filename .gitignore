@@ -113,3 +113,5 @@ buildNumber.properties
 run/
 .vscode/settings.json
 .classpath
+push.sh
+.vscode/tasks.json

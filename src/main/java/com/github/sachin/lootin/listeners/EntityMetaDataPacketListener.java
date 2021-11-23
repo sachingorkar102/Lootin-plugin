@@ -37,7 +37,7 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
         PacketContainer packet = event.getPacket();
         Entity entity = packet.getEntityModifier(event).read(0);
         Player player = event.getPlayer();
-        if(entity.getType()==EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
+        if(entity != null && entity.getType()==EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
             NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
             List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
             for(WrappedWatchableObject object : objects){
