@@ -97,7 +97,6 @@ public class Commands extends BaseCommand{
     }
 
     @Subcommand("rwg inventory|inv")
-    @CommandCompletion("CHEST|BARREL|MINECART")
     public void onRwgInventoryCommand(Player player){
         if(!player.hasPermission("lootin.command.rwg")){
             player.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION,null));
