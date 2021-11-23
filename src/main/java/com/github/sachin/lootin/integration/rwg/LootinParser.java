@@ -1,6 +1,5 @@
 package com.github.sachin.lootin.integration.rwg;
 
-import com.github.sachin.lootin.integration.rwg.util.ChestSide;
 import com.google.common.base.Enums;
 import com.syntaxphoenix.syntaxapi.nbt.NbtCompound;
 import com.syntaxphoenix.syntaxapi.nbt.NbtType;
@@ -29,11 +28,13 @@ public class LootinParser extends CompatibilityBlockParser {
         if(properties.hasKey("loottable", NbtType.STRING)) {
           data.getProperties().set(IProperty.of("loottable", properties.getString("loottable")));
         }
+        if(properties.hasKey("facing",NbtType.STRING)){
+          data.getProperties().set(IProperty.of("facing", properties.getString("facing")));
+        }
       }
       return data;
     }
     if(id.equalsIgnoreCase("chest")) {
-      
       CustomBlockData data = new CustomBlockData(LootinAddon.NAMESPACE, compound.getString("id"));
       if(compound.hasKey("properties", NbtType.COMPOUND)) {
         NbtCompound properties = compound.getCompound("properties");
@@ -44,7 +45,23 @@ public class LootinParser extends CompatibilityBlockParser {
           data.getProperties().set(IProperty.of("type", properties.getString("type")));
         }
         if(properties.hasKey("facing",NbtType.STRING)){
-          data.getProperties().set(IProperty.of("facing", properties.get("facing")));
+          data.getProperties().set(IProperty.of("facing", properties.getString("facing")));
+        }
+      }
+      return data;
+    }
+    if(id.equalsIgnoreCase("minecart")) {
+      CustomBlockData data = new CustomBlockData(LootinAddon.NAMESPACE, compound.getString("id"));
+      if(compound.hasKey("properties", NbtType.COMPOUND)) {
+        NbtCompound properties = compound.getCompound("properties");
+        if(properties.hasKey("loottable", NbtType.STRING)) {
+          data.getProperties().set(IProperty.of("loottable", properties.getString("loottable")));
+        }
+        if(properties.hasKey("shape", NbtType.STRING)) {
+          data.getProperties().set(IProperty.of("shape", properties.getString("shape")));
+        }
+        if(properties.hasKey("rail_type",NbtType.STRING)){
+          data.getProperties().set(IProperty.of("rail_type", properties.getString("rail_type")));
         }
       }
       return data;

@@ -3,6 +3,9 @@ package com.github.sachin.lootin.commands;
 import java.util.Arrays;
 
 import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.integration.rwg.RWGCompat;
+import com.github.sachin.lootin.integration.rwg.listener.RwgInventoryListener;
+import com.github.sachin.lootin.integration.rwg.util.inventory.RwgInventory;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 
@@ -44,10 +47,10 @@ public class Commands extends BaseCommand{
         }
     }
 
-    @Subcommand("rwggive")
+    @Subcommand("rwg give")
     @CommandCompletion("CHEST|BARREL|MINECART @rwgloottables")
     public void onRwgChestCommand(Player player,String[] args){
-        if(!player.hasPermission("lootin.command.rwggive")){
+        if(!player.hasPermission("lootin.command.rwg")){
             player.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION,null));
             return;
         }
@@ -91,7 +94,26 @@ public class Commands extends BaseCommand{
             player.getInventory().addItem(item);
             player.sendMessage(plugin.getPrefix()+ChatColor.GREEN+"Gave "+player.getName()+" LootTable "+containerType+ChatColor.YELLOW+loottable);
         }
-        
+    }
+
+    @Subcommand("rwg inventory|inv")
+    public void onRwgInventoryCommand(Player player){
+        if(!player.hasPermission("lootin.command.rwg")){
+            player.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION,null));
+            return;
+        }
+        RWGCompat compat = plugin.rwgCompat;
+        if(compat == null){
+            player.sendMessage(plugin.getPrefix()+ChatColor.RED+"You need Realistic World Generator plugin installed to use this command");
+            return;
+        }
+        if(compat.isSetupFailed()) {
+            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "This feature is not available because the addon setup failed");
+            return;
+        }
+        RwgInventory inventory = new RwgInventory(compat.getHeads(), compat.getApi().getChestStorage());
+        inventory.populate();
+        player.openInventory(inventory.getInventory());
     }
     
 }
