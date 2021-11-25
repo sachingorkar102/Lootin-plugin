@@ -12,7 +12,7 @@ public class LConstants {
     public static final NamespacedKey DATA_KEY = new NamespacedKey(Lootin.getPlugin(), DATA_KEY_STRING);
     public static final NamespacedKey ITEM_FRAME_ELYTRA_KEY = Lootin.getKey("item-frame-elytra-key");
     public static final NamespacedKey RWG_LOOTTABLE_KEY = Lootin.getKey("rwg-loottable-key");
-    public static final NamespacedKey RWG_CONTAINER_KEY = Lootin.getKey("rwg-container-key");
+    public static final NamespacedKey RWG_IDENTITY_KEY = Lootin.getKey("rwg-identity-key");
 
     public static final String TITLE_CHEST = "gui-titles.chest";
     public static final String TITLE_DOUBLE_CHEST = "gui-titles.double-chest";

@@ -1,9 +1,7 @@
 package com.github.sachin.lootin.integration.rwg;
 
-import java.util.Arrays;
-
 import com.github.sachin.lootin.Lootin;
-import com.github.sachin.lootin.integration.rwg.listener.RwgInventoryListener;
+import com.github.sachin.lootin.integration.rwg.listener.RwgListener;
 import com.syntaxphoenix.syntaxapi.utils.java.Exceptions;
 
 import org.bukkit.Bukkit;
@@ -16,19 +14,13 @@ import net.sourcewriters.spigot.rwg.legacy.api.version.IConversionAccess;
 
 public final class RWGCompat{
 
-    private final RealisticWorldGenerator api;
     private final Lootin plugin;
+    private RealisticWorldGenerator api;
 
     private boolean setupFailed = false;
-    private ItemStack[] heads = new ItemStack[3];
 
     public RWGCompat(){
-        this.api = RealisticWorldGenerator.get();
         this.plugin = Lootin.getPlugin();
-    }
-
-    public void reloadCompletions(){
-        plugin.getCommandManager().getCommandCompletions().registerCompletion("rwgloottables", c -> Arrays.asList(api.getChestStorage().getNames()));
     }
 
     public boolean enableRwgSupport(Plugin plugin) {
@@ -49,14 +41,8 @@ public final class RWGCompat{
             return false;
         }
         try {
-            boolean registered = api.getCompatibilityManager().register(this.plugin, LootinAddon.class, this.plugin.getName());
-            try {
-                setup();
-            } catch (Exception e) {
-                this.plugin.getLogger().warning("Failed run RealisticWorldGenerator addon setup. The RWG support will still work but some features may not work properly.");
-                setupFailed = true;
-            }
-            return registered;
+            api = RealisticWorldGenerator.get();
+            return api.getCompatibilityManager().register(this.plugin, LootinAddon.class, this.plugin.getName());
         } catch (AddonInitializationException e) {
             this.plugin.getLogger().warning("Failed to install RealisticWorldGenerator addon");
             this.plugin.getLogger().warning(Exceptions.stackTraceToString(e));
@@ -73,15 +59,27 @@ public final class RWGCompat{
     }
 
     public ItemStack[] getHeads(){
-        return heads;
-    }
-    
-    private void setup() {
         IConversionAccess access = api.getVersionAccess().getConversionAccess();
+        ItemStack[] heads = new ItemStack[3];
         heads[0] = access.asHeadItem("NDNjNWNlYWM0ZjViN2YzZDhlMzUxN2ViNTdkOTc3ZmM2ZGU0MTRhMmNiZTE4NDljMTYzMmRjMDhmNTJmZDgifX19");
         heads[1] = access.asHeadItem("MmZkMjUzYzRjNmQ2NmVkNjY5NGJlYzgxOGFhYzFiZTc1OTRhM2RkOGU1OTQzOGQwMWNiNzY3MzdmOTU5In19fQ==");
         heads[2] = access.asHeadItem("MThiYTVlZTg5NGUyYzcwZDI1NGYwZjExY2NhMzU2ODIyYjA5ZWI5ZTZkYzQwODExYWMxYjQ2NzFjY2E0NmIifX19");
-        Bukkit.getPluginManager().registerEvents(new RwgInventoryListener(), plugin);
+        System.out.println(api.getVersionAccess().getNmsAccess().getLookupProvider().getLookup("cb_skull_meta").getFieldValue(heads[0].getItemMeta(), "profile"));
+        return heads;
+    }
+    
+    public void setup() {
+        try {
+            setupImpl();
+        } catch(Exception exp) {
+            this.setupFailed = true;
+            plugin.getLogger().warning("Failed to setup RWG compat");
+            plugin.getLogger().warning(Exceptions.stackTraceToString(exp));
+        }
+    }
+
+    private void setupImpl() throws Exception {
+        Bukkit.getPluginManager().registerEvents(new RwgListener(), plugin);
     }
 
 }

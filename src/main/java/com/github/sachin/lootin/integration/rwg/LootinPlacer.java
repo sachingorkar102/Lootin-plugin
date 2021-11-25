@@ -3,6 +3,7 @@ package com.github.sachin.lootin.integration.rwg;
 import com.github.sachin.lootin.integration.rwg.util.ChestSide;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
+import com.github.sachin.lootin.utils.LConstants;
 import com.google.common.base.Enums;
 import com.syntaxphoenix.syntaxapi.random.NumberGeneratorType;
 import com.syntaxphoenix.syntaxapi.random.RandomNumberGenerator;
@@ -14,12 +15,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.block.data.Rail;
-import org.bukkit.block.data.Rail.Shape;
-import org.bukkit.block.data.type.RedstoneRail;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.util.Vector;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 
 import net.sourcewriters.spigot.rwg.legacy.api.RealisticWorldGenerator;
 import net.sourcewriters.spigot.rwg.legacy.api.block.BlockStateEditor;
@@ -89,6 +90,22 @@ public class LootinPlacer extends CompatibilityBlockPlacer {
       StorageMinecart minecart = block.getWorld().spawn(block.getLocation().add(0.5, 0, 0.5), StorageMinecart.class);
       inventory = minecart.getInventory();
       ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+    }
+    if(id.equalsIgnoreCase("elytra")) {
+      IProperties properties = data.getProperties();
+      BlockFace itemFace = BlockFace.values()[properties.find("facing").cast(Byte.class).getValue()];
+      BlockFace face = itemFace.getOppositeFace();
+      Block faceBlock = block.getWorld().getBlockAt(block.getLocation().clone().add(face.getModX(), face.getModY(), face.getModZ()));
+      Material type = faceBlock.getType();
+      if(type == Material.AIR || type == Material.CAVE_AIR){
+        faceBlock.setType(Material.STONE);
+      }
+      ItemFrame itemFrame = (ItemFrame) block.getWorld().spawnEntity(block.getLocation(), properties.find("glow").cast(Boolean.class).getValueOr(false) ? EntityType.GLOW_ITEM_FRAME : EntityType.ITEM_FRAME);
+      itemFrame.setFacingDirection(itemFace);
+      itemFrame.setItem(new ItemStack(Material.ELYTRA));
+      itemFrame.setPersistent(true);
+      itemFrame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
+      return true;
     }
 
     if(inventory == null) {

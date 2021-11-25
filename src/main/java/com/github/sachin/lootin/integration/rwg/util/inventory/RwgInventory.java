@@ -1,7 +1,5 @@
 package com.github.sachin.lootin.integration.rwg.util.inventory;
 
-import java.util.UUID;
-
 import com.github.sachin.lootin.utils.LConstants;
 import com.syntaxphoenix.syntaxapi.utils.java.UniCode;
 
@@ -50,7 +48,7 @@ public class RwgInventory implements InventoryHolder {
             inventory.setItem(index, stack);
         }
         if(page != 0) {
-            stack = heads[0].clone();
+            stack = heads[0];
             meta = stack.getItemMeta();
             meta.setDisplayName(ChatColor.GRAY + "" + UniCode.ARROWS_LEFT + " Previous Page");
             stack.setItemMeta(meta);
@@ -58,14 +56,14 @@ public class RwgInventory implements InventoryHolder {
             inventory.setItem(37, stack);
             hasPrevious = true;
         }
-        stack = heads[1].clone();
+        stack = heads[1];
         meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.GRAY + "Current Page");
         stack.setItemMeta(meta);
         stack.setAmount(page + 1);
         inventory.setItem(40, stack);
         if(page + 1 != getMaxPage()) {
-            stack = heads[2].clone();
+            stack = heads[2];
             meta = stack.getItemMeta();
             meta.setDisplayName(ChatColor.GRAY + "Next Page " + UniCode.ARROWS_RIGHT);
             stack.setItemMeta(meta);
@@ -86,10 +84,8 @@ public class RwgInventory implements InventoryHolder {
             inventory.setItem(index++, stack);
             hasNext = true;
         }
-        if(index < planIndex){
-            while(index <= planIndex) {
-                inventory.setItem(index++, null);
-            }
+        while(index < 27) {
+            inventory.setItem(index++, null);
         }
     }
 
@@ -105,27 +101,27 @@ public class RwgInventory implements InventoryHolder {
         meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + selected);
         stack.setItemMeta(meta);
-        inventory.setItem(13, stack);
-        stack = new ItemStack(Material.CHEST);
-        meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.GOLD + "Chest");
-        stack.setItemMeta(meta);
-        inventory.setItem(34, stack);
+        inventory.setItem(4, stack);
         stack = new ItemStack(Material.BARREL);
         meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "Barrel");
         stack.setItemMeta(meta);
-        inventory.setItem(28, stack);
+        inventory.setItem(19, stack);
         stack = new ItemStack(Material.MINECART);
         meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.GOLD + "Minecart");
         stack.setItemMeta(meta);
-        inventory.setItem(31, stack);
+        inventory.setItem(22, stack);
+        stack = new ItemStack(Material.CHEST);
+        meta = stack.getItemMeta();
+        meta.setDisplayName(ChatColor.GOLD + "Chest");
+        stack.setItemMeta(meta);
+        inventory.setItem(25, stack);
         stack = new ItemStack(Material.BARRIER);
         meta = stack.getItemMeta();
         meta.setDisplayName(ChatColor.RED + "Back");
         stack.setItemMeta(meta);
-        inventory.setItem(44, stack);
+        inventory.setItem(40, stack);
     }
 
     public void populate() {
@@ -150,28 +146,28 @@ public class RwgInventory implements InventoryHolder {
 
     public void giveItem(Inventory inventory, int slot){
         String name;
-        String containerName;
+        Material material;
         switch(slot){
-            case 34:
-                name = "Chest: ";
-                containerName = "CHEST";
-                break;
-            case 28:
+            case 19:
                 name = "Barrel: ";
-                containerName = "BARREL";
+                material = Material.BARREL;
                 break;
-            case 31:
+            case 22:
                 name = "Minecart: ";
-                containerName = "MINECART";
+                material = Material.FURNACE;
+                break;
+            case 25:
+                name = "Chest: ";
+                material = Material.CHEST;
                 break;
             default:
                 return;
         }
-        ItemStack stack = new ItemStack(slot == 28 ? Material.BARREL : Material.CHEST);
+        ItemStack stack = new ItemStack(material);
         ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.GREEN + name + ChatColor.GOLD + selected);
+        meta.setDisplayName(ChatColor.GOLD + "RWG " + name + ChatColor.YELLOW + selected);
         PersistentDataContainer container = meta.getPersistentDataContainer();
-        container.set(LConstants.RWG_CONTAINER_KEY, PersistentDataType.STRING, containerName);
+        container.set(LConstants.RWG_IDENTITY_KEY, PersistentDataType.BYTE, (byte) 0);
         container.set(LConstants.RWG_LOOTTABLE_KEY, PersistentDataType.STRING, selected);
         stack.setItemMeta(meta);
         inventory.addItem(stack);
@@ -180,6 +176,10 @@ public class RwgInventory implements InventoryHolder {
     public void selectItem(int slot) {
         if(slot == -1) {
             this.type = false;
+            return;
+        }
+        String[] names = storage.getNames();
+        if(slot >= names.length) {
             return;
         }
         this.selected = storage.getNames()[slot + (page * 27)];

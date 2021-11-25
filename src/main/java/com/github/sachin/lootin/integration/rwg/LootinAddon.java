@@ -1,9 +1,5 @@
 package com.github.sachin.lootin.integration.rwg;
 
-import java.util.Arrays;
-
-import com.github.sachin.lootin.Lootin;
-
 import org.bukkit.plugin.Plugin;
 
 import net.sourcewriters.spigot.rwg.legacy.api.RealisticWorldGenerator;
