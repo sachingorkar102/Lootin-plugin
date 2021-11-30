@@ -103,7 +103,7 @@ public final class Lootin extends JavaPlugin {
     }
 
     public String getMessage(String key,Player player){
-        String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")+getConfig().getString(key,""));
+        String message = ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix")+getConfig().getString(key,key));
         if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI") && player != null){
             return PlaceholderAPI.setPlaceholders(player, message);
         }
