@@ -17,3 +17,5 @@ permissions:
     default: op  
   lootin.command.rwggive:
     default: op 
+  lootin.command.set:
+    default: op  

@@ -50,6 +50,10 @@ public class Commands extends BaseCommand{
     @CommandCompletion("CHEST|BARREL|MINECART")
     public void onSet(Player player,String[] args){
         if(args.length<1) return;
+        if(!player.hasPermission("lootin.command.set")){
+            player.sendMessage(plugin.getMessage(LConstants.NO_PERMISSION,null));
+            return;
+        }
         String type = args[0];
         RayTraceResult ray = player.rayTraceBlocks(4);
         if(type.equals("CHEST")){
