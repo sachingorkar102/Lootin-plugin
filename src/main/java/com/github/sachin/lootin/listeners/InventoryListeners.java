@@ -42,6 +42,7 @@ public class InventoryListeners extends BaseListener{
             Chest block = (Chest) holder;
             if(ChestUtils.isLootinContainer(null, block, ContainerType.CHEST)){
                 e.setCancelled(true);
+                
                 if(plugin.currentChestviewers.contains(block.getLocation())) return;
                 ChestGui gui = new ChestGui(player, block);
                 gui.open();
