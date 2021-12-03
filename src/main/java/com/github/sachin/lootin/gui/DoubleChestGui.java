@@ -6,6 +6,8 @@ import java.util.List;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -30,6 +32,9 @@ public class DoubleChestGui extends GuiHolder{
             inventory.setContents(items.toArray(new ItemStack[0]));
             player.openInventory(inventory);
             ((Chest)block).open();
+            if(plugin.isRunningProtocolLib){
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN,SoundCategory.PLAYERS,0.5F,1);
+            }
             plugin.currentChestviewers.add(((Chest)doubleChest.getLeftSide()).getLocation());
             plugin.currentChestviewers.add(((Chest)doubleChest.getRightSide()).getLocation());
         }
@@ -42,6 +47,9 @@ public class DoubleChestGui extends GuiHolder{
             ChestUtils.setContainerItems(null, block, type, contents, player.getUniqueId().toString());
         }
         ((Chest)block).close();
+        if(plugin.isRunningProtocolLib){
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE,SoundCategory.PLAYERS,0.5F,1);
+        }
         plugin.currentChestviewers.remove(((Chest)doubleChest.getLeftSide()).getLocation());
         plugin.currentChestviewers.remove(((Chest)doubleChest.getRightSide()).getLocation());
     }

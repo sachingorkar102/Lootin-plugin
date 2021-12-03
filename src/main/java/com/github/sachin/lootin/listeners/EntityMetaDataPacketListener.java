@@ -7,12 +7,17 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers.SoundCategory;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.utils.ChestUtils;
+import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -21,7 +26,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public class EntityMetaDataPacketListener extends PacketAdapter{
 
-    private static final PacketType TYPE = PacketType.Play.Server.ENTITY_METADATA;
+    private static final PacketType[] TYPE = new PacketType[]{PacketType.Play.Server.ENTITY_METADATA,PacketType.Play.Server.NAMED_SOUND_EFFECT};
 
     public EntityMetaDataPacketListener() {
         super(Lootin.getPlugin(),TYPE);
@@ -31,20 +36,32 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
     @Override
     public void onPacketSending(PacketEvent event) {
         PacketContainer packet = event.getPacket();
-        Entity entity = packet.getEntityModifier(event).read(0);
         Player player = event.getPlayer();
-        if(entity != null && entity.getType()==EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
-            NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
-            List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
-            for(WrappedWatchableObject object : objects){
-                if(object.getIndex()==8){
-                    if(entity.getPersistentDataContainer().has(key,PersistentDataType.INTEGER)){
-                        object.setValue(new ItemStack(Material.AIR));
+        if(packet.getType()==TYPE[0]){
+            Entity entity = packet.getEntityModifier(event).read(0);
+            if(entity != null && entity.getType()==EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
+                NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
+                List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
+                for(WrappedWatchableObject object : objects){
+                    if(object.getIndex()==8){
+                        if(entity.getPersistentDataContainer().has(key,PersistentDataType.INTEGER)){
+                            object.setValue(new ItemStack(Material.AIR));
+                        }
+                        
                     }
-                    
+                }
+                packet.getWatchableCollectionModifier().write(0, objects);
+            }
+        }
+        else if(packet.getType()==TYPE[1]){
+            Sound sound = packet.getSoundEffects().read(0);
+            SoundCategory category = packet.getSoundCategories().read(0);
+            if((sound==Sound.BLOCK_CHEST_OPEN || sound==Sound.BLOCK_CHEST_CLOSE) && category==SoundCategory.BLOCKS){
+                Block block = player.getWorld().getBlockAt((packet.getIntegers().read(0)/8), (packet.getIntegers().read(1)/8), (packet.getIntegers().read(2)/8));
+                if(ChestUtils.isLootinContainer(null, block.getState(), ContainerType.CHEST)){
+                    event.setCancelled(true);
                 }
             }
-            packet.getWatchableCollectionModifier().write(0, objects);
         }
 
     }
