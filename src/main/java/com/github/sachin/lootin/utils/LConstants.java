@@ -25,6 +25,7 @@ public class LConstants {
     public static final String BLACK_LIST_CUSTOM_STRUCTURES = "black-list-customstructures";
     public static final String BLACK_LIST_OTD_STRUCTURES = "black-list-otd-structures";
     public static final String PER_PLAYER_ELYTRA_ITEM_FRAME = "per-player-elytra-item-frame";
+    public static final String BYPASS_GREIF_PLUGINS = "bypass-grief-plugins";
 
     public static final String BLOCK_BREAK_WITHP = "messages.chestbreak-with-permission";
     public static final String BLOCK_BREAK_WITHOUTP = "messages.chestbreak-without-permission";

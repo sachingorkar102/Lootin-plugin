@@ -7,21 +7,48 @@ import com.github.sachin.lootin.gui.GuiHolder;
 import com.github.sachin.lootin.gui.MinecartGui;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
+import com.github.sachin.lootin.utils.LConstants;
 
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
+import org.bukkit.Material;
 import org.bukkit.block.Barrel;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 
 public class InventoryListeners extends BaseListener{
     
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onInteract(PlayerInteractEvent e){
+        if(e.getAction()==Action.RIGHT_CLICK_BLOCK && e.isCancelled() && plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)){
+            Material type = e.getClickedBlock().getType();
+            BlockState state = e.getClickedBlock().getState();
+            if(type==Material.CHEST && ChestUtils.isLootinContainer(null, state, ContainerType.CHEST)){
+                e.setCancelled(false);
+            }
+            else if(type==Material.BARREL && ChestUtils.isLootinContainer(null, state, ContainerType.BARREL)){
+                e.setCancelled(false);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onMinecartInteract(PlayerInteractEntityEvent e){
+        if((e.getRightClicked() instanceof StorageMinecart) && e.isCancelled() && plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS) && ChestUtils.isLootinContainer(e.getRightClicked(), null, ContainerType.MINECART)){
+            e.setCancelled(false);
+        }
+    }
+
 
     @EventHandler
     public void onInventoryOpen(InventoryOpenEvent e){
@@ -52,7 +79,6 @@ public class InventoryListeners extends BaseListener{
             StorageMinecart minecart = (StorageMinecart) holder;
             if(ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
                 e.setCancelled(true);
-                player.stopSound(Sound.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS);
                 if(plugin.currentMinecartviewers.contains(minecart)) return;
                 MinecartGui gui = new MinecartGui(player, minecart);
                 gui.open();

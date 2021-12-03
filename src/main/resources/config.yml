@@ -50,3 +50,6 @@ black-list-customstructures: []
 # list of OhTheDungeon structure names where lootin will not modify loot chests.
 # only applicable if OhTheDungeon is installed.
 black-list-otd-structures: []
+
+# if set to false, if the loot chest block is claimed, player will not able to open lootin chest 
+bypass-grief-plugins: true
