@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 import com.github.sachin.lootin.Lootin;
 
 import org.bukkit.NamespacedKey;
@@ -100,6 +99,7 @@ public class ChestUtils{
         }
         else if(type == ContainerType.MINECART){
             minecart.getPersistentDataContainer().set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
+            
 
         }
         else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){

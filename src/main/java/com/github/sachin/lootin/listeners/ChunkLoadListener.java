@@ -119,16 +119,23 @@ public class ChunkLoadListener extends BaseListener{
                 }
             }
         }
-        for(Entity entity : chunk.getEntities()){
-            if(entity instanceof StorageMinecart){
-                StorageMinecart minecart = (StorageMinecart) entity;
-                if(minecart.getLootTable() != null){
-                    if(!plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())){
-                        ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(!chunk.isLoaded()) return;
+                for(Entity entity : chunk.getEntities()){
+                    if(entity instanceof StorageMinecart){
+                        StorageMinecart minecart = (StorageMinecart) entity;
+                        if(minecart.getLootTable() != null){
+                            if(!plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())){
+                                ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+                            }
+                        }
                     }
                 }
             }
-        }
+        }.runTaskLater(plugin, 7);
     }
     
 }
