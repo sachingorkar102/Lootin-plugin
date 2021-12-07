@@ -6,7 +6,7 @@
 
     <groupId>com.github.sachin.lootin</groupId>
     <artifactId>Lootin</artifactId>
-    <version>3.4</version>
+    <version>3.6</version>
     <packaging>jar</packaging>
 
 
@@ -154,8 +154,9 @@
         <dependency>
             <groupId>com.github.ryandw11</groupId>
             <artifactId>CustomStructures</artifactId>
-            <version>master-SNAPSHOT</version>
-            <scope>provided</scope>
+            <version>1.5</version>
+            <systemPath>${project.basedir}/lib/CustomStructures-1.7.0.jar</systemPath>
+            <scope>system</scope>
             
         </dependency>
         
