@@ -1,9 +1,12 @@
 package com.github.sachin.lootin.listeners;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.ListenerOptions;
+import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
@@ -29,7 +32,8 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
     private static final PacketType[] TYPE = new PacketType[]{PacketType.Play.Server.ENTITY_METADATA,PacketType.Play.Server.NAMED_SOUND_EFFECT};
 
     public EntityMetaDataPacketListener() {
-        super(Lootin.getPlugin(),TYPE);
+        // super(Lootin.getPlugin(),TYPE);
+        super(Lootin.getPlugin(),ListenerPriority.NORMAL,Arrays.asList(TYPE),ListenerOptions.ASYNC);
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
@@ -57,10 +61,12 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
             Sound sound = packet.getSoundEffects().read(0);
             SoundCategory category = packet.getSoundCategories().read(0);
             if((sound==Sound.BLOCK_CHEST_OPEN || sound==Sound.BLOCK_CHEST_CLOSE) && category==SoundCategory.BLOCKS){
-                Block block = player.getWorld().getBlockAt((packet.getIntegers().read(0)/8), (packet.getIntegers().read(1)/8), (packet.getIntegers().read(2)/8));
-                if(ChestUtils.isLootinContainer(null, block.getState(), ContainerType.CHEST)){
+                Block block = player.getTargetBlockExact(4);
+                if(block.getType()==Material.CHEST && ChestUtils.isLootinContainer(null, block.getState(), ContainerType.CHEST)){
                     event.setCancelled(true);
                 }
+                
+                
             }
         }
 
