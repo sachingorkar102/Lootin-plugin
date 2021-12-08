@@ -62,7 +62,7 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
             SoundCategory category = packet.getSoundCategories().read(0);
             if((sound==Sound.BLOCK_CHEST_OPEN || sound==Sound.BLOCK_CHEST_CLOSE) && category==SoundCategory.BLOCKS){
                 Block block = player.getTargetBlockExact(4);
-                if(block.getType()==Material.CHEST && ChestUtils.isLootinContainer(null, block.getState(), ContainerType.CHEST)){
+                if(block!= null && block.getType()==Material.CHEST && ChestUtils.isLootinContainer(null, block.getState(), ContainerType.CHEST)){
                     event.setCancelled(true);
                 }
                 
