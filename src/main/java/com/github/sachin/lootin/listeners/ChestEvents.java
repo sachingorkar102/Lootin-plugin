@@ -38,7 +38,7 @@ public class ChestEvents extends BaseListener{
     public void onChestBreak(BlockBreakEvent e){
         Player player = e.getPlayer();
         Block block = e.getBlock();
-        if(block.getType() == Material.CHEST){
+        if(ChestUtils.isChest(block.getType())){
             Chest chest = (Chest) block.getState();
             if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
                 if(plugin.currentChestviewers.contains(chest.getLocation())){
@@ -211,7 +211,7 @@ public class ChestEvents extends BaseListener{
     public void onChestPlace(PlayerInteractEvent e){
         if(e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
         if(e.getItem() == null) return;
-        if(e.getItem().getType() != Material.CHEST) return;
+        if(!ChestUtils.isChest(e.getMaterial())) return;
         Block b = e.getClickedBlock().getRelative(e.getBlockFace());
         Player player = e.getPlayer();
         new BukkitRunnable(){
@@ -223,7 +223,7 @@ public class ChestEvents extends BaseListener{
                         Chest chest = (Chest) block.getState();
                         if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
                             b.setType(Material.AIR);
-                            player.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(Material.CHEST));
+                            player.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(e.getMaterial()));
                             player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_DCHEST, player));
                             break;
                         }

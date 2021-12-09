@@ -20,6 +20,7 @@ import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -79,14 +80,15 @@ public class ChunkLoadListener extends BaseListener{
     }
 
 
-    @EventHandler
+
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onChunkLoad(ChunkLoadEvent e){
         Chunk chunk = e.getChunk();
-        if(e.isNewChunk() && e.getChunk().getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if(!chunk.isLoaded()) return;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if(!chunk.isLoaded()) return;
+                if(e.isNewChunk() && chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
                     for(Entity entity : chunk.getEntities()){
                         if(entity.getType()==EntityType.ITEM_FRAME){
                             ItemFrame frame = (ItemFrame) entity;
@@ -97,33 +99,27 @@ public class ChunkLoadListener extends BaseListener{
                         }
                     }
                 }
-            }.runTaskLater(plugin, 7);
-        }
-        if(!chunk.isLoaded()) return;
-        if(plugin.getBlackListWorlds().contains(chunk.getWorld().getName())) return;
-        for(BlockState tile : chunk.getTileEntities()){
-            if(tile instanceof Chest){
-                if(((Chest)tile).getLootTable() != null){
-                    if(!plugin.getBlackListStructures().contains(((Chest)tile).getLootTable().getKey())){
-                        ChestUtils.setLootinContainer(null, tile, ContainerType.CHEST);
-                        
+                // if(!chunk.isLoaded()) return;
+                if(plugin.getBlackListWorlds().contains(chunk.getWorld().getName())) return;
+                for(BlockState tile : chunk.getTileEntities()){
+                    if(tile instanceof Chest){
+                        if(((Chest)tile).getLootTable() != null && !ChestUtils.isLootinContainer(null, tile, ContainerType.CHEST)){
+                            if(!plugin.getBlackListStructures().contains(((Chest)tile).getLootTable().getKey())){
+                                ChestUtils.setLootinContainer(null, tile, ContainerType.CHEST);
+                                
+                            }
+                        }
+                    }
+                    if(tile instanceof Barrel){
+                        if(((Barrel)tile).getLootTable() != null){
+                            if(!plugin.getBlackListStructures().contains(((Barrel)tile).getLootTable().getKey())){
+                                ChestUtils.setLootinContainer(null, tile, ContainerType.BARREL);
+                                
+                            }
+                        }
                     }
                 }
-            }
-            if(tile instanceof Barrel){
-                if(((Barrel)tile).getLootTable() != null){
-                    if(!plugin.getBlackListStructures().contains(((Barrel)tile).getLootTable().getKey())){
-                        ChestUtils.setLootinContainer(null, tile, ContainerType.BARREL);
-                        
-                    }
-                }
-            }
-        }
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(!chunk.isLoaded()) return;
+        
                 for(Entity entity : chunk.getEntities()){
                     if(entity instanceof StorageMinecart){
                         StorageMinecart minecart = (StorageMinecart) entity;
@@ -135,7 +131,7 @@ public class ChunkLoadListener extends BaseListener{
                     }
                 }
             }
-        }.runTaskLater(plugin, 7);
+        }.runTaskLater(plugin, 5);
     }
     
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.github.sachin.lootin.Lootin;
 
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.BlockState;
@@ -224,5 +225,9 @@ public class ChestUtils{
 
     private static boolean hasKey(PersistentDataContainer data){
         return data.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING);
+    }
+
+    public static boolean isChest(Material mat){
+        return mat==Material.CHEST || mat==Material.TRAPPED_CHEST;
     }
 }
