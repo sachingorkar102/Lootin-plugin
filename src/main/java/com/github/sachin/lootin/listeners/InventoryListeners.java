@@ -8,9 +8,11 @@ import com.github.sachin.lootin.gui.MinecartGui;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
+import com.github.sachin.lootin.utils.cooldown.Cooldown;
 
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -20,91 +22,91 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.InventoryHolder;
 
-public class InventoryListeners extends BaseListener{
-    
+public class InventoryListeners extends BaseListener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent e){
-        if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getType() == Material.CHEST) {
-            e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
+        if(e.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-
-        if(e.getAction()==Action.RIGHT_CLICK_BLOCK && e.isCancelled() && plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)){
-            Material type = e.getClickedBlock().getType();
-            BlockState state = e.getClickedBlock().getState();
-            if(type==Material.CHEST && ChestUtils.isLootinContainer(null, state, ContainerType.CHEST)){
-                e.setCancelled(false);
-            }
-            else if(type==Material.BARREL && ChestUtils.isLootinContainer(null, state, ContainerType.BARREL)){
-                e.setCancelled(false);
-            }
+        Player player = e.getPlayer();
+        Block block = e.getClickedBlock();
+        BlockState state = block.getState();
+        Material type = state.getType();
+        boolean isLootin = false;
+        ContainerType container;
+        if(ChestUtils.isChest(type)) {
+            isLootin = ChestUtils.isLootinContainer(null, state, container = (ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+        } else if(type == Material.BARREL) {
+            isLootin = ChestUtils.isLootinContainer(null, state, container = ContainerType.BARREL);
+        } else {
+            return;
         }
+        if(!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
+            return;
+        }
+        e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
+        if(player.isSneaking()) {
+            e.setUseItemInHand(PlayerInteractEvent.Result.ALLOW);
+            return;
+        }
+        Cooldown cooldown = plugin.cooldown.get(player.getUniqueId());
+        if(!cooldown.isTriggerable()) {
+            return;
+        }
+        cooldown.trigger();
+        switch(container) {
+            case CHEST:
+                if (plugin.currentChestviewers.contains(block.getLocation()))
+                    return;
+                new ChestGui(player, (Chest) state).open();
+                return;
+            case DOUBLE_CHEST:
+                Chest chest = (Chest) ((DoubleChest) state).getLeftSide();
+                if(plugin.currentChestviewers.contains(block.getLocation())) 
+                    return;
+                new DoubleChestGui(player, chest).open();
+                return;
+            case BARREL:
+                if (plugin.currentChestviewers.contains(block.getLocation()))
+                    return;
+                new BarrelGui(player, (Barrel) state).open();
+                return;
+            default:
+                return;
+        }
+        
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onMinecartInteract(PlayerInteractEntityEvent e){
-        if((e.getRightClicked() instanceof StorageMinecart) && e.isCancelled() && plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS) && ChestUtils.isLootinContainer(e.getRightClicked(), null, ContainerType.MINECART)){
-            e.setCancelled(false);
+    public void onMinecartInteract(PlayerInteractEntityEvent e) {
+        if (!(e.getRightClicked() instanceof StorageMinecart)
+                || !ChestUtils.isLootinContainer(e.getRightClicked(), null, ContainerType.MINECART)) {
+            return;
         }
-    }
-
-
-    @EventHandler
-    public void onInventoryOpen(InventoryOpenEvent e){
-        InventoryHolder holder = e.getInventory().getHolder();
-        if(holder == null) return;
-        Player player = (Player) e.getPlayer();
-        if(holder instanceof DoubleChest){
-            DoubleChest doubleChest = (DoubleChest) holder;
-            Chest block = (Chest) doubleChest.getLeftSide();
-            if(ChestUtils.isLootinContainer(null, block, ContainerType.DOUBLE_CHEST)){
-                e.setCancelled(true);
-                if(plugin.currentChestviewers.contains(block.getLocation())) return;
-                DoubleChestGui gui = new DoubleChestGui(player,block);
-                gui.open();
-            }
+        if (e.isCancelled() && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)) {
+            return;
         }
-        else if(holder instanceof Chest){
-            Chest block = (Chest) holder;
-            if(ChestUtils.isLootinContainer(null, block, ContainerType.CHEST)){
-                e.setCancelled(true);
-                
-                if(plugin.currentChestviewers.contains(block.getLocation())) return;
-                ChestGui gui = new ChestGui(player, block);
-                gui.open();
-            }
+        e.setCancelled(true);
+        StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
+        if (plugin.currentMinecartviewers.contains(minecart))
+            return;
+        Player player = e.getPlayer();
+        Cooldown cooldown = plugin.cooldown.get(player.getUniqueId());
+        if(!cooldown.isTriggerable()) {
+            return;
         }
-        else if(holder instanceof StorageMinecart){
-            StorageMinecart minecart = (StorageMinecart) holder;
-            if(ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                e.setCancelled(true);
-                if(plugin.currentMinecartviewers.contains(minecart)) return;
-                MinecartGui gui = new MinecartGui(player, minecart);
-                gui.open();
-            }
-        }
-        else if(holder instanceof Barrel){
-            Barrel barrel = (Barrel) holder;
-            if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL)){
-                e.setCancelled(true);
-                if(plugin.currentChestviewers.contains(barrel.getLocation())) return;
-                BarrelGui gui = new BarrelGui(player, barrel);
-                gui.open();
-            }
-        }
+        cooldown.trigger();
+        new MinecartGui(player, minecart).open();
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e){
-        if(e.getInventory().getHolder() instanceof GuiHolder){
-            GuiHolder chestGui = (GuiHolder) e.getInventory().getHolder();
-            chestGui.close();
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (e.getInventory().getHolder() instanceof GuiHolder) {
+            ((GuiHolder) e.getInventory().getHolder()).close();
         }
     }
 }
