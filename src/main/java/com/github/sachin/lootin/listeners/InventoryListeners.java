@@ -30,6 +30,11 @@ public class InventoryListeners extends BaseListener{
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInteract(PlayerInteractEvent e){
+        if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getType() == Material.CHEST) {
+            e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
+            return;
+        }
+
         if(e.getAction()==Action.RIGHT_CLICK_BLOCK && e.isCancelled() && plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)){
             Material type = e.getClickedBlock().getType();
             BlockState state = e.getClickedBlock().getState();
