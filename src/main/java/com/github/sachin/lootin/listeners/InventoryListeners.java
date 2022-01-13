@@ -53,7 +53,7 @@ public class InventoryListeners extends BaseListener {
             e.setUseItemInHand(PlayerInteractEvent.Result.ALLOW);
             return;
         }
-        Cooldown cooldown = plugin.cooldown.get(player.getUniqueId());
+        Cooldown cooldown = plugin.interactCooldown.get(player.getUniqueId());
         if(!cooldown.isTriggerable()) {
             return;
         }
@@ -95,7 +95,7 @@ public class InventoryListeners extends BaseListener {
         if (plugin.currentMinecartviewers.contains(minecart))
             return;
         Player player = e.getPlayer();
-        Cooldown cooldown = plugin.cooldown.get(player.getUniqueId());
+        Cooldown cooldown = plugin.interactCooldown.get(player.getUniqueId());
         if(!cooldown.isTriggerable()) {
             return;
         }
