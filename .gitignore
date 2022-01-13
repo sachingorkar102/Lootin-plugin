@@ -115,4 +115,4 @@ run/
 .classpath
 push.sh
 .vscode/tasks.json
-.classpath
+.project
