@@ -16,6 +16,7 @@ import com.github.sachin.lootin.listeners.integration.OTDLootListener;
 import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
+import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -40,6 +41,9 @@ public final class Lootin extends JavaPlugin {
     public RWGCompat rwgCompat;
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
+
+    public CooldownContainer interactCooldown;
+
     public boolean isRunningPurpur;
     public boolean isRunningProtocolLib;
 
@@ -53,6 +57,11 @@ public final class Lootin extends JavaPlugin {
         } catch (ClassNotFoundException e) {
             this.isRunningPurpur = false;
         }
+
+        // Setup PlayerInteractEvent cooldown
+        interactCooldown = new CooldownContainer();
+        interactCooldown.setCooldown(350);
+        interactCooldown.getTimer().setRunning(true);
 
         this.isRunningProtocolLib = getServer().getPluginManager().getPlugin("ProtocolLib") != null;
         this.commandManager = new PaperCommandManager(plugin);
@@ -92,6 +101,15 @@ public final class Lootin extends JavaPlugin {
             new Metrics(this, 11877);
         }
 
+    }
+
+    @Override
+    public void onDisable() {
+        if(interactCooldown != null) {
+            interactCooldown.getTimer().setRunning(false);
+            interactCooldown.getTimer().kill();
+            interactCooldown = null;
+        }
     }
     
     public static Lootin getPlugin() {

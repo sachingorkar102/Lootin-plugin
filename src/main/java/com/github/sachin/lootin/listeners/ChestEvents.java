@@ -217,6 +217,9 @@ public class ChestEvents extends BaseListener{
         new BukkitRunnable(){
             @Override
             public void run() {
+                if(!ChestUtils.isChest(b.getType())) {
+                    return;
+                }
                 for(BlockFace face : Arrays.asList(BlockFace.EAST,BlockFace.WEST,BlockFace.SOUTH,BlockFace.NORTH)){
                     Block block = b.getRelative(face);
                     if(block.getState() instanceof Chest){
