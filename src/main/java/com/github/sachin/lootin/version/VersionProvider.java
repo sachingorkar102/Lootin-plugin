@@ -6,8 +6,8 @@ import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.version.lookup.ClassLookupProvider;
 import com.github.sachin.lootin.version.lookup.handle.ClassLookup;
 
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.loot.Lootable;
 
 public final class VersionProvider {
@@ -22,9 +22,11 @@ public final class VersionProvider {
         setupAll();
         if(LConstants.SERVER_MINOR_VERSION >= 17) {
             setupRemap();
+            setupSearch();
             return;
         }
         setupLegacy();
+        setupSearch();
     }
 
     private static void setupAll() {
@@ -33,12 +35,20 @@ public final class VersionProvider {
     }
 
     private static void setupLegacy() {
-        PROVIDER.createNMSLookup("TileEntityLootable", "TileEntityLootable").searchMethod("fill", "d", PROVIDER.getNMSClass("EntityHuman"));
+        PROVIDER.createNMSLookup("TileEntityLootable", "TileEntityLootable");
+        PROVIDER.createNMSLookup("EntityMinecartContainer", "EntityMinecartContainer");
     }
 
     private static void setupRemap() {
-        PROVIDER.createNMSLookup("TileEntityLootable", "world.level.block.entity.TileEntityLootable").searchMethod("fill", "e", PROVIDER.getNMSClass("world.entity.player.EntityHuman"));
-   }
+        PROVIDER.createNMSLookup("TileEntityLootable", "world.level.block.entity.TileEntityLootable");
+        PROVIDER.createNMSLookup("EntityMinecartContainer", "world.entity.vehicle.EntityMinecartContainer");
+    }
+
+    private static void setupSearch() {
+        Class<?> human = PROVIDER.getNMSClass("EntityHuman");
+        PROVIDER.getLookup("TileEntityLootable").searchMethod("fill", "e", human).searchMethod("fill", "d", human);
+        PROVIDER.getLookup("EntityMinecartContainer").searchMethod("fill", "e", human).searchMethod("fill", "d", human);
+    }
 
     private static ClassLookup[] require(String... names) {
         ClassLookup[] lookups = new ClassLookup[names.length];
@@ -53,10 +63,17 @@ public final class VersionProvider {
     }
 
     public static void fillLoot(Player player, Lootable lootable) {
-        ClassLookup[] lookup = require("CraftEntity", "CraftBlockEntityState", "TileEntityLootable");
-        Object snapshot = lookup[1].run(lootable, "snapshot");
+        if(lootable instanceof BlockState) {
+            ClassLookup[] lookup = require("CraftEntity", "CraftBlockEntityState", "TileEntityLootable");
+            Object snapshot = lookup[1].run(lootable, "snapshot");
+            Object target = lookup[0].run(player, "handle");
+            lookup[2].execute(snapshot, "fill", target);
+            return;
+        }
+        ClassLookup[] lookup = require("CraftEntity", "EntityMinecartContainer");
+        Object handle = lookup[0].run(lootable, "handle");
         Object target = lookup[0].run(player, "handle");
-        lookup[2].run(snapshot, "fill", target);
+        lookup[1].execute(handle, "fill", target);
     }   
     
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.version.VersionProvider;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -133,36 +134,38 @@ public class ChestUtils{
         PersistentDataContainer data = null;
         Inventory inventory = null;
         LootTable loottable = null;
-        long seed = 0;
         if(type == ContainerType.CHEST){
             Chest chest = (Chest) block;
             data = chest.getPersistentDataContainer();
-            inventory = chest.getBlockInventory();
             loottable = chest.getLootTable();
-            if(loottable == null) {
-                seed = chest.getSeed();
+            if(loottable != null) {
                 chest.setLootTable(null);
+                chest.setSeed(0);
+                VersionProvider.fillLoot(player, chest);
             }
+            inventory = chest.getSnapshotInventory();
         }
         else if(type == ContainerType.MINECART){
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
-            inventory = tileCart.getInventory();
             loottable = tileCart.getLootTable();
-            if(loottable == null) {
-                seed = tileCart.getSeed();
+            if(loottable != null) {
                 tileCart.setLootTable(null);
+                tileCart.setSeed(0);
+                VersionProvider.fillLoot(player, tileCart);
             }
+            inventory = tileCart.getInventory();
         }
         else if(type == ContainerType.BARREL){
             Barrel barrel = (Barrel) block;
             data = barrel.getPersistentDataContainer();
-            inventory = barrel.getInventory();
             loottable = barrel.getLootTable();
-            if(loottable == null) {
-                seed = barrel.getSeed();
+            if(loottable != null) {
                 barrel.setLootTable(null);
+                barrel.setSeed(0);
+                VersionProvider.fillLoot(player, barrel);
             }
+            inventory = barrel.getSnapshotInventory();
         }
         else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
