@@ -116,3 +116,5 @@ run/
 push.sh
 .vscode/tasks.json
 .project
+.settings/org.eclipse.jdt.core.prefs
+.classpath
