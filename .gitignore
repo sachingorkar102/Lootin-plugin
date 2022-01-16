@@ -112,7 +112,6 @@ buildNumber.properties
 # Common working directory
 run/
 .vscode/settings.json
-.classpath
 push.sh
 .vscode/tasks.json
 .project
