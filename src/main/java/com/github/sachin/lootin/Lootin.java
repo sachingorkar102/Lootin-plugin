@@ -17,6 +17,7 @@ import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
 import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
+import com.github.sachin.lootin.version.VersionProvider;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -57,6 +58,9 @@ public final class Lootin extends JavaPlugin {
         } catch (ClassNotFoundException e) {
             this.isRunningPurpur = false;
         }
+
+        // Setup reflections
+        VersionProvider.setup();
 
         // Setup PlayerInteractEvent cooldown
         interactCooldown = new CooldownContainer();
@@ -110,6 +114,8 @@ public final class Lootin extends JavaPlugin {
             interactCooldown.getTimer().kill();
             interactCooldown = null;
         }
+        // Clear reflections
+        VersionProvider.PROVIDER.deleteAll();
     }
     
     public static Lootin getPlugin() {

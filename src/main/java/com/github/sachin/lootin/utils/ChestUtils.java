@@ -3,6 +3,7 @@ package com.github.sachin.lootin.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import com.github.sachin.lootin.Lootin;
 
@@ -17,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootContext;
+import org.bukkit.loot.LootTable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
  * Class for loot container utils
  */
 public class ChestUtils{
-
 
     public static boolean hasPlayerLoot(@Nullable Entity minecart,@Nullable BlockState block,@NotNull Player player,@NotNull ContainerType type){
         NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
@@ -130,20 +132,37 @@ public class ChestUtils{
         String uuid = player.getUniqueId().toString();
         PersistentDataContainer data = null;
         Inventory inventory = null;
+        LootTable loottable = null;
+        long seed = 0;
         if(type == ContainerType.CHEST){
             Chest chest = (Chest) block;
             data = chest.getPersistentDataContainer();
             inventory = chest.getBlockInventory();
+            loottable = chest.getLootTable();
+            if(loottable == null) {
+                seed = chest.getSeed();
+                chest.setLootTable(null);
+            }
         }
         else if(type == ContainerType.MINECART){
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
             inventory = tileCart.getInventory();
+            loottable = tileCart.getLootTable();
+            if(loottable == null) {
+                seed = tileCart.getSeed();
+                tileCart.setLootTable(null);
+            }
         }
         else if(type == ContainerType.BARREL){
             Barrel barrel = (Barrel) block;
             data = barrel.getPersistentDataContainer();
             inventory = barrel.getInventory();
+            loottable = barrel.getLootTable();
+            if(loottable == null) {
+                seed = barrel.getSeed();
+                barrel.setLootTable(null);
+            }
         }
         else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
@@ -167,8 +186,7 @@ public class ChestUtils{
         }
         else if(data.has(LConstants.DATA_KEY, PersistentDataType.STRING)){
             return ItemSerializer.deserialize(data.get(LConstants.DATA_KEY, PersistentDataType.STRING));
-        }
-        else{
+        } else {
             List<ItemStack> chestContents = Arrays.asList(inventory.getContents());
             setContainerItems(minecart, block, type, chestContents, LConstants.DATA_KEY_STRING);
             inventory.clear();

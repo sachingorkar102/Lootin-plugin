@@ -106,12 +106,11 @@ public class ChunkLoadListener extends BaseListener{
                         if(((Chest)tile).getLootTable() != null && !ChestUtils.isLootinContainer(null, tile, ContainerType.CHEST)){
                             if(!plugin.getBlackListStructures().contains(((Chest)tile).getLootTable().getKey())){
                                 ChestUtils.setLootinContainer(null, tile, ContainerType.CHEST);
-                                
                             }
                         }
                     }
                     if(tile instanceof Barrel){
-                        if(((Barrel)tile).getLootTable() != null){
+                        if(((Barrel)tile).getLootTable() != null && !ChestUtils.isLootinContainer(null, tile, ContainerType.BARREL)){
                             if(!plugin.getBlackListStructures().contains(((Barrel)tile).getLootTable().getKey())){
                                 ChestUtils.setLootinContainer(null, tile, ContainerType.BARREL);
                                 
@@ -123,7 +122,7 @@ public class ChunkLoadListener extends BaseListener{
                 for(Entity entity : chunk.getEntities()){
                     if(entity instanceof StorageMinecart){
                         StorageMinecart minecart = (StorageMinecart) entity;
-                        if(minecart.getLootTable() != null){
+                        if(minecart.getLootTable() != null && !ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
                             if(!plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())){
                                 ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
                             }

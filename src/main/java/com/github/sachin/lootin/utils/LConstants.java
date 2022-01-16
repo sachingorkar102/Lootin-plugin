@@ -2,6 +2,7 @@ package com.github.sachin.lootin.utils;
 
 import com.github.sachin.lootin.Lootin;
 
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 
 public class LConstants {
@@ -36,5 +37,9 @@ public class LConstants {
     public static final String ELYTRA_IF_BREAK_WITHPERM = "messages.elytra-itemframe-break-with-permission";
     public static final String ELYTRA_IF_BREAK_WITHOUTPERM = "messages.elytra-itemframe-break-without-permission";
     public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
+
+    public static final String MINECRAFT_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.", 4)[3];
+    public static final String SERVER_VERSION = Bukkit.getVersion().split(" ")[2].replace(")", "");
+    public static final int SERVER_MINOR_VERSION = Integer.parseInt(MINECRAFT_VERSION.split("\\.")[1]);
     
 }
