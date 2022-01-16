@@ -28,8 +28,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class InventoryListeners extends BaseListener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onInteract(PlayerInteractEvent e){
-        if(e.getAction() != Action.RIGHT_CLICK_BLOCK) {
+    public void onInteract(PlayerInteractEvent e) {
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
         Player player = e.getPlayer();
@@ -38,37 +38,37 @@ public class InventoryListeners extends BaseListener {
         Material type = state.getType();
         boolean isLootin = false;
         ContainerType container;
-        if(ChestUtils.isChest(type)) {
-            isLootin = ChestUtils.isLootinContainer(null, state, container = (ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
-        } else if(type == Material.BARREL) {
+        if (ChestUtils.isChest(type)) {
+            isLootin = ChestUtils.isLootinContainer(null, state,
+                    container = (ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+        } else if (type == Material.BARREL) {
             isLootin = ChestUtils.isLootinContainer(null, state, container = ContainerType.BARREL);
         } else {
             return;
         }
-        if(!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
+        if (!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY
+                && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
+            return;
+        }
+        if (player.isSneaking()) {
             return;
         }
         e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
-        if(player.isSneaking()) {
-            e.setUseItemInHand(PlayerInteractEvent.Result.ALLOW);
-            return;
-        }
         Cooldown cooldown = plugin.interactCooldown.get(player.getUniqueId());
-        if(!cooldown.isTriggerable()) {
+        if (!cooldown.isTriggerable()) {
             return;
         }
         cooldown.trigger();
-        switch(container) {
+        switch (container) {
             case CHEST:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
                 new ChestGui(player, (Chest) state).open();
                 return;
             case DOUBLE_CHEST:
-                Chest chest = (Chest) ((DoubleChest) state).getLeftSide();
-                if(plugin.currentChestviewers.contains(block.getLocation())) 
+                if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
-                new DoubleChestGui(player, chest).open();
+                new DoubleChestGui(player, (Chest) ((DoubleChest) ((Chest) state).getInventory().getHolder()).getLeftSide()).open();
                 return;
             case BARREL:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
@@ -78,7 +78,6 @@ public class InventoryListeners extends BaseListener {
             default:
                 return;
         }
-        
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -91,15 +90,15 @@ public class InventoryListeners extends BaseListener {
             return;
         }
         e.setCancelled(true);
-        StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
-        if (plugin.currentMinecartviewers.contains(minecart))
-            return;
         Player player = e.getPlayer();
         Cooldown cooldown = plugin.interactCooldown.get(player.getUniqueId());
-        if(!cooldown.isTriggerable()) {
+        if (!cooldown.isTriggerable()) {
             return;
         }
         cooldown.trigger();
+        StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
+        if (plugin.currentMinecartviewers.contains(minecart))
+            return;
         new MinecartGui(player, minecart).open();
     }
 
