@@ -19,6 +19,7 @@ import com.github.sachin.lootin.version.lookup.handle.field.SafeFieldHandle;
 import com.github.sachin.lootin.version.lookup.handle.field.UnsafeDeclaredFieldHandle;
 import com.github.sachin.lootin.version.lookup.handle.field.UnsafeStaticFieldHandle;
 import com.syntaxphoenix.syntaxapi.reflection.ClassCache;
+import com.syntaxphoenix.syntaxapi.utils.java.Exceptions;
 
 public class ClassLookup {
     
@@ -302,6 +303,7 @@ public class ClassLookup {
             try {
                 methods.put(name, unreflect(method));
             } catch (IllegalAccessException | SecurityException e) {
+                System.out.println(Exceptions.stackTraceToString(e));
             }
         }
         return this;

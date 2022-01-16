@@ -1,7 +1,7 @@
 package com.github.sachin.lootin.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.github.sachin.lootin.Lootin;
@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootTable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -101,8 +100,6 @@ public class ChestUtils{
         }
         else if(type == ContainerType.MINECART){
             minecart.getPersistentDataContainer().set(LConstants.IDENTITY_KEY, PersistentDataType.STRING, "");
-            
-
         }
         else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
@@ -131,68 +128,88 @@ public class ChestUtils{
         String uuid = player.getUniqueId().toString();
         PersistentDataContainer data = null;
         Inventory inventory = null;
-        LootTable loottable = null;
         if(type == ContainerType.CHEST){
             Chest chest = (Chest) block;
             data = chest.getPersistentDataContainer();
-            loottable = chest.getLootTable();
-            if(loottable != null) {
+            if(chest.getLootTable() != null) {
+                VersionProvider.fillLoot(player, chest);
                 chest.setLootTable(null);
                 chest.setSeed(0);
-                VersionProvider.fillLoot(player, chest);
             }
-            inventory = chest.getSnapshotInventory();
+            inventory = chest.getInventory();
         }
         else if(type == ContainerType.MINECART){
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
-            loottable = tileCart.getLootTable();
-            if(loottable != null) {
+            if(tileCart.getLootTable() != null) {
+                VersionProvider.fillLoot(player, tileCart);
                 tileCart.setLootTable(null);
                 tileCart.setSeed(0);
-                VersionProvider.fillLoot(player, tileCart);
             }
             inventory = tileCart.getInventory();
         }
         else if(type == ContainerType.BARREL){
             Barrel barrel = (Barrel) block;
             data = barrel.getPersistentDataContainer();
-            loottable = barrel.getLootTable();
-            if(loottable != null) {
+            if(barrel.getLootTable() != null) {
+                VersionProvider.fillLoot(player, barrel);
                 barrel.setLootTable(null);
                 barrel.setSeed(0);
-                VersionProvider.fillLoot(player, barrel);
             }
-            inventory = barrel.getSnapshotInventory();
+            inventory = barrel.getInventory();
         }
         else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
-            Chest c1 = ((Chest)doubleChest.getLeftSide());
-            Chest c2 = ((Chest)doubleChest.getRightSide());
-            List<ItemStack> c1Items = getContainerItems(null, c1, ContainerType.CHEST, player);
-            List<ItemStack> c2Items = getContainerItems(null, c2, ContainerType.CHEST, player);
-            List<ItemStack> combined = new ArrayList<>();
-            for (ItemStack itemStack : c1Items)combined.add(itemStack);
-            for (ItemStack itemStack : c2Items)combined.add(itemStack);
-            return combined;
+            Chest chestLeft = ((Chest) doubleChest.getLeftSide());
+            Chest chestRight = ((Chest) doubleChest.getRightSide());
+            boolean changed = false;
+            if(chestLeft.getLootTable() != null) {
+                VersionProvider.fillLoot(player, chestLeft);
+                chestLeft.setLootTable(null);
+                chestLeft.setSeed(0);
+                changed = true;
+            }
+            if(chestRight.getLootTable() != null) {
+                VersionProvider.fillLoot(player, chestRight);
+                chestRight.setLootTable(null);
+                chestRight.setSeed(0);
+                changed = true;
+            }
+            inventory = doubleChest.getInventory();
+            if(!changed) {
+                ArrayList<ItemStack> chestContents = new ArrayList<>();
+                fillDoubleLoot(uuid, chestLeft, chestContents);
+                fillDoubleLoot(uuid, chestRight, chestContents);
+                return chestContents;
+            }
         }
         else{
             return null;
         }
 
-
-
-        if(data.has(Lootin.getKey(uuid), PersistentDataType.STRING)){
+        if(data != null && data.has(Lootin.getKey(uuid), PersistentDataType.STRING)){
             return ItemSerializer.deserialize(data.get(Lootin.getKey(uuid), PersistentDataType.STRING));
         }
-        else if(data.has(LConstants.DATA_KEY, PersistentDataType.STRING)){
+        else if(data != null && data.has(LConstants.DATA_KEY, PersistentDataType.STRING)){
             return ItemSerializer.deserialize(data.get(LConstants.DATA_KEY, PersistentDataType.STRING));
         } else {
-            List<ItemStack> chestContents = Arrays.asList(inventory.getContents());
+            ArrayList<ItemStack> chestContents = new ArrayList<>();
+            Collections.addAll(chestContents, inventory.getContents());
             setContainerItems(minecart, block, type, chestContents, LConstants.DATA_KEY_STRING);
             inventory.clear();
             return chestContents;
         }
+    }
+
+    private static void fillDoubleLoot(String uuid, Chest chest, ArrayList<ItemStack> items) {
+        PersistentDataContainer data = chest.getPersistentDataContainer();
+        if(data.has(Lootin.getKey(uuid), PersistentDataType.STRING)){
+            items.addAll(ItemSerializer.deserialize(data.get(Lootin.getKey(uuid), PersistentDataType.STRING)));
+            return;
+        }else if(!data.has(LConstants.DATA_KEY, PersistentDataType.STRING)){
+            return;
+        } 
+        items.addAll(ItemSerializer.deserialize(data.get(LConstants.DATA_KEY, PersistentDataType.STRING)));
     }
 
     /**
