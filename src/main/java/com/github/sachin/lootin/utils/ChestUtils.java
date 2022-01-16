@@ -3,7 +3,6 @@ package com.github.sachin.lootin.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.version.VersionProvider;
@@ -19,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
