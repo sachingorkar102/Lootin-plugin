@@ -41,5 +41,7 @@ public class LConstants {
     public static final String MINECRAFT_VERSION = Bukkit.getVersion().split(" ", 3)[2].replace(")", "");
     public static final String SERVER_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.", 4)[3];
     public static final int SERVER_MINOR_VERSION = Integer.parseInt(MINECRAFT_VERSION.split("\\.")[1]);
+
+    public static final boolean SERVER_REMAPPED = LConstants.SERVER_MINOR_VERSION >= 17;
     
 }

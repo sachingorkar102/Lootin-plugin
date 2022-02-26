@@ -132,9 +132,8 @@ public class ChestUtils{
             Chest chest = (Chest) block;
             data = chest.getPersistentDataContainer();
             if(chest.getLootTable() != null) {
-                VersionProvider.fillLoot(player, chest);
+                VersionProvider.fillLoot(player, chest); // TODO: Fix loot not being generated (1.16.5)
                 chest.setLootTable(null);
-                chest.setSeed(0);
             }
             inventory = chest.getInventory();
         }
@@ -144,7 +143,6 @@ public class ChestUtils{
             if(tileCart.getLootTable() != null) {
                 VersionProvider.fillLoot(player, tileCart);
                 tileCart.setLootTable(null);
-                tileCart.setSeed(0);
             }
             inventory = tileCart.getInventory();
         }
@@ -152,9 +150,8 @@ public class ChestUtils{
             Barrel barrel = (Barrel) block;
             data = barrel.getPersistentDataContainer();
             if(barrel.getLootTable() != null) {
-                VersionProvider.fillLoot(player, barrel);
+                VersionProvider.fillLoot(player, barrel); // TODO: Fix loot not being generated (1.16.5)
                 barrel.setLootTable(null);
-                barrel.setSeed(0);
             }
             inventory = barrel.getInventory();
         }
@@ -164,15 +161,13 @@ public class ChestUtils{
             Chest chestRight = ((Chest) doubleChest.getRightSide());
             boolean changed = false;
             if(chestLeft.getLootTable() != null) {
-                VersionProvider.fillLoot(player, chestLeft);
+                VersionProvider.fillLoot(player, chestLeft); // TODO: Fix loot not being generated (1.16.5)
                 chestLeft.setLootTable(null);
-                chestLeft.setSeed(0);
                 changed = true;
             }
             if(chestRight.getLootTable() != null) {
-                VersionProvider.fillLoot(player, chestRight);
+                VersionProvider.fillLoot(player, chestRight); // TODO: Fix loot not being generated (1.16.5)
                 chestRight.setLootTable(null);
-                chestRight.setSeed(0);
                 changed = true;
             }
             inventory = doubleChest.getInventory();

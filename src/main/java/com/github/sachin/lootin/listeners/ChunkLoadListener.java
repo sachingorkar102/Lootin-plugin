@@ -113,7 +113,6 @@ public class ChunkLoadListener extends BaseListener{
                         if(((Barrel)tile).getLootTable() != null && !ChestUtils.isLootinContainer(null, tile, ContainerType.BARREL)){
                             if(!plugin.getBlackListStructures().contains(((Barrel)tile).getLootTable().getKey())){
                                 ChestUtils.setLootinContainer(null, tile, ContainerType.BARREL);
-                                
                             }
                         }
                     }

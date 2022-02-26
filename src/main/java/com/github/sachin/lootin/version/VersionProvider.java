@@ -20,7 +20,7 @@ public final class VersionProvider {
 
     public static void setup() {
         setupAll();
-        if(LConstants.SERVER_MINOR_VERSION >= 17) {
+        if (LConstants.SERVER_REMAPPED) {
             setupRemap();
             setupSearch();
             return;
@@ -29,10 +29,9 @@ public final class VersionProvider {
         setupSearch();
     }
 
-    private static void setupAll() {
-        PROVIDER.createCBLookup("CraftBlockEntityState", "block.CraftBlockEntityState").searchMethod("handle", "getTileEntity");
-        PROVIDER.createCBLookup("CraftEntity", "entity.CraftEntity").searchMethod("handle", "getHandle");
-    }
+    /*
+     * Legacy stuff
+     */
 
     private static void setupLegacy() {
         PROVIDER.createNMSLookup("EntityHuman", "EntityHuman");
@@ -40,10 +39,24 @@ public final class VersionProvider {
         PROVIDER.createNMSLookup("EntityMinecartContainer", "EntityMinecartContainer");
     }
 
+    /*
+     * Remap stuff
+     */
+
     private static void setupRemap() {
         PROVIDER.createNMSLookup("EntityHuman", "world.entity.player.EntityHuman");
         PROVIDER.createNMSLookup("TileEntityLootable", "world.level.block.entity.TileEntityLootable");
         PROVIDER.createNMSLookup("EntityMinecartContainer", "world.entity.vehicle.EntityMinecartContainer");
+    }
+
+    /*
+     * All stuff
+     */
+
+    private static void setupAll() {
+        PROVIDER.createCBLookup("CraftBlockEntityState", "block.CraftBlockEntityState").searchMethod("handle",
+                "getTileEntity");
+        PROVIDER.createCBLookup("CraftEntity", "entity.CraftEntity").searchMethod("handle", "getHandle");
     }
 
     private static void setupSearch() {
@@ -54,9 +67,9 @@ public final class VersionProvider {
 
     private static ClassLookup[] require(String... names) {
         ClassLookup[] lookups = new ClassLookup[names.length];
-        for(int index = 0; index < names.length; index++) {
+        for (int index = 0; index < names.length; index++) {
             Optional<ClassLookup> lookup = PROVIDER.getOptionalLookup(names[index]);
-            if(lookup.isEmpty()){
+            if (lookup.isEmpty()) {
                 throw new IllegalStateException("Lookup " + names[index] + " not found!");
             }
             lookups[index] = lookup.get();
@@ -65,17 +78,17 @@ public final class VersionProvider {
     }
 
     public static void fillLoot(Player player, Lootable lootable) {
-        if(lootable instanceof BlockState) {
+        if (lootable instanceof BlockState) {
             ClassLookup[] lookup = require("CraftEntity", "CraftBlockEntityState", "TileEntityLootable");
-            Object snapshot = lookup[1].run(lootable, "handle");
+            Object handle = lookup[1].run(lootable, "handle");
             Object target = lookup[0].run(player, "handle");
-            lookup[2].execute(snapshot, "fill", target);
+            lookup[2].execute(handle, "fill", target);
             return;
         }
         ClassLookup[] lookup = require("CraftEntity", "EntityMinecartContainer");
         Object handle = lookup[0].run(lootable, "handle");
         Object target = lookup[0].run(player, "handle");
         lookup[1].execute(handle, "fill", target);
-    }   
-    
+    }
+
 }
