@@ -24,6 +24,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.loot.LootTable;
+import org.bukkit.loot.Lootable;
 
 public class InventoryListeners extends BaseListener {
 
@@ -45,6 +47,13 @@ public class InventoryListeners extends BaseListener {
             isLootin = ChestUtils.isLootinContainer(null, state, container = ContainerType.BARREL);
         } else {
             return;
+        }
+        if(!isLootin && ((Lootable)state).getLootTable() != null){
+            if(plugin.getBlackListStructures().contains(((Lootable)state).getLootTable().getKey())){
+                return;
+            }
+            ChestUtils.setLootinContainer(null, state, container);
+            isLootin = true;
         }
         if (!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY
                 && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
@@ -82,9 +91,16 @@ public class InventoryListeners extends BaseListener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMinecartInteract(PlayerInteractEntityEvent e) {
-        if (!(e.getRightClicked() instanceof StorageMinecart)
-                || !ChestUtils.isLootinContainer(e.getRightClicked(), null, ContainerType.MINECART)) {
+        if (!(e.getRightClicked() instanceof StorageMinecart)) {
             return;
+        }
+        StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
+        if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
+            if(minecart.getLootTable() == null || plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())) {
+                return;
+            }
+            ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+            
         }
         if (e.isCancelled() && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)) {
             return;
@@ -96,7 +112,6 @@ public class InventoryListeners extends BaseListener {
             return;
         }
         cooldown.trigger();
-        StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
         if (plugin.currentMinecartviewers.contains(minecart))
             return;
         new MinecartGui(player, minecart).open();

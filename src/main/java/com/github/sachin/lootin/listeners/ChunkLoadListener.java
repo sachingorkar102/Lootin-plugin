@@ -94,36 +94,6 @@ public class ChunkLoadListener extends BaseListener{
                             ItemFrame frame = (ItemFrame) entity;
                             if(frame.getItem() != null && frame.getItem().getType()==Material.ELYTRA){
                                 frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
-                                
-                            }
-                        }
-                    }
-                }
-                // if(!chunk.isLoaded()) return;
-                if(plugin.getBlackListWorlds().contains(chunk.getWorld().getName())) return;
-                for(BlockState tile : chunk.getTileEntities()){
-                    if(tile instanceof Chest){
-                        if(((Chest)tile).getLootTable() != null && !ChestUtils.isLootinContainer(null, tile, ContainerType.CHEST)){
-                            if(!plugin.getBlackListStructures().contains(((Chest)tile).getLootTable().getKey())){
-                                ChestUtils.setLootinContainer(null, tile, ContainerType.CHEST);
-                            }
-                        }
-                    }
-                    if(tile instanceof Barrel){
-                        if(((Barrel)tile).getLootTable() != null && !ChestUtils.isLootinContainer(null, tile, ContainerType.BARREL)){
-                            if(!plugin.getBlackListStructures().contains(((Barrel)tile).getLootTable().getKey())){
-                                ChestUtils.setLootinContainer(null, tile, ContainerType.BARREL);
-                            }
-                        }
-                    }
-                }
-        
-                for(Entity entity : chunk.getEntities()){
-                    if(entity instanceof StorageMinecart){
-                        StorageMinecart minecart = (StorageMinecart) entity;
-                        if(minecart.getLootTable() != null && !ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                            if(!plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())){
-                                ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
                             }
                         }
                     }
