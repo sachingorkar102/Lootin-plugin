@@ -18,6 +18,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -60,6 +61,7 @@ public class InventoryListeners extends BaseListener {
             return;
         }
         if (player.isSneaking()) {
+            e.setCancelled(true);
             return;
         }
         e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);

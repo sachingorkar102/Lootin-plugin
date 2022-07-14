@@ -72,25 +72,25 @@
                 </executions>
             </plugin>
             <!-- Plugin for copying stuff into test server  -->
-			<plugin> 
-				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
-				<executions>
-					<execution>
-						<phase>install</phase>
-						<goals>
-							<goal>run</goal>
-						</goals>
-						<configuration>
-							<target>
-								<copy
-									file="${project.build.directory}/${project.build.finalName}.jar"
-									tofile="${basedir}/../../Java - Jar/TestServers/${server.version}/plugins/${project.name}.jar" />
-							</target>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin> -->
+<!--				<artifactId>maven-antrun-plugin</artifactId>-->
+<!--				<version>1.8</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>install</phase>-->
+<!--						<goals>-->
+<!--							<goal>run</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<target>-->
+<!--								<copy-->
+<!--									file="${project.build.directory}/${project.build.finalName}.jar"-->
+<!--									tofile="${basedir}/../../Java - Jar/TestServers/${server.version}/plugins/${project.name}.jar" />-->
+<!--							</target>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
         </plugins>
         <resources>
             <resource>
