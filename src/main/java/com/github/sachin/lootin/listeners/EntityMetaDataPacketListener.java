@@ -27,8 +27,7 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
     private static final PacketType TYPE = PacketType.Play.Server.ENTITY_METADATA;
 
     public EntityMetaDataPacketListener() {
-        // super(Lootin.getPlugin(),TYPE);
-        super(Lootin.getPlugin(),ListenerPriority.NORMAL,Arrays.asList(TYPE),ListenerOptions.ASYNC);
+         super(Lootin.getPlugin(),TYPE);
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
@@ -36,10 +35,11 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
     public void onPacketSending(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         Player player = event.getPlayer();
-        if(packet.getType() != TYPE) {
-            return;
-        }
-        Entity entity = packet.getEntityModifier(event).read(0);
+        Entity entity = null;
+        try {
+            entity = packet.getEntityModifier(event).read(0);
+        }catch (Exception ignored){}
+
         if(entity != null && entity.getType()==EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
             NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
             List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().read(0);
