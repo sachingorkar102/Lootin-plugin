@@ -117,3 +117,6 @@ push.sh
 .project
 .settings/org.eclipse.jdt.core.prefs
 .classpath
+/.vscode/
+/.settings/
+.classpath

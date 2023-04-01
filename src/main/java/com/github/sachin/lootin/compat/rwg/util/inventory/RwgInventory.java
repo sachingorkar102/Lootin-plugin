@@ -1,4 +1,4 @@
-package com.github.sachin.lootin.integration.rwg.util.inventory;
+package com.github.sachin.lootin.compat.rwg.util.inventory;
 
 import com.github.sachin.lootin.utils.LConstants;
 import com.syntaxphoenix.syntaxapi.utils.java.UniCode;

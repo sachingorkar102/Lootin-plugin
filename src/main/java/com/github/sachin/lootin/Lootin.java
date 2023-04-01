@@ -6,19 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.sachin.lootin.commands.Commands;
-import com.github.sachin.lootin.integration.rwg.RWGCompat;
+import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.listeners.ChestEvents;
 import com.github.sachin.lootin.listeners.ChunkLoadListener;
 import com.github.sachin.lootin.listeners.EntityMetaDataPacketListener;
 import com.github.sachin.lootin.listeners.InventoryListeners;
-import com.github.sachin.lootin.listeners.integration.CustomStructuresLootPopulateEvent;
-import com.github.sachin.lootin.listeners.integration.OTDLootListener;
+import com.github.sachin.lootin.compat.BetterStructuresListener;
+import com.github.sachin.lootin.compat.CustomStructuresLootPopulateEvent;
+import com.github.sachin.lootin.compat.OTDLootListener;
 import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
 import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
-import com.github.sachin.lootin.version.VersionProvider;
 
+import com.github.sachin.prilib.Prilib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
@@ -38,6 +39,8 @@ import me.clip.placeholderapi.PlaceholderAPI;
 public final class Lootin extends JavaPlugin {
 
     private static Lootin plugin;
+
+    private Prilib prilib;
     private PaperCommandManager commandManager;
     public RWGCompat rwgCompat;
     public List<Location> currentChestviewers = new ArrayList<>();
@@ -52,15 +55,21 @@ public final class Lootin extends JavaPlugin {
     public void onEnable() {
 
         plugin = this;
+        prilib = new Prilib(this);
+        prilib.initialize();
+        if(!prilib.isNMSEnabled()){
+            getLogger().severe("Running incompatible minecraft version, disabling lootin...");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
         try {
             Class.forName("net.pl3x.purpur.event.PlayerAFKEvent");
             this.isRunningPurpur = true;
         } catch (ClassNotFoundException e) {
             this.isRunningPurpur = false;
         }
-
         // Setup reflections
-        VersionProvider.setup();
+//        VersionProvider.setup();
 
         // Setup PlayerInteractEvent cooldown
         interactCooldown = new CooldownContainer();
@@ -96,6 +105,10 @@ public final class Lootin extends JavaPlugin {
                 getLogger().info("No need to register RealisticWorldGenerator compatibility addon");
             }
         }
+        if(pm.isPluginEnabled("BetterStructures")){
+            getLogger().info("Found BetterStructures, registering listeners...");
+            pm.registerEvents(new BetterStructuresListener(),plugin);
+        }
         if(isRunningProtocolLib){
             getLogger().info("Found ProtocolLib, registering meta data packet listener...");
             new EntityMetaDataPacketListener();
@@ -115,7 +128,7 @@ public final class Lootin extends JavaPlugin {
             interactCooldown = null;
         }
         // Clear reflections
-        VersionProvider.PROVIDER.deleteAll();
+//        VersionProvider.PROVIDER.deleteAll();
     }
     
     public static Lootin getPlugin() {
@@ -159,6 +172,7 @@ public final class Lootin extends JavaPlugin {
             list = plugin.getConfig().getStringList(LConstants.BLACK_LIST_STRUCTURES);
             if(list.isEmpty() || list == null) return keyList;
             list.forEach(s -> {
+
                 if(LootTables.valueOf(s) != null){
                     keyList.add(LootTables.valueOf(s).getKey());
                 }
@@ -191,5 +205,9 @@ public final class Lootin extends JavaPlugin {
 
     public PaperCommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public Prilib getPrilib() {
+        return prilib;
     }
 }

@@ -38,6 +38,7 @@ public class ClassLookup {
 
     protected ClassLookup(final Class<?> owner) throws IllegalAccessException {
         this.owner = owner;
+
         this.privateLookup = owner != null ? MethodHandles.privateLookupIn(owner, LOOKUP) : null;
     }
 

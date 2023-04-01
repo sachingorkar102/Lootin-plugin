@@ -1,6 +1,6 @@
-package com.github.sachin.lootin.integration.rwg;
+package com.github.sachin.lootin.compat.rwg;
 
-import com.github.sachin.lootin.integration.rwg.util.ChestSide;
+import com.github.sachin.lootin.compat.rwg.util.ChestSide;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;

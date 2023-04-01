@@ -18,6 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootContext;
+import org.bukkit.loot.LootTable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * Class for loot container utils
  */
 public class ChestUtils{
+
+    private static final Lootin plugin = Lootin.getPlugin();
 
     public static boolean hasPlayerLoot(@Nullable Entity minecart,@Nullable BlockState block,@NotNull Player player,@NotNull ContainerType type){
         NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
@@ -128,11 +132,15 @@ public class ChestUtils{
         String uuid = player.getUniqueId().toString();
         PersistentDataContainer data = null;
         Inventory inventory = null;
+        String loottable = null;
         if(type == ContainerType.CHEST){
             Chest chest = (Chest) block;
             data = chest.getPersistentDataContainer();
             if(chest.getLootTable() != null) {
-                VersionProvider.fillLoot(player, chest); // TODO: Fix loot not being generated (1.16.5)
+//                loottable = chest.getLootTable().getKey().getKey();
+//                data.set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,loottable);
+                plugin.getPrilib().getNmsHandler().fillLoot(player,chest);
+//                VersionProvider.fillLoot(player, chest); // TODO: Fix loot not being generated (1.16.5)
                 chest.setLootTable(null);
             }
             inventory = chest.getInventory();
@@ -141,7 +149,8 @@ public class ChestUtils{
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
             if(tileCart.getLootTable() != null) {
-                VersionProvider.fillLoot(player, tileCart);
+                plugin.getPrilib().getNmsHandler().fillLoot(player,tileCart);
+//                VersionProvider.fillLoot(player, tileCart);
                 tileCart.setLootTable(null);
             }
             inventory = tileCart.getInventory();
@@ -150,7 +159,8 @@ public class ChestUtils{
             Barrel barrel = (Barrel) block;
             data = barrel.getPersistentDataContainer();
             if(barrel.getLootTable() != null) {
-                VersionProvider.fillLoot(player, barrel); // TODO: Fix loot not being generated (1.16.5)
+                plugin.getPrilib().getNmsHandler().fillLoot(player,barrel);
+//                VersionProvider.fillLoot(player, barrel); // TODO: Fix loot not being generated (1.16.5)
                 barrel.setLootTable(null);
             }
             inventory = barrel.getInventory();
@@ -161,12 +171,14 @@ public class ChestUtils{
             Chest chestRight = ((Chest) doubleChest.getRightSide());
             boolean changed = false;
             if(chestLeft.getLootTable() != null) {
-                VersionProvider.fillLoot(player, chestLeft); // TODO: Fix loot not being generated (1.16.5)
+                plugin.getPrilib().getNmsHandler().fillLoot(player,chestLeft);
+//                VersionProvider.fillLoot(player, chestLeft); // TODO: Fix loot not being generated (1.16.5)
                 chestLeft.setLootTable(null);
                 changed = true;
             }
             if(chestRight.getLootTable() != null) {
-                VersionProvider.fillLoot(player, chestRight); // TODO: Fix loot not being generated (1.16.5)
+                plugin.getPrilib().getNmsHandler().fillLoot(player,chestRight);
+//                VersionProvider.fillLoot(player, chestRight); // TODO: Fix loot not being generated (1.16.5)
                 chestRight.setLootTable(null);
                 changed = true;
             }
@@ -189,6 +201,9 @@ public class ChestUtils{
             return ItemSerializer.deserialize(data.get(LConstants.DATA_KEY, PersistentDataType.STRING));
         } else {
             ArrayList<ItemStack> chestContents = new ArrayList<>();
+//            if(plugin.getConfig().getBoolean(LConstants.RESET_SEED)){
+//
+//            }
             Collections.addAll(chestContents, inventory.getContents());
             setContainerItems(minecart, block, type, chestContents, LConstants.DATA_KEY_STRING);
             inventory.clear();
@@ -203,7 +218,7 @@ public class ChestUtils{
             return;
         }else if(!data.has(LConstants.DATA_KEY, PersistentDataType.STRING)){
             return;
-        } 
+        }
         items.addAll(ItemSerializer.deserialize(data.get(LConstants.DATA_KEY, PersistentDataType.STRING)));
     }
 
@@ -227,7 +242,7 @@ public class ChestUtils{
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
             data.set(Lootin.getKey(key), PersistentDataType.STRING, ItemSerializer.serialize(items));
-            
+
         }
         else if(type == ContainerType.BARREL){
             Barrel barrel = (Barrel) block;
@@ -251,7 +266,7 @@ public class ChestUtils{
 
     public static boolean isDoubleChest(BlockState block){
         return (block instanceof Chest) && (((Chest)block).getInventory().getHolder() instanceof DoubleChest);
-     }
+    }
 
 
     private static boolean hasKey(PersistentDataContainer data){

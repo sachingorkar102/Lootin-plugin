@@ -1,4 +1,4 @@
-package com.github.sachin.lootin.integration.rwg.util;
+package com.github.sachin.lootin.compat.rwg.util;
 
 public enum ChestSide {
 

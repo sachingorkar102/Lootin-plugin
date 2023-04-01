@@ -1,4 +1,4 @@
-package com.github.sachin.lootin.integration.rwg;
+package com.github.sachin.lootin.compat.rwg;
 
 import org.bukkit.plugin.Plugin;
 

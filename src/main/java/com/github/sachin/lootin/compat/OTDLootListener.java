@@ -1,4 +1,4 @@
-package com.github.sachin.lootin.listeners.integration;
+package com.github.sachin.lootin.compat;
 
 import com.github.sachin.lootin.listeners.BaseListener;
 import com.github.sachin.lootin.utils.ChestUtils;

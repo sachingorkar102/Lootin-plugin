@@ -1,6 +1,7 @@
 package com.github.sachin.lootin.version;
 
 import java.util.Optional;
+import java.util.Random;
 
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.version.lookup.ClassLookupProvider;
@@ -69,7 +70,7 @@ public final class VersionProvider {
         ClassLookup[] lookups = new ClassLookup[names.length];
         for (int index = 0; index < names.length; index++) {
             Optional<ClassLookup> lookup = PROVIDER.getOptionalLookup(names[index]);
-            if (lookup.isEmpty()) {
+            if (lookup.isPresent()) {
                 throw new IllegalStateException("Lookup " + names[index] + " not found!");
             }
             lookups[index] = lookup.get();

@@ -6,7 +6,7 @@
 
     <groupId>com.github.sachin.lootin</groupId>
     <artifactId>Lootin</artifactId>
-    <version>5.1</version>
+    <version>6.2</version>
     <packaging>jar</packaging>
 
 
@@ -16,11 +16,17 @@
     <properties>
         <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <server.version>1.18</server.version>
     </properties>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>G:\TestServer\1.19.4\plugins</outputDirectory>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -57,22 +63,79 @@
                             <pattern>com.syntaxphoenix.syntaxapi</pattern>
                             <shadedPattern>net.sourcewriters.spigot.rwg.legacy.shaded.synapi</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.github.sachin.prilib</pattern>
+                            <shadedPattern>com.github.sachin.lootin.prilib</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
                     <execution>
+                        <id>shade</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>acf-core_bg.properties</exclude>
+                                        <exclude>acf-core_cs.properties</exclude>
+                                        <exclude>acf-core_de.properties</exclude>
+                                        <exclude>acf-core_es.properties</exclude>
+                                        <exclude>acf-core_fr.properties</exclude>
+                                        <exclude>acf-core_hu.properties</exclude>
+                                        <exclude>acf-core_ja.properties</exclude>
+                                        <exclude>acf-core_ko.properties</exclude>
+                                        <exclude>acf-core_nb.properties</exclude>
+                                        <exclude>acf-core_nl.properties</exclude>
+                                        <exclude>acf-core_nn.properties</exclude>
+                                        <exclude>acf-core_pl.properties</exclude>
+                                        <exclude>acf-core_pt.properties</exclude>
+                                        <exclude>acf-core_ru.properties</exclude>
+                                        <exclude>acf-core_sv.properties</exclude>
+                                        <exclude>acf-core_tr.properties</exclude>
+                                        <exclude>acf-core_zh.properties</exclude>
+                                        <exclude>acf-core_zh_CN.properties</exclude>
+                                        <exclude>acf-core_zh_TW.properties</exclude>
+                                        <exclude>acf-minecraft_bg.properties</exclude>
+                                        <exclude>acf-minecraft_cs.properties</exclude>
+                                        <exclude>acf-minecraft_de.properties</exclude>
+                                        <exclude>acf-minecraft_en.properties</exclude>
+                                        <exclude>acf-minecraft_es.properties</exclude>
+                                        <exclude>acf-minecraft_fr.properties</exclude>
+                                        <exclude>acf-minecraft_hu.properties</exclude>
+                                        <exclude>acf-minecraft_ja.properties</exclude>
+                                        <exclude>acf-minecraft_ko.properties</exclude>
+                                        <exclude>acf-minecraft_nb.properties</exclude>
+                                        <exclude>acf-minecraft_nl.properties</exclude>
+                                        <exclude>acf-minecraft_nn.properties</exclude>
+                                        <exclude>acf-minecraft_pl.properties</exclude>
+                                        <exclude>acf-minecraft_pt.properties</exclude>
+                                        <exclude>acf-minecraft_ru.properties</exclude>
+                                        <exclude>acf-minecraft_sv.properties</exclude>
+                                        <exclude>acf-minecraft_tr.properties</exclude>
+                                        <exclude>acf-minecraft_zh.properties</exclude>
+                                        <exclude>acf-minecraft_zh_CN.properties</exclude>
+                                        <exclude>acf-minecraft_zh_TW.properties</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>co.aikar.commands</pattern>
+                                    <shadedPattern>com.github.sachin.lootin.acf</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <!-- Plugin for copying stuff into test server  -->
-<!--			<plugin> -->
+<!--			<plugin>-->
 <!--				<artifactId>maven-antrun-plugin</artifactId>-->
 <!--				<version>1.8</version>-->
 <!--				<executions>-->
@@ -85,7 +148,7 @@
 <!--							<target>-->
 <!--								<copy-->
 <!--									file="${project.build.directory}/${project.build.finalName}.jar"-->
-<!--									tofile="${basedir}/../../Java - Jar/TestServers/${server.version}/plugins/${project.name}.jar" />-->
+<!--									tofile="G:/TestServer/1.19.4/plugins/${project.name}.jar" />-->
 <!--							</target>-->
 <!--						</configuration>-->
 <!--					</execution>-->
@@ -151,6 +214,16 @@
             <scope>system</scope>
             
         </dependency>
+
+        <!-- BetterStructures -->
+        <dependency>
+            <groupId>com.magmaguy.betterstructures</groupId>
+            <artifactId>BetterStructures</artifactId>
+            <version>1.5</version>
+            <systemPath>${project.basedir}/lib/BetterStructures.jar</systemPath>
+            <scope>system</scope>
+
+        </dependency>
         
         <!-- Oh the dungeons you all go -->
         <dependency>
@@ -180,13 +253,13 @@
         <dependency>
             <groupId>com.syntaxphoenix.syntaxapi</groupId>
             <artifactId>nbt</artifactId>
-            <version>2.0.10</version>
+            <version>2.0.13</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.syntaxphoenix.syntaxapi</groupId>
             <artifactId>random</artifactId>
-            <version>2.0.9</version>
+            <version>2.0.12</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -194,6 +267,13 @@
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
             <scope>provided</scope>
+        </dependency>
+<!--        Prilib-->
+        <dependency>
+            <groupId>com.github.sachin.prilib</groupId>
+            <artifactId>dist</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

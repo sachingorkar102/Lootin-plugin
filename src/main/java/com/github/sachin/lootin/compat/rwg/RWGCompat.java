@@ -1,7 +1,7 @@
-package com.github.sachin.lootin.integration.rwg;
+package com.github.sachin.lootin.compat.rwg;
 
 import com.github.sachin.lootin.Lootin;
-import com.github.sachin.lootin.integration.rwg.listener.RwgListener;
+import com.github.sachin.lootin.compat.rwg.listener.RwgListener;
 import com.syntaxphoenix.syntaxapi.utils.java.Exceptions;
 
 import org.bukkit.Bukkit;

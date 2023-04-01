@@ -1,6 +1,6 @@
-package com.github.sachin.lootin.integration.rwg.listener;
+package com.github.sachin.lootin.compat.rwg.listener;
 
-import com.github.sachin.lootin.integration.rwg.util.inventory.RwgInventory;
+import com.github.sachin.lootin.compat.rwg.util.inventory.RwgInventory;
 import com.github.sachin.lootin.utils.LConstants;
 
 import org.bukkit.block.Container;

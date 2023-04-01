@@ -1,8 +1,8 @@
 package com.github.sachin.lootin.commands;
 
 import com.github.sachin.lootin.Lootin;
-import com.github.sachin.lootin.integration.rwg.RWGCompat;
-import com.github.sachin.lootin.integration.rwg.util.inventory.RwgInventory;
+import com.github.sachin.lootin.compat.rwg.RWGCompat;
+import com.github.sachin.lootin.compat.rwg.util.inventory.RwgInventory;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;

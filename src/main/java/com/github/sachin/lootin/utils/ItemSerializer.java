@@ -38,6 +38,7 @@ public class ItemSerializer {
                 dataOutput.writeObject(itemStack);
             }
             dataOutput.close();
+
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();

@@ -25,6 +25,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -88,18 +89,50 @@ public class ChunkLoadListener extends BaseListener{
             @Override
             public void run() {
                 if(!chunk.isLoaded()) return;
-                if(e.isNewChunk() && chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
-                    for(Entity entity : chunk.getEntities()){
-                        if(entity.getType()==EntityType.ITEM_FRAME){
+                boolean isNewChunk = e.isNewChunk();
+                for(Entity entity : chunk.getEntities()){
+                    if(entity.getType()==EntityType.ITEM_FRAME && isNewChunk){
+                        if(chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
                             ItemFrame frame = (ItemFrame) entity;
                             if(frame.getItem() != null && frame.getItem().getType()==Material.ELYTRA){
                                 frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
                             }
                         }
                     }
+                    if(entity.getType()==EntityType.MINECART_CHEST){
+                        StorageMinecart minecart = (StorageMinecart) entity;
+                        if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
+                            if(minecart.getLootTable() == null || plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())) {
+                                continue;
+                            }
+                            ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+
+                        }
+                    }
+
+                }
+                for(BlockState block : chunk.getTileEntities()){
+                    if(block instanceof Lootable){
+                        Lootable lootable = (Lootable) block;
+                        if(lootable.getLootTable() == null || plugin.getBlackListStructures().contains(lootable.getLootTable().getKey())) {
+                            continue;
+                        }
+                        boolean isLootin = false;
+                        ContainerType container;
+                        if (ChestUtils.isChest(block.getType())) {
+                            isLootin = ChestUtils.isLootinContainer(null, block,
+                                    container = (ChestUtils.isDoubleChest(block) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+                        } else if (block.getType() == Material.BARREL) {
+                            isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
+                        }
+                        else{continue;}
+                        if(!isLootin){
+                            ChestUtils.setLootinContainer(null,block,container);
+                        }
+                    }
                 }
             }
-        }.runTaskLater(plugin, 5);
+        }.runTaskLater(plugin, 3);
     }
     
 }
