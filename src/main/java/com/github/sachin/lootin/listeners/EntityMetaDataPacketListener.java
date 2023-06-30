@@ -46,7 +46,7 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
         if(entity != null && entity.getType()==EntityType.ITEM_FRAME && entity.getPersistentDataContainer().has(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER)){
             Prilib prilib = Lootin.getPlugin().getPrilib();
             NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
-            if(prilib.getBukkitVersion().equals("v1_19_R3") || prilib.getBukkitVersion().equals("v1_19_R2")){
+            if(Lootin.getPlugin().isPost1_19()){
                Object newPacket = prilib.getNmsHandler().getElytraUpdatePacket(packet.getHandle(),entity,key);
                if(newPacket != null){
                 event.setPacket(PacketContainer.fromPacket(newPacket));

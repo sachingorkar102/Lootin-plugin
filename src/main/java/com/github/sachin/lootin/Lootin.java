@@ -3,6 +3,7 @@ package com.github.sachin.lootin;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.sachin.lootin.commands.Commands;
@@ -201,6 +202,10 @@ public final class Lootin extends JavaPlugin {
         }
         reloadConfig();
         getLogger().info("Config file reloaded");
+    }
+
+    public boolean isPost1_19(){
+        return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1").contains(prilib.getBukkitVersion());
     }
 
     public PaperCommandManager getCommandManager() {
