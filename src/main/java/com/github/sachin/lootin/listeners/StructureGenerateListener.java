@@ -12,7 +12,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.world.AsyncStructureGenerateEvent;
 import org.bukkit.generator.LimitedRegion;
 import org.bukkit.loot.Lootable;
@@ -21,70 +20,66 @@ import org.bukkit.util.BlockTransformer;
 import org.bukkit.util.EntityTransformer;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
 
 public class StructureGenerateListener extends BaseListener {
 
+
+    private final BlockTransformer CONTAINER_TRANSFORMER = this::containerTransformer;
+    private final EntityTransformer ITEMFRAME_TRANSFORMER = this::itemFrameTransformer;
+    private final EntityTransformer MINECART_TRANSFORMER = this::minecartTransformer;
     @EventHandler
     public void onStrucGenerate(AsyncStructureGenerateEvent e){
-        e.setBlockTransformer(LConstants.IDENTITY_KEY,new StructureTransformer(e.getWorld().getUID()));
-        e.setEntityTransformer(LConstants.IDENTITY_KEY,new StructureTransformer(e.getWorld().getUID()));
+        if(plugin.isBlackListWorld(e.getWorld())) return;
+        e.setBlockTransformer(LConstants.TRANSFORMER_CHEST_KEY, CONTAINER_TRANSFORMER);
+        if(e.getWorld().getEnvironment()== World.Environment.NORMAL){
+            e.setEntityTransformer(LConstants.TRANSFORMER_MINECART_KEY, MINECART_TRANSFORMER);
+        }
+        if(plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME) && e.getWorld().getEnvironment()== World.Environment.THE_END){
+            e.setEntityTransformer(LConstants.TRANSFORMER_ITEMFRAME_KEY, ITEMFRAME_TRANSFORMER);
+        }
     }
 
-    private static final class StructureTransformer implements BlockTransformer, EntityTransformer {
-
-        private final UUID world;
-
-        public StructureTransformer(UUID world){
-            this.world = world;
-        }
-
-
-        @Override
-        public BlockState transform(@NotNull LimitedRegion region, int x, int y, int z, @NotNull BlockState block, @NotNull BlockTransformer.TransformationState state) {
-            if(Lootin.getPlugin().isBlackListWorld(world)) return block;
-            if(block instanceof Lootable){
-                Lootable lootable = (Lootable) block;
-                if(lootable.getLootTable() == null || Lootin.getPlugin().getBlackListStructures().contains(lootable.getLootTable().getKey())) {
-                    return block;
-                }
-                boolean isLootin = false;
-                ContainerType container;
-                if (ChestUtils.isChest(block.getType())) {
-                    isLootin = ChestUtils.isLootinContainer(null, block, container = (ChestUtils.isDoubleChest(block) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
-                } else if (block.getType() == Material.BARREL) {
-                    isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
-                }
-                else{return block;}
-                if(!isLootin){
-                    ChestUtils.setLootinContainer(null,block,container);
-                }
+    public BlockState containerTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull BlockState block, @NotNull BlockTransformer.TransformationState state) {
+        if(block instanceof Lootable){
+            Lootable lootable = (Lootable) block;
+            if(lootable.getLootTable() == null || Lootin.getPlugin().getBlackListStructures().contains(lootable.getLootTable().getKey())) {
+                return block;
             }
-            return block;
-        }
-
-        @Override
-        public boolean transform(@NotNull LimitedRegion region, int x, int y, int z, @NotNull Entity entity, boolean allowedToSpawn) {
-            if(Lootin.getPlugin().isBlackListWorld(world)) return allowedToSpawn;
-            if(entity.getType()== EntityType.ITEM_FRAME){
-                if(entity.getWorld().getEnvironment() == World.Environment.THE_END && Lootin.getPlugin().getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
-                    ItemFrame frame = (ItemFrame) entity;
-                    if(frame.getItem() != null && frame.getItem().getType()==Material.ELYTRA){
-                        frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
-                    }
-                }
+            boolean isLootin = false;
+            ContainerType container;
+            if (ChestUtils.isChest(block.getType())) {
+                isLootin = ChestUtils.isLootinContainer(null, block, container = (ChestUtils.isDoubleChest(block) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+            } else if (block.getType() == Material.BARREL) {
+                isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
             }
-            if(entity.getType()==EntityType.MINECART_CHEST){
-                StorageMinecart minecart = (StorageMinecart) entity;
-                if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                    if(minecart.getLootTable() == null || Lootin.getPlugin().getBlackListStructures().contains(minecart.getLootTable().getKey())) {
-                        return allowedToSpawn;
-                    }
-                    ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
-
-                }
+            else{return block;}
+            if(!isLootin){
+                ChestUtils.setLootinContainer(null,block,container);
             }
-            return allowedToSpawn;
         }
+        return block;
+    }
+
+    public boolean itemFrameTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull Entity entity, boolean allowedToSpawn) {
+        if(entity.getType()== EntityType.ITEM_FRAME){
+            ItemFrame frame = (ItemFrame) entity;
+            frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
+
+        }
+        return allowedToSpawn;
+    }
+
+    public boolean minecartTransformer(@NotNull LimitedRegion region, int x, int y, int z, @NotNull Entity entity, boolean allowedToSpawn) {
+        if(entity.getType()==EntityType.MINECART_CHEST){
+            StorageMinecart minecart = (StorageMinecart) entity;
+            if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
+                if(minecart.getLootTable() == null || Lootin.getPlugin().getBlackListStructures().contains(minecart.getLootTable().getKey())) {
+                    return allowedToSpawn;
+                }
+                ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+
+            }
+        }
+        return allowedToSpawn;
     }
 }

@@ -82,11 +82,16 @@ public final class Lootin extends JavaPlugin {
         reloadConfigs();
         // register listeners
         PluginManager pm = getServer().getPluginManager();
-        pm.registerEvents(new ChunkLoadListener(), plugin);
+        if(isPost1_20_R2()){
+            pm.registerEvents(new StructureGenerateListener(),plugin);
+        }
+        else{
+            pm.registerEvents(new ChunkLoadListener(), plugin);
+        }
 
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
-        pm.registerEvents(new StructureGenerateListener(),plugin);
+        pm.registerEvents(new ItemFrameListener(),plugin);
         if(pm.isPluginEnabled("CustomStructures")){
             getLogger().info("Found custom structures, registering listeners...");
 
@@ -218,6 +223,10 @@ public final class Lootin extends JavaPlugin {
 
     public boolean isPost1_19(){
         return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1","v1_20_R2").contains(prilib.getBukkitVersion());
+    }
+
+    public boolean isPost1_20_R2(){
+        return Arrays.asList("v1_20_R2").contains(prilib.getBukkitVersion());
     }
 
     public PaperCommandManager getCommandManager() {

@@ -10,6 +10,9 @@ public class LConstants {
     public static final String IDENTITY_KEY_STRING = "Lootin";
     public static final String DATA_KEY_STRING = "loot-container";
     public static final NamespacedKey IDENTITY_KEY = new NamespacedKey(Lootin.getPlugin(), IDENTITY_KEY_STRING);
+    public static final NamespacedKey TRANSFORMER_CHEST_KEY = new NamespacedKey(Lootin.getPlugin(), "lootin-chest");
+    public static final NamespacedKey TRANSFORMER_ITEMFRAME_KEY = new NamespacedKey(Lootin.getPlugin(), "lootin-itemframe");
+    public static final NamespacedKey TRANSFORMER_MINECART_KEY = new NamespacedKey(Lootin.getPlugin(), "lootin-minecart");
     public static final NamespacedKey DATA_KEY = new NamespacedKey(Lootin.getPlugin(), DATA_KEY_STRING);
     public static final NamespacedKey ITEM_FRAME_ELYTRA_KEY = Lootin.getKey("item-frame-elytra-key");
     public static final NamespacedKey RWG_LOOTTABLE_KEY = Lootin.getKey("rwg-loottable-key");
