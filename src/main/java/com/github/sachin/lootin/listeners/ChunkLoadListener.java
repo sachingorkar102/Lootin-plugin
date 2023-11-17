@@ -23,12 +23,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.world.AsyncStructureSpawnEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.BlockTransformer;
 import org.bukkit.util.BoundingBox;
 
 
@@ -41,6 +41,8 @@ public class ChunkLoadListener extends BaseListener{
             e.setCancelled(true);
         }
     }
+
+
 
     @EventHandler
     public void onElytraRemove(EntityDamageByEntityEvent e){
@@ -85,9 +87,10 @@ public class ChunkLoadListener extends BaseListener{
 
 
 
-    @EventHandler(priority = EventPriority.MONITOR)
+//    @EventHandler(priority = EventPriority.MONITOR)
     public void onChunkLoad(ChunkLoadEvent e){
         Chunk chunk = e.getChunk();
+        if(plugin.isBlackListWorld(chunk.getWorld())) return;
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -39,6 +39,7 @@ public class ChestEvents extends BaseListener{
     public void onChestBreak(BlockBreakEvent e){
         Player player = e.getPlayer();
         Block block = e.getBlock();
+        if(plugin.isBlackListWorld(player.getWorld())) return;
         if(ChestUtils.isChest(block.getType())){
             Chest chest = (Chest) block.getState();
             if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
@@ -112,7 +113,7 @@ public class ChestEvents extends BaseListener{
     @EventHandler
     public void onItemMove(InventoryMoveItemEvent e){
         List<InventoryHolder> holders = Arrays.asList(e.getSource().getHolder(),e.getDestination().getHolder());
-        
+//        if(plugin.isBlackListWorld(e.ge)) return;
         for (InventoryHolder h1 : holders) {
             if(h1 == null) return;
             if(h1 instanceof DoubleChest){
@@ -143,7 +144,7 @@ public class ChestEvents extends BaseListener{
 
     @EventHandler
     public void onBlockExplode(EntityExplodeEvent e){
-        if(!plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS)) return;
+        if(!plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS) || plugin.isBlackListWorld(e.getEntity().getWorld())) return;
         List<Block> chestBlocks = new ArrayList<>();
         for(Block block : e.blockList()){
             BlockState state = (BlockState) block.getState();
@@ -166,7 +167,7 @@ public class ChestEvents extends BaseListener{
 
     @EventHandler
     public void onMinecartDestroy(VehicleDestroyEvent e){
-        if(!(e.getVehicle() instanceof StorageMinecart)) return;
+        if(!(e.getVehicle() instanceof StorageMinecart) || plugin.isBlackListWorld(e.getVehicle().getWorld())) return;
         StorageMinecart chest = (StorageMinecart) e.getVehicle();
         if(ChestUtils.isLootinContainer(e.getVehicle(), null, ContainerType.MINECART)){
             if(plugin.currentMinecartviewers.contains(chest)){
@@ -215,6 +216,7 @@ public class ChestEvents extends BaseListener{
         if(!ChestUtils.isChest(e.getMaterial())) return;
         Block b = e.getClickedBlock().getRelative(e.getBlockFace());
         Player player = e.getPlayer();
+        if(plugin.isBlackListWorld(player.getWorld())) return;
         new BukkitRunnable(){
             @Override
             public void run() {

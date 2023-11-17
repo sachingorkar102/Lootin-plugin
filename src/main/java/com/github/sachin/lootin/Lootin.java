@@ -5,13 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.rwg.RWGCompat;
-import com.github.sachin.lootin.listeners.ChestEvents;
-import com.github.sachin.lootin.listeners.ChunkLoadListener;
-import com.github.sachin.lootin.listeners.EntityMetaDataPacketListener;
-import com.github.sachin.lootin.listeners.InventoryListeners;
+import com.github.sachin.lootin.listeners.*;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 import com.github.sachin.lootin.compat.CustomStructuresLootPopulateEvent;
 import com.github.sachin.lootin.compat.OTDLootListener;
@@ -24,6 +22,7 @@ import com.github.sachin.prilib.Prilib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -87,6 +86,7 @@ public final class Lootin extends JavaPlugin {
 
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
+        pm.registerEvents(new StructureGenerateListener(),plugin);
         if(pm.isPluginEnabled("CustomStructures")){
             getLogger().info("Found custom structures, registering listeners...");
 
@@ -166,6 +166,18 @@ public final class Lootin extends JavaPlugin {
         return new ArrayList<>();
     }
 
+    public boolean isBlackListWorld(World world){
+        return getBlackListWorlds().contains(world.getName());
+    }
+
+    public boolean isBlackListWorld(UUID uuid){
+        World world = getServer().getWorld(uuid);
+        if(world == null){
+            return false;
+        }
+        return getBlackListWorlds().contains(world.getName());
+    }
+
     public List<NamespacedKey> getBlackListStructures(){
         List<String> list = new ArrayList<>();
         List<NamespacedKey> keyList = new ArrayList<>();
@@ -205,7 +217,7 @@ public final class Lootin extends JavaPlugin {
     }
 
     public boolean isPost1_19(){
-        return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1").contains(prilib.getBukkitVersion());
+        return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1","v1_20_R2").contains(prilib.getBukkitVersion());
     }
 
     public PaperCommandManager getCommandManager() {

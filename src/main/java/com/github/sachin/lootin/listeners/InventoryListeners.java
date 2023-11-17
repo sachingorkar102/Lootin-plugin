@@ -41,6 +41,7 @@ public class InventoryListeners extends BaseListener {
         Material type = state.getType();
         boolean isLootin = false;
         ContainerType container;
+        if(plugin.isBlackListWorld(player.getWorld())) return;
         if (ChestUtils.isChest(type)) {
             isLootin = ChestUtils.isLootinContainer(null, state,
                     container = (ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
@@ -93,6 +94,7 @@ public class InventoryListeners extends BaseListener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMinecartInteract(PlayerInteractEntityEvent e) {
+        if(plugin.isBlackListWorld(e.getPlayer().getWorld())) return;
         if (!(e.getRightClicked() instanceof StorageMinecart)) {
             return;
         }

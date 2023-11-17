@@ -27,6 +27,7 @@ public class LConstants {
     public static final String RESET_SEED = "reset-seed-on-fill";
 
 
+//    public static final String BLACK_LIST_
     public static final String BLACK_LIST_STRUCTURES = "black-list-structures";
     public static final String BLACK_LIST_CUSTOM_STRUCTURES = "black-list-customstructures";
     public static final String BLACK_LIST_OTD_STRUCTURES = "black-list-otd-structures";

@@ -38,6 +38,7 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
     public void onPacketSending(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         Player player = event.getPlayer();
+        if(Lootin.getPlugin().isBlackListWorld(player.getWorld())) return;
         Entity entity = null;
         try {
             entity = packet.getEntityModifier(event).read(0);
