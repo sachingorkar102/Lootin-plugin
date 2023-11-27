@@ -10,6 +10,7 @@ import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.cooldown.Cooldown;
 
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
@@ -61,7 +62,7 @@ public class InventoryListeners extends BaseListener {
                 && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
             return;
         }
-        if (player.isSneaking()) {
+        if (player.isSneaking() || player.getGameMode() == GameMode.SPECTATOR) {
             e.setCancelled(true);
             return;
         }
@@ -111,6 +112,9 @@ public class InventoryListeners extends BaseListener {
         }
         e.setCancelled(true);
         Player player = e.getPlayer();
+        if (player.isSneaking() || player.getGameMode() == GameMode.SPECTATOR) {
+            return;
+        }
         Cooldown cooldown = plugin.interactCooldown.get(player.getUniqueId());
         if (!cooldown.isTriggerable()) {
             return;
