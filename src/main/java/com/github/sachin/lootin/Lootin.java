@@ -221,12 +221,18 @@ public final class Lootin extends JavaPlugin {
         getLogger().info("Config file reloaded");
     }
 
+    public void debug(String message){
+        if(getConfig().getBoolean(LConstants.DEBUG_MODE)){
+            getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',message));
+        }
+    }
+
     public boolean isPost1_19(){
-        return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1","v1_20_R2").contains(prilib.getBukkitVersion());
+        return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1","v1_20_R2","v1_20_R3").contains(prilib.getBukkitVersion());
     }
 
     public boolean isPost1_20_R2(){
-        return Arrays.asList("v1_20_R2").contains(prilib.getBukkitVersion());
+        return Arrays.asList("v1_20_R2","v1_20_R3").contains(prilib.getBukkitVersion());
     }
 
     public PaperCommandManager getCommandManager() {

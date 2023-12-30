@@ -6,7 +6,7 @@
 
     <groupId>com.github.sachin.lootin</groupId>
     <artifactId>Lootin</artifactId>
-    <version>7.5</version>
+    <version>8.1</version>
     <packaging>jar</packaging>
 
 
@@ -98,12 +98,12 @@
                                         <exclude>acf-core_sv.properties</exclude>
                                         <exclude>acf-core_tr.properties</exclude>
                                         <exclude>acf-core_zh.properties</exclude>
+                                        <exclude>acf-core_it.properties</exclude>
                                         <exclude>acf-core_zh_CN.properties</exclude>
                                         <exclude>acf-core_zh_TW.properties</exclude>
                                         <exclude>acf-minecraft_bg.properties</exclude>
                                         <exclude>acf-minecraft_cs.properties</exclude>
                                         <exclude>acf-minecraft_de.properties</exclude>
-                                        <exclude>acf-minecraft_en.properties</exclude>
                                         <exclude>acf-minecraft_es.properties</exclude>
                                         <exclude>acf-minecraft_fr.properties</exclude>
                                         <exclude>acf-minecraft_hu.properties</exclude>
@@ -120,6 +120,7 @@
                                         <exclude>acf-minecraft_zh.properties</exclude>
                                         <exclude>acf-minecraft_zh_CN.properties</exclude>
                                         <exclude>acf-minecraft_zh_TW.properties</exclude>
+                                        <exclude>acf-minecraft_it.properties</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -127,7 +128,11 @@
                             <relocations>
                                 <relocation>
                                     <pattern>co.aikar.commands</pattern>
-                                    <shadedPattern>com.github.sachin.lootin.acf</shadedPattern>
+                                    <shadedPattern>com.github.sachin.acf</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.jeff_media.morepersistentdatatypes</pattern>
+                                    <shadedPattern>com.github.sachin.morepersistentdatatypes</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -183,6 +188,10 @@
         <repository>
             <id>jitpack</id>
             <url>https://jitpack.io/</url>
+        </repository>
+        <repository>
+            <id>jeff-media-public</id>
+            <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
         </repository>
     </repositories>
 
@@ -273,6 +282,14 @@
             <groupId>com.github.sachin.prilib</groupId>
             <artifactId>dist</artifactId>
             <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+<!--        MorePersistentDataTypes-->
+        <dependency>
+            <groupId>com.jeff_media</groupId>
+            <artifactId>MorePersistentDataTypes</artifactId>
+            <version>2.4.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
