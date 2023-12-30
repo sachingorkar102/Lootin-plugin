@@ -8,6 +8,9 @@ gui-titles:
   minecart: "&6Minecart with Chest"
   barrel: "&6Barrel"
 
+
+debug-mode: false
+
  
 # Its bstats 
 metrics: true
