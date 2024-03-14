@@ -3,7 +3,7 @@ version: ${project.version}
 main: com.github.sachin.lootin.Lootin
 api-version: 1.16
 authors: [ sachingorkar ]
-softdepend: [Terra,CustomStructures,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,Realistic_World,BetterStructures]
+softdepend: [Terra,CustomStructures,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,Realistic_World,BetterStructures,WorldGuard]
 description: Loot per player
 api: []
 

@@ -42,6 +42,7 @@ public class InventoryListeners extends BaseListener {
         Material type = state.getType();
         boolean isLootin = false;
         ContainerType container;
+        if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(player,block.getLocation())) return;
         if(plugin.isBlackListWorld(player.getWorld())) return;
         if (ChestUtils.isChest(type)) {
             isLootin = ChestUtils.isLootinContainer(null, state,
@@ -100,6 +101,7 @@ public class InventoryListeners extends BaseListener {
             return;
         }
         StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
+        if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(e.getPlayer(),minecart.getLocation())) return;
         if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
             if(minecart.getLootTable() == null || plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())) {
                 return;

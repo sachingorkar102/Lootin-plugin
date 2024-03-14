@@ -54,5 +54,6 @@ public class LConstants {
     public static final int SERVER_MINOR_VERSION = Integer.parseInt(MINECRAFT_VERSION.split("\\.")[1]);
 
     public static final boolean SERVER_REMAPPED = LConstants.SERVER_MINOR_VERSION >= 17;
-    
+
+    public static final String WG_FLAG_NAME = "lootin-container-access";
 }

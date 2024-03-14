@@ -51,6 +51,21 @@ public final class Lootin extends JavaPlugin {
     public boolean isRunningPurpur;
     public boolean isRunningProtocolLib;
 
+    public boolean isRunningWG;
+
+    private WGFlag WGflag;
+
+    @Override
+    public void onLoad() {
+        plugin = this;
+        isRunningWG = Bukkit.getPluginManager().getPlugin("WorldGuard") != null;
+        if(isRunningWG){
+            WGflag = new WGFlag();
+            plugin.getLogger().info("Found WorldGuard, registering "+LConstants.WG_FLAG_NAME+" flag");
+            WGflag.registerFlag();
+        }
+    }
+
     @Override
     public void onEnable() {
 
@@ -199,6 +214,10 @@ public final class Lootin extends JavaPlugin {
         } catch (Exception e) {
             return keyList;
         }
+    }
+
+    public WGFlag getWGflag() {
+        return WGflag;
     }
 
     public int getBarrelRowCount(){

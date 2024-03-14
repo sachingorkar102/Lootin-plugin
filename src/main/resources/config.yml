@@ -59,3 +59,13 @@ black-list-otd-structures: []
 
 # if set to false, if the loot chest block is claimed, player will not able to open lootin chest 
 bypass-grief-plugins: true
+
+# REQUIRES WorldGuard Plugin installed
+# determines the default world guard flag value for "lootin-container-access" flag
+default-worldguard-flag-value: true
+
+# if set to true, loot will be unique for each player opening the same chest
+reset-seed-on-fill: false
+
+# option to keep using new structure generate listener
+use-new-structure-generate-listener: true
