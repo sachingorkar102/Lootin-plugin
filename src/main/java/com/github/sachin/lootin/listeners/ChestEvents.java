@@ -16,6 +16,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -110,33 +111,36 @@ public class ChestEvents extends BaseListener{
         }
     }
 
-    @EventHandler
+//    @EventHandler
     public void onItemMove(InventoryMoveItemEvent e){
-        List<InventoryHolder> holders = Arrays.asList(e.getSource().getHolder(),e.getDestination().getHolder());
 //        if(plugin.isBlackListWorld(e.ge)) return;
-        for (InventoryHolder h1 : holders) {
-            if(h1 == null) return;
-            if(h1 instanceof DoubleChest){
-                DoubleChest doubleChest = (DoubleChest) h1;
-                PersistentDataContainer d1 = ((Chest)doubleChest.getLeftSide()).getPersistentDataContainer();
-                PersistentDataContainer d2 = ((Chest)doubleChest.getRightSide()).getPersistentDataContainer();
-                if(d1.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING) || d2.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)){
-                    e.setCancelled(true);
+        if(e.getDestination().getHolder() instanceof HopperMinecart || e.getSource().getHolder() instanceof HopperMinecart){
+            List<InventoryHolder> holders = Arrays.asList(e.getSource().getHolder(),e.getDestination().getHolder());
+            for (InventoryHolder h : holders) {
+                if(h == null) continue;
+                if(h instanceof HopperMinecart) continue;
+                if(h instanceof DoubleChest){
+                    DoubleChest doubleChest = (DoubleChest) h;
+                    PersistentDataContainer d1 = ((Chest)doubleChest.getLeftSide()).getPersistentDataContainer();
+                    PersistentDataContainer d2 = ((Chest)doubleChest.getRightSide()).getPersistentDataContainer();
+                    if(d1.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING) || d2.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING)){
+                        e.setCancelled(true);
+                    }
                 }
-            }
-            else if(h1 instanceof Chest){
-                if(ChestUtils.isLootinContainer(null, ((Chest)h1), ContainerType.CHEST)){
-                    e.setCancelled(true);
+                else if(h instanceof Chest){
+                    if(ChestUtils.isLootinContainer(null, ((Chest)h), ContainerType.CHEST)){
+                        e.setCancelled(true);
+                    }
                 }
-            }
-            else if(h1 instanceof StorageMinecart){
-                if(ChestUtils.isLootinContainer(((StorageMinecart)h1), null, ContainerType.MINECART)){
-                    e.setCancelled(true);
+                else if(h instanceof StorageMinecart){
+                    if(ChestUtils.isLootinContainer(((StorageMinecart)h), null, ContainerType.MINECART)){
+                        e.setCancelled(true);
+                    }
                 }
-            }
-            else if(h1 instanceof Barrel){
-                if(ChestUtils.isLootinContainer(null, ((Barrel)h1), ContainerType.BARREL)){
-                    e.setCancelled(true);
+                else if(h instanceof Barrel){
+                    if(ChestUtils.isLootinContainer(null, ((Barrel)h), ContainerType.BARREL)){
+                        e.setCancelled(true);
+                    }
                 }
             }
         }
@@ -223,9 +227,10 @@ public class ChestEvents extends BaseListener{
                 if(!ChestUtils.isChest(b.getType())) {
                     return;
                 }
-                for(BlockFace face : Arrays.asList(BlockFace.EAST,BlockFace.WEST,BlockFace.SOUTH,BlockFace.NORTH)){
+                for(BlockFace face : Arrays.asList(BlockFace.EAST,BlockFace.WEST,BlockFace.SOUTH,BlockFace.NORTH,BlockFace.UP,BlockFace.DOWN)){
                     Block block = b.getRelative(face);
-                    if(block.getState() instanceof Chest){
+
+                    if(block.getState() instanceof Chest && !(face == BlockFace.UP || face == BlockFace.DOWN)){
                         Chest chest = (Chest) block.getState();
                         if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
                             b.setType(Material.AIR);
@@ -235,6 +240,7 @@ public class ChestEvents extends BaseListener{
                         }
                     }
                 }
+
             }
         }.runTaskLater(plugin, 1);
     }

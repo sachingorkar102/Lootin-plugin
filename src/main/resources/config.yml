@@ -33,9 +33,6 @@ delete-items-on-break: true
 # weather or not to prevent lootin chest from being exploded by tnt or creeper
 prevent-explosions: true
 
-# Under Progress
-reset-seed-on-fill: true
-
 # list of worlds where lootin will not modify loot chests
 black-list-worlds: []
 

@@ -19,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootContext;
 import org.bukkit.loot.LootTable;
+import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -119,6 +120,28 @@ public class ChestUtils{
         }
     }
 
+    public static void fillLoot(Player player,PersistentDataContainer data,Lootable container,Inventory inventory){
+        String lootTableKey = null;
+        NamespacedKey playerLootKey = Lootin.getKey(player.getUniqueId().toString());
+        if(data.has(playerLootKey,PersistentDataType.STRING) || data.has(playerLootKey,DataType.ITEM_STACK_ARRAY)) return;
+        if(container.getLootTable() != null){
+            lootTableKey = container.getLootTable().getKey().getKey();
+            data.set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,lootTableKey);
+            container.setLootTable(null);
+            if(container instanceof BlockState){
+                ((BlockState)container).update();
+            }
+        }
+        else if(data.has(LConstants.LOOTTABLE_KEY, PersistentDataType.STRING)){
+            lootTableKey = data.get(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING);
+        }
+        if(lootTableKey != null){
+            inventory.clear();
+            plugin.getPrilib().getNmsHandler().fill(player,container,lootTableKey,plugin.getConfig().getBoolean(LConstants.RESET_SEED));
+        }
+    }
+
+
     /**
      * Retrives list of items unique to player or the default loot from lootable if there isnt any loot uique to player yet
      * @param minecart only StorageMinecart if container is a Entity or can be null
@@ -135,34 +158,20 @@ public class ChestUtils{
         if(type == ContainerType.CHEST){
             Chest chest = (Chest) block;
             data = chest.getPersistentDataContainer();
-            if(chest.getLootTable() != null) {
-//                loottable = chest.getLootTable().getKey().getKey();
-//                data.set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,loottable);
-                plugin.getPrilib().getNmsHandler().fillLoot(player,chest);
-//                VersionProvider.fillLoot(player, chest); // Fix loot not being generated (1.16.5)
-                chest.setLootTable(null);
-            }
             inventory = chest.getBlockInventory();
+            fillLoot(player,data,chest,inventory);
         }
         else if(type == ContainerType.MINECART){
             StorageMinecart tileCart = (StorageMinecart) minecart;
             data = tileCart.getPersistentDataContainer();
-            if(tileCart.getLootTable() != null) {
-                plugin.getPrilib().getNmsHandler().fillLoot(player,tileCart);
-//                VersionProvider.fillLoot(player, tileCart);
-                tileCart.setLootTable(null);
-            }
             inventory = tileCart.getInventory();
+            fillLoot(player,data,tileCart,inventory);
         }
         else if(type == ContainerType.BARREL){
             Barrel barrel = (Barrel) block;
             data = barrel.getPersistentDataContainer();
-            if(barrel.getLootTable() != null) {
-                plugin.getPrilib().getNmsHandler().fillLoot(player,barrel);
-//                VersionProvider.fillLoot(player, barrel); // Fix loot not being generated (1.16.5)
-                barrel.setLootTable(null);
-            }
             inventory = barrel.getInventory();
+            fillLoot(player,data,barrel,inventory);
         }
         else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
             DoubleChest doubleChest = getDoubleChest(block);
@@ -170,44 +179,21 @@ public class ChestUtils{
             Chest chestRight = ((Chest) doubleChest.getRightSide());
 //            boolean changed = false;
             ArrayList<ItemStack> chestContents = new ArrayList<>();
-            if(chestLeft.getLootTable() != null) {
-                plugin.getPrilib().getNmsHandler().fillLoot(player,chestLeft);
-                plugin.debug("LeftChest LootTable: "+chestLeft.getLootTable().getKey().getKey());
-//                VersionProvider.fillLoot(player, chestLeft); // Fix loot not being generated (1.16.5)
-                chestLeft.setLootTable(null);
-//                changed = true;
-            }
-            if(chestRight.getLootTable() != null) {
-                plugin.getPrilib().getNmsHandler().fillLoot(player,chestRight);
-                plugin.debug("RightChest LootTable: "+chestRight.getLootTable().getKey().getKey());
-//                VersionProvider.fillLoot(player, chestRight); // Fix loot not being generated (1.16.5)
-                chestRight.setLootTable(null);
-//                changed = true;
-            }
             chestContents.addAll(getContainerItems(null,chestLeft,ContainerType.CHEST,player));
             chestContents.addAll(getContainerItems(null,chestRight,ContainerType.CHEST,player));
             inventory = doubleChest.getInventory();
             if(!chestContents.isEmpty()){
-                plugin.debug("DOUBLE CHEST CONTENTS:");
-                plugin.debug(chestContents.toString());
                 return chestContents;
             }
-//            if(!changed) {
-//                ArrayList<ItemStack> chestContents = new ArrayList<>();
-//                chestContents.addAll(getContainerItems(null,chestLeft,ContainerType.CHEST,player));
-//                chestContents.addAll(getContainerItems(null,chestRight,ContainerType.CHEST,player));
-//                fillDoubleLoot(uuid, chestLeft, chestContents);
-//                fillDoubleLoot(uuid, chestRight, chestContents);
-//                return chestContents;
-//            }
         }
         else{
             return null;
         }
 
         if(data != null){
+            List<ItemStack> items = new ArrayList<>();
             if(data.has(Lootin.getKey(uuid),PersistentDataType.STRING)){
-                List<ItemStack> items = ItemSerializer.deserialize(data.get(Lootin.getKey(uuid),PersistentDataType.STRING));
+                items = ItemSerializer.deserialize(data.get(Lootin.getKey(uuid),PersistentDataType.STRING));
                 updatePersistentStorageTypes(data,inventory,items,Lootin.getKey(uuid));
                 return items;
             }
@@ -215,12 +201,23 @@ public class ChestUtils{
                 return Arrays.asList(data.get(Lootin.getKey(uuid), DataType.ITEM_STACK_ARRAY));
             }
             else if(data.has(LConstants.DATA_KEY,PersistentDataType.STRING)){
-                List<ItemStack> items = ItemSerializer.deserialize(data.get(LConstants.DATA_KEY,PersistentDataType.STRING));
+                items = ItemSerializer.deserialize(data.get(LConstants.DATA_KEY,PersistentDataType.STRING));
                 updatePersistentStorageTypes(data,inventory,items,LConstants.DATA_KEY);
+                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                    items = Arrays.asList(inventory.getContents());
+                }
+                inventory.clear();
                 return items;
             }
             else if(data.has(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY)){
-                return Arrays.asList(data.get(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY));
+                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                    items = Arrays.asList(inventory.getContents());
+                }
+                else{
+                    items = Arrays.asList(data.get(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY));
+                }
+                inventory.clear();
+                return items;
             }
         }
         ArrayList<ItemStack> chestContents = new ArrayList<>();
@@ -230,6 +227,7 @@ public class ChestUtils{
         return chestContents;
     }
 
+//    this is used to change from old way to store items as String to new way of storing them as ConfigurationSection
     private static void updatePersistentStorageTypes(PersistentDataContainer data,Inventory inv,List<ItemStack> items,NamespacedKey key){
         data.remove(key);
         data.set(key,DataType.ITEM_STACK_ARRAY,items.toArray(new ItemStack[0]));
