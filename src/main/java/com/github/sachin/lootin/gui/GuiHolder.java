@@ -5,6 +5,7 @@ import com.github.sachin.lootin.utils.ContainerType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -23,6 +24,10 @@ public class GuiHolder implements InventoryHolder{
         this.inventory = Bukkit.createInventory(this, type.getSlots(),type.getTitle(player));
     }
 
+
+    public void handleClickEvents(InventoryClickEvent e){
+
+    }
 
     public Player getPlayer() {
         return player;

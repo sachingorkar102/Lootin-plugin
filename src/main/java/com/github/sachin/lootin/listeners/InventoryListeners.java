@@ -23,6 +23,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -125,6 +126,13 @@ public class InventoryListeners extends BaseListener {
         if (plugin.currentMinecartviewers.contains(minecart))
             return;
         new MinecartGui(player, minecart).open();
+    }
+
+    @EventHandler
+    public void onInventoryInteract(InventoryClickEvent e){
+        if(e.getInventory().getHolder() instanceof GuiHolder){
+            ((GuiHolder)e.getInventory().getHolder()).handleClickEvents(e);
+        }
     }
 
     @EventHandler

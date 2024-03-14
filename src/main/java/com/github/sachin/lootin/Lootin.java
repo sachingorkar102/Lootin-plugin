@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.github.sachin.lootin.commands.Commands;
+import com.github.sachin.lootin.compat.WGFlag;
 import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.listeners.*;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
@@ -19,10 +20,7 @@ import com.github.sachin.lootin.utils.Metrics;
 import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
 import com.github.sachin.prilib.Prilib;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -69,7 +67,7 @@ public final class Lootin extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        plugin = this;
+
         prilib = new Prilib(this);
         prilib.initialize();
         if(!prilib.isNMSEnabled()){
@@ -97,16 +95,17 @@ public final class Lootin extends JavaPlugin {
         reloadConfigs();
         // register listeners
         PluginManager pm = getServer().getPluginManager();
-        if(isPost1_20_R2()){
+        if(isPost1_20_R2() && plugin.getConfig().getBoolean(LConstants.USE_NEW_LISTENER,true)){
+            getLogger().info("Registering new listener");
             pm.registerEvents(new StructureGenerateListener(),plugin);
         }
         else{
             pm.registerEvents(new ChunkLoadListener(), plugin);
         }
-
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         pm.registerEvents(new ItemFrameListener(),plugin);
+        pm.registerEvents(new LootGenerateListener(),plugin);
         if(pm.isPluginEnabled("CustomStructures")){
             getLogger().info("Found custom structures, registering listeners...");
 
@@ -241,7 +240,7 @@ public final class Lootin extends JavaPlugin {
     }
 
     public void debug(String message){
-        if(getConfig().getBoolean(LConstants.DEBUG_MODE)){
+        if(getConfig().getBoolean(LConstants.DEBUG_MODE) && message != null){
             getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',message));
         }
     }
@@ -253,6 +252,8 @@ public final class Lootin extends JavaPlugin {
     public boolean isPost1_20_R2(){
         return Arrays.asList("v1_20_R2","v1_20_R3").contains(prilib.getBukkitVersion());
     }
+
+    public boolean is1_16(){ return prilib.getBukkitVersion().equals("v1_16_R3");}
 
     public PaperCommandManager getCommandManager() {
         return commandManager;
