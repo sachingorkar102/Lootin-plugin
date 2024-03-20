@@ -49,6 +49,8 @@ public final class Lootin extends JavaPlugin {
     public boolean isRunningPurpur;
     public boolean isRunningProtocolLib;
 
+    public boolean isRunningBetterStructures;
+
     public boolean isRunningWG;
 
     private WGFlag WGflag;
@@ -126,6 +128,7 @@ public final class Lootin extends JavaPlugin {
             }
         }
         if(pm.isPluginEnabled("BetterStructures")){
+            this.isRunningBetterStructures = true;
             getLogger().info("Found BetterStructures, registering listeners...");
             pm.registerEvents(new BetterStructuresListener(),plugin);
         }

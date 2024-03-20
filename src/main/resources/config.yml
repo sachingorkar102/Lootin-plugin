@@ -61,8 +61,8 @@ bypass-grief-plugins: true
 # determines the default world guard flag value for "lootin-container-access" flag
 default-worldguard-flag-value: true
 
-# if set to true, loot will be unique for each player opening the same chest
-reset-seed-on-fill: false
+# when set to true, lostoot will be unique for each player opening the same chest
+reset-seed-on-fill: true
 
 # option to keep using new structure generate listener
 use-new-structure-generate-listener: true

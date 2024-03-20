@@ -65,17 +65,19 @@ public class ChunkLoadListener extends BaseListener{
                     }
 
                 }
-                for(BlockState block : chunk.getTileEntities()){
-                    if(block instanceof Lootable){
+                for(BlockState b : chunk.getTileEntities()){
+                    if(b instanceof Lootable){
+                        BlockState block = chunk.getWorld().getBlockState(b.getLocation());
                         Lootable lootable = (Lootable) block;
                         if(lootable.getLootTable() == null || plugin.getBlackListStructures().contains(lootable.getLootTable().getKey())) {
                             continue;
                         }
                         boolean isLootin = false;
                         ContainerType container;
+                        plugin.debug(block.getType()+": "+block.getLocation());
                         if (ChestUtils.isChest(block.getType())) {
                             isLootin = ChestUtils.isLootinContainer(null, block,
-                                    container = (ChestUtils.isDoubleChest(block) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+                                    container = (ChestUtils.isDoubleChest(b) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
                         } else if (block.getType() == Material.BARREL) {
                             isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
                         }
@@ -86,7 +88,7 @@ public class ChunkLoadListener extends BaseListener{
                     }
                 }
             }
-        }.runTaskLater(plugin, 3);
+        }.runTaskLater(plugin, 1);
     }
     
 }

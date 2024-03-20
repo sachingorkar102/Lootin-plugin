@@ -6,7 +6,7 @@
 
     <groupId>com.github.sachin.lootin</groupId>
     <artifactId>Lootin</artifactId>
-    <version>8.2</version>
+    <version>8.3</version>
     <packaging>jar</packaging>
 
 
@@ -233,7 +233,7 @@
             <groupId>com.magmaguy.betterstructures</groupId>
             <artifactId>BetterStructures</artifactId>
             <version>1.5</version>
-            <systemPath>${project.basedir}/lib/BetterStructures.jar</systemPath>
+            <systemPath>${project.basedir}/lib/BetterStructures-1.6.10.jar</systemPath>
             <scope>system</scope>
 
         </dependency>
