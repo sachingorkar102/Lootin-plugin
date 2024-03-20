@@ -20,6 +20,8 @@ public class LConstants {
 
     public static final NamespacedKey LOOTTABLE_KEY = Lootin.getKey("lotttable");
 
+    public static final NamespacedKey BETTER_STRUC_KEY = Lootin.getKey("better-structures-name-key");
+
     public static final String TITLE_CHEST = "gui-titles.chest";
     public static final String TITLE_DOUBLE_CHEST = "gui-titles.double-chest";
     public static final String TITLE_MINECART = "gui-titles.minecart";
