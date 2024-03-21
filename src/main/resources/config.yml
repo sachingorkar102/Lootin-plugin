@@ -36,8 +36,10 @@ prevent-explosions: true
 # list of worlds where lootin will not modify loot chests
 black-list-worlds: []
 
-# list of vanilla structures where lootin will not modify loot chests
-# valid structure names can be found here https://www.spigotmc.org/resources/90453/
+# list of loottables lootin will ignore, in other words containers with these loottables will not turn into lootin chests
+# Pro tip:
+  # use NAME$ to take those loottables into account which end with "NAME" eg. "_treasure$"
+  # use ^NAME to take those loottables into acccount which start with "NAME" eg. "^minecraft:chests/"
 black-list-structures: []
 
 # Note: does not work with already looted end ships

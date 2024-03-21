@@ -6,6 +6,7 @@ import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 import com.ryandw11.structure.api.LootPopulateEvent;
 
+import com.ryandw11.structure.loottables.LootTableType;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;

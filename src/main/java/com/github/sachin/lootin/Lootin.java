@@ -25,7 +25,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
+import org.bukkit.loot.Lootable;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -198,6 +200,25 @@ public final class Lootin extends JavaPlugin {
             return false;
         }
         return getBlackListWorlds().contains(world.getName());
+    }
+
+    public boolean isBlackListedLootable(String lootable){
+        List<String> list = plugin.getConfig().getStringList(LConstants.BLACK_LIST_STRUCTURES);
+        for(String s : list){
+            if(s.startsWith("^") && lootable.startsWith(s.replace("^", ""))){
+                return true;
+            }
+            if(s.endsWith("$") && lootable.endsWith(s.replace("$", ""))){
+                return true;
+            }
+            if(lootable.equals(s)) return true;
+
+        }
+        return false;
+    }
+
+    public boolean isBlackListedLootable(LootTable lootable){
+        return isBlackListedLootable(lootable.getKey().toString());
     }
 
     public List<NamespacedKey> getBlackListStructures(){

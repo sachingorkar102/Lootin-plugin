@@ -56,7 +56,7 @@ public class ChunkLoadListener extends BaseListener{
                     if(entity.getType()==EntityType.MINECART_CHEST){
                         StorageMinecart minecart = (StorageMinecart) entity;
                         if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                            if(minecart.getLootTable() == null || plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())) {
+                            if(minecart.getLootTable() == null || plugin.isBlackListedLootable(minecart.getLootTable())) {
                                 continue;
                             }
                             ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
@@ -69,16 +69,16 @@ public class ChunkLoadListener extends BaseListener{
                     if(b instanceof Lootable){
                         BlockState block = chunk.getWorld().getBlockState(b.getLocation());
                         Lootable lootable = (Lootable) block;
-                        if(lootable.getLootTable() == null || plugin.getBlackListStructures().contains(lootable.getLootTable().getKey())) {
+                        if(lootable.getLootTable() == null || plugin.isBlackListedLootable(lootable.getLootTable())) {
                             continue;
                         }
                         boolean isLootin = false;
                         ContainerType container;
                         plugin.debug(block.getType()+": "+block.getLocation());
-                        if (ChestUtils.isChest(block.getType())) {
+                        if (block instanceof Chest) {
                             isLootin = ChestUtils.isLootinContainer(null, block,
                                     container = (ChestUtils.isDoubleChest(b) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
-                        } else if (block.getType() == Material.BARREL) {
+                        } else if (block instanceof Barrel) {
                             isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
                         }
                         else{continue;}

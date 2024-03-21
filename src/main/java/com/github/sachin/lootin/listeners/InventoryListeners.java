@@ -45,6 +45,7 @@ public class InventoryListeners extends BaseListener {
         ContainerType container;
         if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(player,block.getLocation())) return;
         if(plugin.isBlackListWorld(player.getWorld())) return;
+
         if (ChestUtils.isChest(type)) {
             isLootin = ChestUtils.isLootinContainer(null, state,
                     container = (ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
@@ -53,8 +54,9 @@ public class InventoryListeners extends BaseListener {
         } else {
             return;
         }
+//        plugin.debug(((Lootable)state).getLootTable().getKey().toString());
         if(!isLootin && ((Lootable)state).getLootTable() != null){
-            if(plugin.getBlackListStructures().contains(((Lootable)state).getLootTable().getKey())){
+            if(plugin.isBlackListedLootable(((Lootable)state).getLootTable())){
                 return;
             }
             ChestUtils.setLootinContainer(null, state, container);
@@ -104,7 +106,7 @@ public class InventoryListeners extends BaseListener {
         StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
         if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(e.getPlayer(),minecart.getLocation())) return;
         if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-            if(minecart.getLootTable() == null || plugin.getBlackListStructures().contains(minecart.getLootTable().getKey())) {
+            if(minecart.getLootTable() == null || plugin.isBlackListedLootable(minecart.getLootTable())) {
                 return;
             }
             ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
