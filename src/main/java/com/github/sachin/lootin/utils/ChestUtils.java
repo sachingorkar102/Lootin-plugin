@@ -125,7 +125,6 @@ public class ChestUtils{
         if(plugin.isRunningBetterStructures && plugin.getConfig().getBoolean(LConstants.RESET_SEED) && data.has(LConstants.BETTER_STRUC_KEY,PersistentDataType.STRING)){
 
             Chest chest = (Chest) container;
-            chest.getSnapshotInventory().clear();
             BetterStructuresListener.refillChest(chest);
             return;
         }

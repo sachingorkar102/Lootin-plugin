@@ -59,9 +59,12 @@ public class BetterStructuresListener implements Listener {
     public static void refillChest(Chest chest){
         String fileName = chest.getPersistentDataContainer().get(LConstants.BETTER_STRUC_KEY,PersistentDataType.STRING);
         if(fileName != null){
-            GeneratorConfigFields generatorConfigFields = GeneratorConfig.getConfigFields(fileName);
-            if(generatorConfigFields != null && generatorConfigFields.getChestContents() != null){
-                generatorConfigFields.getChestContents().rollChestContents(chest);
+            if(GeneratorConfig.getGeneratorConfigurations().containsKey(fileName)){
+                GeneratorConfigFields generatorConfigFields = GeneratorConfig.getGeneratorConfigurations().get(fileName);
+                if(generatorConfigFields != null && generatorConfigFields.getChestContents() != null){
+                    chest.getSnapshotInventory().clear();
+                    generatorConfigFields.getChestContents().rollChestContents(chest);
+                }
             }
         }
     }
