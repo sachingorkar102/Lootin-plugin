@@ -8,6 +8,7 @@ import java.util.List;
 import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 
+import com.github.sachin.lootin.compat.CustomStructuresListener;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -126,6 +127,10 @@ public class ChestUtils{
 
             Chest chest = (Chest) container;
             BetterStructuresListener.refillChest(chest);
+            return;
+        }
+        if(plugin.isRunningCustomStructures && plugin.getConfig().getBoolean(LConstants.RESET_SEED) && data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
+            CustomStructuresListener.reFillContainer((Container) container);
             return;
         }
         if(container.getLootTable() != null){

@@ -12,7 +12,7 @@ import com.github.sachin.lootin.compat.WGFlag;
 import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.listeners.*;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
-import com.github.sachin.lootin.compat.CustomStructuresLootPopulateEvent;
+import com.github.sachin.lootin.compat.CustomStructuresListener;
 import com.github.sachin.lootin.compat.OTDLootListener;
 import com.github.sachin.lootin.utils.ConfigUpdater;
 import com.github.sachin.lootin.utils.LConstants;
@@ -27,7 +27,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
-import org.bukkit.loot.Lootable;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -51,7 +50,8 @@ public final class Lootin extends JavaPlugin {
     public boolean isRunningPurpur;
     public boolean isRunningProtocolLib;
 
-    public boolean isRunningBetterStructures;
+    public boolean isRunningBetterStructures = false;
+    public boolean isRunningCustomStructures = false;
 
     public boolean isRunningWG;
 
@@ -111,9 +111,10 @@ public final class Lootin extends JavaPlugin {
         pm.registerEvents(new ItemFrameListener(),plugin);
         pm.registerEvents(new LootGenerateListener(),plugin);
         if(pm.isPluginEnabled("CustomStructures")){
+            this.isRunningCustomStructures = true;
             getLogger().info("Found custom structures, registering listeners...");
 
-            pm.registerEvents(new CustomStructuresLootPopulateEvent(), plugin);
+            pm.registerEvents(new CustomStructuresListener(), plugin);
         }
         if(pm.isPluginEnabled("Oh_the_dungeons_youll_go")){
             getLogger().info("Found OhTheDungeons, registering listeners...");

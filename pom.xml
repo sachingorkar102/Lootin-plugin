@@ -223,7 +223,7 @@
             <groupId>com.github.ryandw11</groupId>
             <artifactId>CustomStructures</artifactId>
             <version>1.5</version>
-            <systemPath>${project.basedir}/lib/CustomStructures-1.7.0.jar</systemPath>
+            <systemPath>${project.basedir}/lib/CustomStructures-1.9.0.1.jar</systemPath>
             <scope>system</scope>
             
         </dependency>
