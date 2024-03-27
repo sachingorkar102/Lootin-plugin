@@ -19,6 +19,7 @@ import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.Metrics;
 import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
+import com.github.sachin.prilib.McVersion;
 import com.github.sachin.prilib.Prilib;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -106,6 +107,8 @@ public final class Lootin extends JavaPlugin {
         else{
             pm.registerEvents(new ChunkLoadListener(), plugin);
         }
+//        pm.registerEvents(new StructureGenerateTempFix(),plugin);
+//        pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         pm.registerEvents(new ItemFrameListener(),plugin);
@@ -271,14 +274,15 @@ public final class Lootin extends JavaPlugin {
     }
 
     public boolean isPost1_19(){
-        return Arrays.asList("v1_19_R2","v1_19_R3","v1_20_R1","v1_20_R2","v1_20_R3").contains(prilib.getBukkitVersion());
+
+        return McVersion.current().isAtLeast(new McVersion(1,19));
     }
 
     public boolean isPost1_20_R2(){
-        return Arrays.asList("v1_20_R2","v1_20_R3").contains(prilib.getBukkitVersion());
+        return McVersion.current().isAtLeast(new McVersion(1,20,2));
     }
 
-    public boolean is1_16(){ return prilib.getBukkitVersion().equals("v1_16_R3");}
+    public boolean is1_16(){ return McVersion.current().equals(new McVersion(1,16,5));}
 
     public PaperCommandManager getCommandManager() {
         return commandManager;

@@ -134,7 +134,7 @@ public class ChestUtils{
             return;
         }
         if(container.getLootTable() != null){
-            lootTableKey = container.getLootTable().getKey().getKey();
+            lootTableKey = container.getLootTable().getKey().toString();
             data.set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,lootTableKey);
             container.setLootTable(null);
             if(container instanceof BlockState){

@@ -43,7 +43,7 @@ public class ChestEvents extends BaseListener{
         if(plugin.isBlackListWorld(player.getWorld())) return;
         if(ChestUtils.isChest(block.getType())){
             Chest chest = (Chest) block.getState();
-            if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
+            if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST) || chest.getLootTable() != null){
                 if(plugin.currentChestviewers.contains(chest.getLocation())){
                     player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED,player));
                     e.setCancelled(true);
@@ -51,7 +51,7 @@ public class ChestEvents extends BaseListener{
                 }
                 if(player.hasPermission("lootin.breakchest.bypass")){
                     if(player.isSneaking()){
-                        chest.getInventory().clear();
+                        chest.getSnapshotInventory().clear();
 
                         if(!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) && ChestUtils.hasPlayerLoot(null, chest, player, ContainerType.CHEST)){
                             List<ItemStack> items = ChestUtils.getContainerItems(null, chest, ContainerType.CHEST, player);
@@ -77,7 +77,7 @@ public class ChestEvents extends BaseListener{
         }
         else if(block.getType() == Material.BARREL){
             Barrel barrel = (Barrel) block.getState();
-            if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL)){
+            if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL) || barrel.getLootTable() != null){
                 if(plugin.currentChestviewers.contains(barrel.getLocation())){
                     player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED,player));
                     e.setCancelled(true);
@@ -153,12 +153,14 @@ public class ChestEvents extends BaseListener{
         for(Block block : e.blockList()){
             BlockState state = (BlockState) block.getState();
             if(state instanceof Chest){
-                if(ChestUtils.isLootinContainer(null, state, ContainerType.CHEST)){
+                Chest chest = (Chest) state;
+                if(ChestUtils.isLootinContainer(null, state, ContainerType.CHEST) || chest.getLootTable() != null){
                     chestBlocks.add(block);
                 }
             }
             else if(state instanceof Barrel){
-                if(ChestUtils.isLootinContainer(null, state, ContainerType.BARREL)){
+                Barrel barrel = (Barrel) state;
+                if(ChestUtils.isLootinContainer(null, state, ContainerType.BARREL) || barrel.getLootTable() != null){
                     chestBlocks.add(block);
                 }
             }
@@ -173,7 +175,7 @@ public class ChestEvents extends BaseListener{
     public void onMinecartDestroy(VehicleDestroyEvent e){
         if(!(e.getVehicle() instanceof StorageMinecart) || plugin.isBlackListWorld(e.getVehicle().getWorld())) return;
         StorageMinecart chest = (StorageMinecart) e.getVehicle();
-        if(ChestUtils.isLootinContainer(e.getVehicle(), null, ContainerType.MINECART)){
+        if(ChestUtils.isLootinContainer(e.getVehicle(), null, ContainerType.MINECART) || chest.getLootTable() != null){
             if(plugin.currentMinecartviewers.contains(chest)){
                 e.setCancelled(true);
                 return;

@@ -32,6 +32,9 @@ public class LConstants {
     public static final String PREVENT_EXPLOSIONS = "prevent-explosions";
     public static final String RESET_SEED = "reset-seed-on-fill";
     public static final String USE_NEW_LISTENER = "use-new-structure-generate-listener";
+    public static final String PREVENT_ITEM_PLACING = "prevent-placing-items-in-container";
+
+
 
 
 

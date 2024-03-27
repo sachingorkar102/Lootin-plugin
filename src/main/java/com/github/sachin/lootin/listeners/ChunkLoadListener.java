@@ -10,10 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World.Environment;
-import org.bukkit.block.Barrel;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
+import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -44,6 +41,7 @@ public class ChunkLoadListener extends BaseListener{
             public void run() {
                 if(!chunk.isLoaded()) return;
                 boolean isNewChunk = e.isNewChunk();
+
                 for(Entity entity : chunk.getEntities()){
                     if(entity.getType()==EntityType.ITEM_FRAME && isNewChunk){
                         if(chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
@@ -74,7 +72,7 @@ public class ChunkLoadListener extends BaseListener{
                         }
                         boolean isLootin = false;
                         ContainerType container;
-                        plugin.debug(block.getType()+": "+block.getLocation());
+//                        plugin.debug(block.getType()+": "+block.getLocation());
                         if (block instanceof Chest) {
                             isLootin = ChestUtils.isLootinContainer(null, block,
                                     container = (ChestUtils.isDoubleChest(b) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
