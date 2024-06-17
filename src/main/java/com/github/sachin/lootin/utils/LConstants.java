@@ -57,10 +57,8 @@ public class LConstants {
     public static final String ELYTRA_IF_BREAK_WITHPERM = "messages.elytra-itemframe-break-with-permission";
     public static final String ELYTRA_IF_BREAK_WITHOUTPERM = "messages.elytra-itemframe-break-without-permission";
     public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
-
-    public static final String MINECRAFT_VERSION = Bukkit.getVersion().split(" ", 3)[2].replace(")", "");
-    public static final String SERVER_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.", 4)[3];
-    public static final int SERVER_MINOR_VERSION = Integer.parseInt(MINECRAFT_VERSION.split("\\.")[1]);
+    public static final String SERVER_VERSION = "";
+    public static final int SERVER_MINOR_VERSION = 0;
 
     public static final boolean SERVER_REMAPPED = LConstants.SERVER_MINOR_VERSION >= 17;
 

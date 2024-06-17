@@ -7,9 +7,11 @@ import com.github.sachin.lootin.utils.LConstants;
 import com.ryandw11.structure.CustomStructures;
 import com.ryandw11.structure.api.LootPopulateEvent;
 
+import com.ryandw11.structure.loottables.LootTable;
 import com.ryandw11.structure.loottables.LootTableType;
 import com.ryandw11.structure.schematic.LootTableReplacer;
 import com.ryandw11.structure.structure.Structure;
+import com.ryandw11.structure.utils.RandomCollection;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
@@ -40,8 +42,11 @@ public class CustomStructuresListener extends BaseListener{
         if(strucName == null) return;
         Structure structure = CustomStructures.getInstance().getStructureHandler().getStructure(strucName);
         if(structure==null) return;
-        container.getSnapshotInventory().clear();
-        LootTableReplacer.replaceChestContent(structure.getLootTables(container instanceof Chest ? LootTableType.CHEST : LootTableType.BARREL).next(),new Random(),container.getSnapshotInventory());
+        RandomCollection<LootTable> loottables = structure.getLootTables(container instanceof Chest ? LootTableType.CHEST : LootTableType.BARREL);
+        if(loottables != null && !loottables.isEmpty()){
+            container.getSnapshotInventory().clear();
+            LootTableReplacer.replaceChestContent(loottables.next(),new Random(),container.getSnapshotInventory());
+        }
     }
 
 

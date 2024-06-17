@@ -49,6 +49,7 @@ public class StructureGenerateListener extends BaseListener {
             boolean isLootin = false;
             ContainerType container;
             if (ChestUtils.isChest(block.getType())) {
+
                 isLootin = ChestUtils.isLootinContainer(null, block, container = (ChestUtils.isDoubleChest(block) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
             } else if (block.getType() == Material.BARREL) {
                 isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
