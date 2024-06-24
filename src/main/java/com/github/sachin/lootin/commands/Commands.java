@@ -57,7 +57,7 @@ public class Commands extends BaseCommand{
         String type = args[0];
         RayTraceResult ray = player.rayTraceBlocks(4);
         if(type.equals("CHEST")){
-            if(ray != null && ray.getHitBlock().getType()==Material.CHEST){
+            if(ray != null && (ray.getHitBlock().getType()==Material.CHEST || ray.getHitBlock().getType()==Material.TRAPPED_CHEST)){
                 Chest chest = (Chest) ray.getHitBlock().getState();
                 if(!chest.getInventory().isEmpty()){
                     ChestUtils.setLootinContainer(null, chest, ContainerType.CHEST);
