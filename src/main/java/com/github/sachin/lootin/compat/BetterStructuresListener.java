@@ -16,7 +16,6 @@ import org.bukkit.block.Chest;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Iterator;
@@ -42,16 +41,14 @@ public class BetterStructuresListener implements Listener {
             while (var1.hasNext()) {
                 Vector chestPosition = (Vector) var1.next();
                 Location chestLocation = LocationProjector.project(fitAnything.getLocation(), fitAnything.getSchematicOffset(), chestPosition);
-                new BukkitRunnable(){
-                    @Override
-                    public void run() {
-                        if(chestLocation.getBlock().getState() instanceof Chest){
-                            Chest container = (Chest) chestLocation.getBlock().getState();
-                            container.getPersistentDataContainer().set(LConstants.BETTER_STRUC_KEY, PersistentDataType.STRING,schematicContainer.getGeneratorConfigFields().getFilename());
-                            container.update();
-                        }
+                Lootin.getPlugin().getScheduler().runTaskLater(Lootin.getPlugin(),() ->
+                {
+                    if(chestLocation.getBlock().getState() instanceof Chest){
+                        Chest container = (Chest) chestLocation.getBlock().getState();
+                        container.getPersistentDataContainer().set(LConstants.BETTER_STRUC_KEY, PersistentDataType.STRING,schematicContainer.getGeneratorConfigFields().getFilename());
+                        container.update();
                     }
-                }.runTaskLater(Lootin.getPlugin(),1);
+                },chestLocation,1);
             }
         }
     }

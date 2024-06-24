@@ -2,14 +2,17 @@ package com.github.sachin.lootin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.WGFlag;
 import com.github.sachin.lootin.compat.rwg.RWGCompat;
+import com.github.sachin.lootin.compat.scheduler.BukkitScheduler;
+import com.github.sachin.lootin.compat.scheduler.PaperScheduler;
+import com.github.sachin.lootin.compat.scheduler.Scheduler;
 import com.github.sachin.lootin.listeners.*;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 import com.github.sachin.lootin.compat.CustomStructuresListener;
@@ -35,13 +38,14 @@ import co.aikar.commands.PaperCommandManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 
-
 public final class Lootin extends JavaPlugin {
 
     private static Lootin plugin;
 
     private Prilib prilib;
     private PaperCommandManager commandManager;
+
+    private Scheduler scheduler;
     public RWGCompat rwgCompat;
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
@@ -50,6 +54,8 @@ public final class Lootin extends JavaPlugin {
 
     public boolean isRunningPurpur;
     public boolean isRunningProtocolLib;
+
+    public boolean isRunningPaper;
 
     public boolean isRunningBetterStructures = false;
     public boolean isRunningCustomStructures = false;
@@ -85,6 +91,21 @@ public final class Lootin extends JavaPlugin {
             this.isRunningPurpur = true;
         } catch (ClassNotFoundException e) {
             this.isRunningPurpur = false;
+        }
+        try{
+
+            Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
+            this.isRunningPaper = true;
+            getLogger().info("Running PaperMC...");
+        }catch (ClassNotFoundException ignored){
+            this.isRunningPaper = false;
+        }
+
+        if(isRunningPaper){
+            scheduler = new PaperScheduler();
+        }
+        else{
+            scheduler = new BukkitScheduler();
         }
         // Setup reflections
 //        VersionProvider.setup();
@@ -290,5 +311,9 @@ public final class Lootin extends JavaPlugin {
 
     public Prilib getPrilib() {
         return prilib;
+    }
+
+    public Scheduler getScheduler() {
+        return scheduler;
     }
 }

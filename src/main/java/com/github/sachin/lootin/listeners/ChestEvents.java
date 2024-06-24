@@ -8,6 +8,8 @@ import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 
+import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
@@ -31,7 +33,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class ChestEvents extends BaseListener{
     
@@ -223,27 +224,27 @@ public class ChestEvents extends BaseListener{
         Block b = e.getClickedBlock().getRelative(e.getBlockFace());
         Player player = e.getPlayer();
         if(plugin.isBlackListWorld(player.getWorld())) return;
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                if(!ChestUtils.isChest(b.getType())) {
-                    return;
-                }
-                for(BlockFace face : Arrays.asList(BlockFace.EAST,BlockFace.WEST,BlockFace.SOUTH,BlockFace.NORTH,BlockFace.UP,BlockFace.DOWN)){
-                    Block block = b.getRelative(face);
 
-                    if(block.getState() instanceof Chest && !(face == BlockFace.UP || face == BlockFace.DOWN)){
-                        Chest chest = (Chest) block.getState();
-                        if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
-                            b.setType(Material.AIR);
-                            player.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(e.getMaterial()));
-                            player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_DCHEST, player));
-                            break;
-                        }
+
+        plugin.getScheduler().runTaskLater(plugin,() ->
+        {
+
+            if(!ChestUtils.isChest(b.getType())) {
+                return;
+            }
+            for(BlockFace face : Arrays.asList(BlockFace.EAST,BlockFace.WEST,BlockFace.SOUTH,BlockFace.NORTH,BlockFace.UP,BlockFace.DOWN)){
+                Block block = b.getRelative(face);
+
+                if(block.getState() instanceof Chest && !(face == BlockFace.UP || face == BlockFace.DOWN)){
+                    Chest chest = (Chest) block.getState();
+                    if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
+                        b.setType(Material.AIR);
+                        player.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(e.getMaterial()));
+                        player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_DCHEST, player));
+                        break;
                     }
                 }
-
             }
-        }.runTaskLater(plugin, 1);
+        },b.getLocation(),1);
     }
 }

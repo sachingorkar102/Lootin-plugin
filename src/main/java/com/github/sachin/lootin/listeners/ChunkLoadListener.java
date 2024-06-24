@@ -24,7 +24,6 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BlockTransformer;
 import org.bukkit.util.BoundingBox;
 
@@ -36,57 +35,55 @@ public class ChunkLoadListener extends BaseListener{
     public void onChunkLoad(ChunkLoadEvent e){
         Chunk chunk = e.getChunk();
         if(plugin.isBlackListWorld(chunk.getWorld())) return;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if(!chunk.isLoaded()) return;
-                boolean isNewChunk = e.isNewChunk();
+        plugin.getScheduler().runTaskLater(plugin,() ->
+        {
+            if(!chunk.isLoaded()) return;
+            boolean isNewChunk = e.isNewChunk();
 
-                for(Entity entity : chunk.getEntities()){
-                    if(entity.getType()==EntityType.ITEM_FRAME && isNewChunk){
-                        if(chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
-                            ItemFrame frame = (ItemFrame) entity;
-                            if(frame.getItem() != null && frame.getItem().getType()==Material.ELYTRA){
-                                frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
-                            }
+            for(Entity entity : chunk.getEntities()){
+                if(entity.getType()==EntityType.ITEM_FRAME && isNewChunk){
+                    if(chunk.getWorld().getEnvironment()==Environment.THE_END && plugin.getConfig().getBoolean(LConstants.PER_PLAYER_ELYTRA_ITEM_FRAME)){
+                        ItemFrame frame = (ItemFrame) entity;
+                        if(frame.getItem() != null && frame.getItem().getType()==Material.ELYTRA){
+                            frame.getPersistentDataContainer().set(LConstants.ITEM_FRAME_ELYTRA_KEY, PersistentDataType.INTEGER, 1);
                         }
                     }
-                    if(entity.getType()==EntityType.MINECART_CHEST){
-                        StorageMinecart minecart = (StorageMinecart) entity;
-                        if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                            if(minecart.getLootTable() == null || plugin.isBlackListedLootable(minecart.getLootTable())) {
-                                continue;
-                            }
-                            ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
-
-                        }
-                    }
-
                 }
-                for(BlockState b : chunk.getTileEntities()){
-                    if(b instanceof Lootable){
-                        BlockState block = chunk.getWorld().getBlockState(b.getLocation());
-                        Lootable lootable = (Lootable) block;
-                        if(lootable.getLootTable() == null || plugin.isBlackListedLootable(lootable.getLootTable())) {
+                if(entity.getType()==EntityType.MINECART_CHEST){
+                    StorageMinecart minecart = (StorageMinecart) entity;
+                    if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
+                        if(minecart.getLootTable() == null || plugin.isBlackListedLootable(minecart.getLootTable())) {
                             continue;
                         }
-                        boolean isLootin = false;
-                        ContainerType container;
+                        ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+
+                    }
+                }
+
+            }
+            for(BlockState b : chunk.getTileEntities()){
+                if(b instanceof Lootable){
+                    BlockState block = chunk.getWorld().getBlockState(b.getLocation());
+                    Lootable lootable = (Lootable) block;
+                    if(lootable.getLootTable() == null || plugin.isBlackListedLootable(lootable.getLootTable())) {
+                        continue;
+                    }
+                    boolean isLootin = false;
+                    ContainerType container;
 //                        plugin.debug(block.getType()+": "+block.getLocation());
-                        if (block instanceof Chest) {
-                            isLootin = ChestUtils.isLootinContainer(null, block,
-                                    container = (ChestUtils.isDoubleChest(b) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
-                        } else if (block instanceof Barrel) {
-                            isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
-                        }
-                        else{continue;}
-                        if(!isLootin){
-                            ChestUtils.setLootinContainer(null,block,container);
-                        }
+                    if (block instanceof Chest) {
+                        isLootin = ChestUtils.isLootinContainer(null, block,
+                                container = (ChestUtils.isDoubleChest(b) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+                    } else if (block instanceof Barrel) {
+                        isLootin = ChestUtils.isLootinContainer(null, block, container = ContainerType.BARREL);
+                    }
+                    else{continue;}
+                    if(!isLootin){
+                        ChestUtils.setLootinContainer(null,block,container);
                     }
                 }
             }
-        }.runTaskLater(plugin, 1);
+        },chunk,1);
     }
     
 }

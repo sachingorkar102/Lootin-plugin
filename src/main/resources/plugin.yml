@@ -6,6 +6,7 @@ authors: [ sachingorkar ]
 softdepend: [Terra,CustomStructures,Oh_the_dungeons_youll_go,PlaceholderAPI,ProtocolLib,Realistic_World,BetterStructures,WorldGuard]
 description: Loot per player
 api: []
+folia-supported: true
 
 
 permissions:
