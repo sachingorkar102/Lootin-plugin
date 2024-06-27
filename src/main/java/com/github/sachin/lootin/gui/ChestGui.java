@@ -19,6 +19,7 @@ public class ChestGui extends GuiHolder{
     public ChestGui(Player player,Chest chest) {
         super(player, ContainerType.CHEST);
         this.chest = chest;
+        this.container = chest;
     }
 
     @Override

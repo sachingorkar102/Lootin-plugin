@@ -18,6 +18,7 @@ public class MinecartGui extends GuiHolder{
     public MinecartGui(Player player,StorageMinecart minecart) {
         super(player, ContainerType.MINECART);
         this.minecart = minecart;
+        this.container = minecart;
     }
 
     @Override

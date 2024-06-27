@@ -22,10 +22,11 @@ messages:
   chestbreak-without-permission: "&cYou dont have permission to break loot chests"
   chest-edited: "&cChest is being edited, cant break it"
   reloaded: "&aConfig file reloaded"
-  cant-place-double-chest: "&cCant place normal chest near loot chest"
+  cant-place-double-chest: "&cCan't place normal chest near loot chest"
   elytra-itemframe-break-with-permission: "&cLeft click with stick in main hand to break the special elytra item frame."
   elytra-itemframe-break-without-permission: "&cCan't break elytra item frame!"
   elytra-item-frame-removed: "&aElytra ItemFrame removed."
+  cant-put-items-in-loot-container: "&cCan't put items in loot containers!!"
 
 # weather or not to delete items when player breaks loot chest successfully
 delete-items-on-break: true  
@@ -69,3 +70,9 @@ reset-seed-on-fill: true
 
 # option to keep using new structure generate listener
 use-new-structure-generate-listener: true
+
+# if enabled, players will not be able to place items in lootin containers, meaning they can only take items out of it.
+# the permission lootin.preventfilling.bypass, bypasses this option and allows the player to put items in a lootin container
+prevent-filling-containers:
+  enabled: false
+  send-warning-message: true

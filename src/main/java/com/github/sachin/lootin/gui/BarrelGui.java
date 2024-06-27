@@ -17,6 +17,7 @@ public class BarrelGui extends GuiHolder{
     public BarrelGui(Player player,Barrel barrel) {
         super(player, ContainerType.BARREL);
         this.barrel = barrel;
+        this.container = barrel;
     }
 
     @Override

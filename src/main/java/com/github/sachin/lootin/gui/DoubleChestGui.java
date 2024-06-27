@@ -23,6 +23,7 @@ public class DoubleChestGui extends GuiHolder{
         super(player, ContainerType.DOUBLE_CHEST);
         this.block = block;
         this.doubleChest = ChestUtils.getDoubleChest(block);
+        this.container = this.doubleChest;
     }
 
     @Override

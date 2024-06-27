@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.loot.LootTable;
@@ -134,6 +135,13 @@ public class InventoryListeners extends BaseListener {
     public void onInventoryInteract(InventoryClickEvent e){
         if(e.getInventory().getHolder() instanceof GuiHolder){
             ((GuiHolder)e.getInventory().getHolder()).handleClickEvents(e);
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e){
+        if(e.getInventory().getHolder() instanceof GuiHolder){
+            ((GuiHolder)e.getInventory().getHolder()).handleDragEvents(e);
         }
     }
 

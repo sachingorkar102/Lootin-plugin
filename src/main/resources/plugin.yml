@@ -19,4 +19,6 @@ permissions:
   lootin.command.rwggive:
     default: op 
   lootin.command.set:
-    default: op  
+    default: op
+  lootin.preventfilling.bypass:
+    default: op

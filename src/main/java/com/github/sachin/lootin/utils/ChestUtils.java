@@ -14,12 +14,15 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -150,6 +153,52 @@ public class ChestUtils{
         }
     }
 
+    public static List<ItemStack> getPlayerLootItems(Lootable container,Player player){
+        List<ItemStack> items = new ArrayList<>();
+        String uuid = player.getUniqueId().toString();
+        if(container instanceof PersistentDataHolder && container instanceof InventoryHolder){
+            PersistentDataContainer data = (PersistentDataContainer) ((PersistentDataHolder)container).getPersistentDataContainer();
+            if(data.has(Lootin.getKey(uuid), PersistentDataType.STRING)){
+                items = ItemSerializer.deserialize(data.get(Lootin.getKey(uuid),PersistentDataType.STRING));
+                ChestUtils.updatePersistentStorageTypes(data,((InventoryHolder)container).getInventory(),items,Lootin.getKey(uuid));
+            }
+            else if(data.has(Lootin.getKey(uuid), DataType.ITEM_STACK_ARRAY)){
+                items = Arrays.asList(data.get(Lootin.getKey(uuid), DataType.ITEM_STACK_ARRAY));
+            }
+        }
+        return items;
+    }
+
+    public static List<ItemStack> getDefaultItems(Lootable container){
+        List<ItemStack> items = new ArrayList<>();
+        if(container instanceof PersistentDataHolder && container instanceof InventoryHolder){
+            PersistentDataHolder dataHolder = (PersistentDataHolder) container;
+            InventoryHolder invHolder = (InventoryHolder) container;
+            Inventory inventory = invHolder.getInventory();
+            PersistentDataContainer data = dataHolder.getPersistentDataContainer();
+            if(data.has(LConstants.DATA_KEY,PersistentDataType.STRING)){
+                items = ItemSerializer.deserialize(data.get(LConstants.DATA_KEY,PersistentDataType.STRING));
+                updatePersistentStorageTypes(data,inventory,items,LConstants.DATA_KEY);
+                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                    items = Arrays.asList(inventory.getContents());
+                }
+                inventory.clear();
+                return items;
+            }
+            else if(data.has(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY)){
+                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                    items = Arrays.asList(inventory.getContents());
+                }
+                else{
+                    items = Arrays.asList(data.get(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY));
+                }
+                inventory.clear();
+                return items;
+            }
+        }
+        return items;
+    }
+
 
     /**
      * Retrives list of items unique to player or the default loot from lootable if there isnt any loot uique to player yet
@@ -237,7 +286,7 @@ public class ChestUtils{
     }
 
 //    this is used to change from old way to store items as String to new way of storing them as ConfigurationSection
-    private static void updatePersistentStorageTypes(PersistentDataContainer data,Inventory inv,List<ItemStack> items,NamespacedKey key){
+    public static void updatePersistentStorageTypes(PersistentDataContainer data,Inventory inv,List<ItemStack> items,NamespacedKey key){
         data.remove(key);
         data.set(key,DataType.ITEM_STACK_ARRAY,items.toArray(new ItemStack[0]));
         if(inv.getHolder() instanceof BlockState){

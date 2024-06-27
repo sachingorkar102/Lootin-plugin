@@ -2,7 +2,6 @@ package com.github.sachin.lootin.utils;
 
 import com.github.sachin.lootin.Lootin;
 
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 
 public class LConstants {
@@ -46,6 +45,9 @@ public class LConstants {
     public static final String BLACK_LIST_CUSTOM_STRUCTURES = "black-list-customstructures";
     public static final String BLACK_LIST_OTD_STRUCTURES = "black-list-otd-structures";
     public static final String PER_PLAYER_ELYTRA_ITEM_FRAME = "per-player-elytra-item-frame";
+    public static final String PREVENT_ITEM_FILLING_ENABLED = "prevent-filling-containers.enabled";
+    public static final String PREVENT_ITEM_FILLING_MSG = "prevent-filling-containers.send-warning-message";
+    public static final String DUMP_OUT_ITEMS = "dump-out-non-belonging-items";
     public static final String BYPASS_GREIF_PLUGINS = "bypass-grief-plugins";
 
     public static final String BLOCK_BREAK_WITHP = "messages.chestbreak-with-permission";
@@ -57,6 +59,9 @@ public class LConstants {
     public static final String ELYTRA_IF_BREAK_WITHPERM = "messages.elytra-itemframe-break-with-permission";
     public static final String ELYTRA_IF_BREAK_WITHOUTPERM = "messages.elytra-itemframe-break-without-permission";
     public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
+    public static final String CANT_PLACE_ITEMS = "messages.cant-put-items-in-loot-container";
+
+
     public static final String SERVER_VERSION = "";
     public static final int SERVER_MINOR_VERSION = 0;
 
