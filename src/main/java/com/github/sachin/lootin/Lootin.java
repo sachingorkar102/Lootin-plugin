@@ -121,15 +121,15 @@ public final class Lootin extends JavaPlugin {
         reloadConfigs();
         // register listeners
         PluginManager pm = getServer().getPluginManager();
-        if(isPost1_20_R2() && plugin.getConfig().getBoolean(LConstants.USE_NEW_LISTENER,true)){
-            getLogger().info("Registering new listener");
-            pm.registerEvents(new StructureGenerateListener(),plugin);
-        }
-        else{
-            pm.registerEvents(new ChunkLoadListener(), plugin);
-        }
+//        if(isPost1_20_R2() && plugin.getConfig().getBoolean(LConstants.USE_NEW_LISTENER,true)){
+//            getLogger().info("Registering new listener");
+//            pm.registerEvents(new StructureGenerateListener(),plugin);
+//        }
+//        else{
+//            pm.registerEvents(new ChunkLoadListener(), plugin);
+//        }
 //        pm.registerEvents(new StructureGenerateTempFix(),plugin);
-//        pm.registerEvents(new ChunkLoadListener(), plugin);
+        pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         pm.registerEvents(new ItemFrameListener(),plugin);
