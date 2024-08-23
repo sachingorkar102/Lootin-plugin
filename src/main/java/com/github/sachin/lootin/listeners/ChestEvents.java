@@ -31,88 +31,68 @@ import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public class ChestEvents extends BaseListener{
-    
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onChestBreak(BlockBreakEvent e){
+    public void onChestBreak(BlockBreakEvent e) {
         Player player = e.getPlayer();
         Block block = e.getBlock();
-        if(plugin.isBlackListWorld(player.getWorld())) return;
-        if(ChestUtils.isChest(block.getType())){
-            Chest chest = (Chest) block.getState();
-            if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST) || chest.getLootTable() != null){
-                if(plugin.currentChestviewers.contains(chest.getLocation())){
-                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED,player));
-                    e.setCancelled(true);
-                    return;
-                }
-                if(player.hasPermission("lootin.breakchest.bypass")){
-                    if(player.isSneaking()){
-                        chest.getSnapshotInventory().clear();
+        if (plugin.isBlackListWorld(player.getWorld())) return;
 
-                        if(!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) && ChestUtils.hasPlayerLoot(null, chest, player, ContainerType.CHEST)){
-                            List<ItemStack> items = ChestUtils.getContainerItems(null, chest, ContainerType.CHEST, player);
-                            if(items != null){
-                                items.forEach(i -> {
-                                    if(i != null){
-                                        player.getWorld().dropItemNaturally(block.getLocation(), i);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                    else{
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP,player));
-                        e.setCancelled(true);
-                    }
-                }
-                else{
-                    e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP,player));
-                }
-            }
+        BlockState state = block.getState();
+        ContainerType containerType = null;
+
+        if (state instanceof Chest) {
+            containerType = ContainerType.CHEST;
+        } else if (state instanceof Barrel) {
+            containerType = ContainerType.BARREL;
         }
-        else if(block.getType() == Material.BARREL){
-            Barrel barrel = (Barrel) block.getState();
-            if(ChestUtils.isLootinContainer(null, barrel, ContainerType.BARREL) || barrel.getLootTable() != null){
-                if(plugin.currentChestviewers.contains(barrel.getLocation())){
-                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED,player));
+
+        if (containerType != null) {
+            Lootable lootable = (Lootable) state;
+            if(ChestUtils.isLootinContainer(null,state,containerType) || lootable.getLootTable() != null){
+                if (plugin.currentChestviewers.contains(state.getLocation())) {
+                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED, player));
                     e.setCancelled(true);
                     return;
                 }
-                if(player.hasPermission("lootin.breakchest.bypass")){
-                    if(player.isSneaking()){
-                        barrel.getInventory().clear();
 
-                        if(!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) && ChestUtils.hasPlayerLoot(null, barrel, player, ContainerType.BARREL)){
-                            List<ItemStack> items = ChestUtils.getContainerItems(null, barrel, ContainerType.BARREL, player);
-                            if(items != null){
-                                items.forEach(i -> {
-                                    if(i != null){
-                                        player.getWorld().dropItemNaturally(block.getLocation(), i);
+                if (player.hasPermission("lootin.breakchest.bypass")) {
+                    if (player.isSneaking()) {
+                        ((InventoryHolder) state).getInventory().clear();
+
+                        if (!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) &&
+                                ChestUtils.hasPlayerLoot(null, state, player, containerType)) {
+
+                            List<ItemStack> items = ChestUtils.getContainerItems(null, state, containerType, player);
+                            if (items != null) {
+                                for (ItemStack item : items) {
+                                    if (item != null) {
+                                        player.getWorld().dropItemNaturally(block.getLocation(), item);
                                     }
-                                });
+                                }
                             }
                         }
-                    }
-                    else{
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP,player));
+                    } else {
+                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP, player));
                         e.setCancelled(true);
                     }
-                }
-                else{
+                } else {
                     e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP,player));
+                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP, player));
                 }
+
             }
+
         }
     }
 
-//    @EventHandler
+
+    @EventHandler
     public void onItemMove(InventoryMoveItemEvent e){
 //        if(plugin.isBlackListWorld(e.ge)) return;
         if(e.getDestination().getHolder() instanceof HopperMinecart || e.getSource().getHolder() instanceof HopperMinecart){

@@ -48,21 +48,27 @@ public class InventoryListeners extends BaseListener {
         if(plugin.isBlackListWorld(player.getWorld())) return;
 
         if (ChestUtils.isChest(type)) {
-            isLootin = ChestUtils.isLootinContainer(null, state,
-                    container = (ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST));
+            container = ChestUtils.isDoubleChest(state) ? ContainerType.DOUBLE_CHEST : ContainerType.CHEST;
         } else if (type == Material.BARREL) {
-            isLootin = ChestUtils.isLootinContainer(null, state, container = ContainerType.BARREL);
+            container = ContainerType.BARREL;
         } else {
             return;
         }
-//        plugin.debug(((Lootable)state).getLootTable().getKey().toString());
-        if(!isLootin && ((Lootable)state).getLootTable() != null){
-            if(plugin.isBlackListedLootable(((Lootable)state).getLootTable())){
-                return;
+        if (state instanceof Lootable) {
+            Lootable lootable = (Lootable) state;
+            LootTable lootTable = lootable.getLootTable();
+            if (lootTable != null) {
+                if (plugin.isBlackListedLootable(lootTable)) {
+                    return;
+                }
+                ChestUtils.setLootinContainer(null, state, container);
             }
-            ChestUtils.setLootinContainer(null, state, container);
+        }
+
+        if(ChestUtils.isLootinContainer(null,state,container)){
             isLootin = true;
         }
+
         if (!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY
                 && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
             return;
