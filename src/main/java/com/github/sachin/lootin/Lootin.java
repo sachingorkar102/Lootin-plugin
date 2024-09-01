@@ -3,9 +3,7 @@ package com.github.sachin.lootin;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.WGFlag;
@@ -13,13 +11,12 @@ import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.compat.scheduler.BukkitScheduler;
 import com.github.sachin.lootin.compat.scheduler.PaperScheduler;
 import com.github.sachin.lootin.compat.scheduler.Scheduler;
+import com.github.sachin.lootin.compat.scheduler.Task;
 import com.github.sachin.lootin.listeners.*;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 import com.github.sachin.lootin.compat.CustomStructuresListener;
 import com.github.sachin.lootin.compat.OTDLootListener;
-import com.github.sachin.lootin.utils.ConfigUpdater;
-import com.github.sachin.lootin.utils.LConstants;
-import com.github.sachin.lootin.utils.Metrics;
+import com.github.sachin.lootin.utils.*;
 import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
 import com.github.sachin.prilib.McVersion;
@@ -31,11 +28,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.jetbrains.annotations.Nullable;
 
 
 public final class Lootin extends JavaPlugin {
@@ -49,6 +48,10 @@ public final class Lootin extends JavaPlugin {
     public RWGCompat rwgCompat;
     public List<Location> currentChestviewers = new ArrayList<>();
     public List<StorageMinecart> currentMinecartviewers = new ArrayList<>();
+
+    public Map<UUID, LootinContainer> cachedContainers = new HashMap<>();
+
+    public Task cachedRunnable;
 
     public CooldownContainer interactCooldown;
 
@@ -129,7 +132,7 @@ public final class Lootin extends JavaPlugin {
 //            pm.registerEvents(new ChunkLoadListener(), plugin);
 //        }
 //        pm.registerEvents(new StructureGenerateTempFix(),plugin);
-//        pm.registerEvents(new ChunkLoadListener(), plugin);
+        pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
         pm.registerEvents(new ItemFrameListener(),plugin);
@@ -168,6 +171,28 @@ public final class Lootin extends JavaPlugin {
             new Metrics(this, 11877);
         }
 
+        cachedRunnable = scheduler.runTaskTimer(this,() -> {
+            if(!cachedContainers.isEmpty()){
+
+                int i =0;
+                Iterator<Map.Entry<UUID, LootinContainer>> iterator = cachedContainers.entrySet().iterator();
+                while (iterator.hasNext()){
+                    Map.Entry<UUID, LootinContainer> entry = iterator.next();
+                    LootinContainer container = entry.getValue();
+                    if(container.getClosingTimer()<=0){
+                        StorageConverterUtility.save(container);
+                        iterator.remove();
+                        i++;
+                        continue;
+                    }
+                    container.setClosingTimer(container.getClosingTimer()-(10*20));
+                }
+
+                if(i!=0){
+                    plugin.debug(i+" cached containers cleared and stored in data folder");
+                }
+            }
+        },1,10*20);
     }
 
     @Override
@@ -176,6 +201,13 @@ public final class Lootin extends JavaPlugin {
             interactCooldown.getTimer().setRunning(false);
             interactCooldown.getTimer().kill();
             interactCooldown = null;
+        }
+        if(cachedRunnable != null && !cachedRunnable.isCancelled()){
+            cachedRunnable.cancel();
+            for(LootinContainer container : cachedContainers.values()){
+                StorageConverterUtility.save(container);
+            }
+            cachedContainers.clear();
         }
         // Clear reflections
 //        VersionProvider.PROVIDER.deleteAll();
@@ -195,6 +227,10 @@ public final class Lootin extends JavaPlugin {
             return PlaceholderAPI.setPlaceholders(player, message);
         }
         return message;
+    }
+
+    public void sendPlayerMessage(String message,Player player){
+        player.sendMessage(getMessage(message,player));
     }
 
     public String getPrefix(){

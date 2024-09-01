@@ -12,4 +12,8 @@ public interface Scheduler {
     void runTaskLater(Plugin plugin, Runnable task, @Nullable Location location, int delay);
 
     void runTaskLater(Plugin plugin, Runnable task,@Nullable Chunk chunk,int delay);
+
+
+    Task runTaskTimer(Plugin plugin,Runnable task,long delay,long period);
+
 }

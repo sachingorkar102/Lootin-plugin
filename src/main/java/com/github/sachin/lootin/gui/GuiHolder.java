@@ -60,14 +60,16 @@ public class GuiHolder implements InventoryHolder{
     }
 
     public void handleDragEvents(InventoryDragEvent e){
-        if(player.hasPermission("lootin.preventfilling.bypass")) return;
-        for(int i : e.getRawSlots()){
-            if(e.getInventory().getSize()>i){
-                e.setCancelled(true);
-                if(plugin.getConfig().getBoolean(LConstants.PREVENT_ITEM_FILLING_MSG)){
-                    player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_ITEMS,player));
+        if(plugin.getConfig().getBoolean(LConstants.PREVENT_ITEM_FILLING_ENABLED)){
+            if(player.hasPermission("lootin.preventfilling.bypass")) return;
+            for(int i : e.getRawSlots()){
+                if(e.getInventory().getSize()>i){
+                    e.setCancelled(true);
+                    if(plugin.getConfig().getBoolean(LConstants.PREVENT_ITEM_FILLING_MSG)){
+                        player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_ITEMS,player));
+                    }
+                    break;
                 }
-                break;
             }
         }
     }

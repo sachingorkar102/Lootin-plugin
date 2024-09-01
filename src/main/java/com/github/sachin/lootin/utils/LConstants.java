@@ -50,6 +50,8 @@ public class LConstants {
     public static final String DUMP_OUT_ITEMS = "dump-out-non-belonging-items";
     public static final String BYPASS_GREIF_PLUGINS = "bypass-grief-plugins";
 
+    public static final String KEEP_IN_MEMORY = "keep-in-memory";
+
     public static final String BLOCK_BREAK_WITHP = "messages.chestbreak-with-permission";
     public static final String BLOCK_BREAK_WITHOUTP = "messages.chestbreak-without-permission";
     public static final String CHEST_EDITED = "messages.chest-edited";
@@ -60,6 +62,7 @@ public class LConstants {
     public static final String ELYTRA_IF_BREAK_WITHOUTPERM = "messages.elytra-itemframe-break-without-permission";
     public static final String ELYTRA_IF_REMOVED = "messages.elytra-item-frame-removed";
     public static final String CANT_PLACE_ITEMS = "messages.cant-put-items-in-loot-container";
+    public static final String LOOK_AT_CONTAINER = "messages.look-at-container";
 
 
     public static final String SERVER_VERSION = "";
@@ -68,4 +71,6 @@ public class LConstants {
     public static final boolean SERVER_REMAPPED = LConstants.SERVER_MINOR_VERSION >= 17;
 
     public static final String WG_FLAG_NAME = "lootin-container-access";
+    public static final NamespacedKey STORAGE_DATA_KEY = Lootin.getKey("file-storage-key");
+
 }

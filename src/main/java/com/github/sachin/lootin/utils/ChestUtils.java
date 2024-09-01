@@ -124,6 +124,7 @@ public class ChestUtils{
 
     public static void fillLoot(Player player,PersistentDataContainer data,Lootable container,Inventory inventory){
         String lootTableKey = null;
+
         NamespacedKey playerLootKey = Lootin.getKey(player.getUniqueId().toString());
         if(data.has(playerLootKey,PersistentDataType.STRING) || data.has(playerLootKey,DataType.ITEM_STACK_ARRAY)) return;
         if(plugin.isRunningBetterStructures && plugin.getConfig().getBoolean(LConstants.RESET_SEED) && data.has(LConstants.BETTER_STRUC_KEY,PersistentDataType.STRING)){
@@ -250,6 +251,12 @@ public class ChestUtils{
 
         if(data != null){
             List<ItemStack> items = new ArrayList<>();
+            if(data.has(LConstants.STORAGE_DATA_KEY)){
+                LootinContainer lootinContainer = StorageConverterUtility.getContainerData(data.get(LConstants.STORAGE_DATA_KEY,DataType.UUID));
+                if(lootinContainer.getItemMap().containsKey(player.getUniqueId())){
+                    return lootinContainer.getItemMap().get(player.getUniqueId());
+                }
+            }
             if(data.has(Lootin.getKey(uuid),PersistentDataType.STRING)){
                 items = ItemSerializer.deserialize(data.get(Lootin.getKey(uuid),PersistentDataType.STRING));
                 updatePersistentStorageTypes(data,inventory,items,Lootin.getKey(uuid));
@@ -314,34 +321,36 @@ public class ChestUtils{
      * @param key a key, generally use player's uuid as key
      */
     public static void setContainerItems(@Nullable Entity minecart,@Nullable BlockState block,@NotNull ContainerType type,@NotNull List<ItemStack> items,String key){
-        PersistentDataContainer data;
-        if(type == ContainerType.CHEST){
-            Chest chest = (Chest) block;
-            data = chest.getPersistentDataContainer();
-            data.set(Lootin.getKey(key), DataType.ITEM_STACK_ARRAY,items.toArray(new ItemStack[0]));
-//            data.set(Lootin.getKey(key), PersistentDataType.STRING, ItemSerializer.serialize(items));
-            chest.update();
+        PersistentDataContainer data = null;
+        if(block != null && block instanceof PersistentDataHolder){
+            if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
+                DoubleChest doubleChest = getDoubleChest(block);
+                Chest c1 = ((Chest)doubleChest.getLeftSide());
+                Chest c2 = ((Chest)doubleChest.getRightSide());
+                setContainerItems(null, c1, ContainerType.CHEST, items.subList(0, 26), key);
+                setContainerItems(null, c2, ContainerType.CHEST, items.subList(26, 53), key);
+                return;
+            }
+            data = ((PersistentDataHolder)block).getPersistentDataContainer();
         }
-        else if(type == ContainerType.MINECART){
-            StorageMinecart tileCart = (StorageMinecart) minecart;
-            data = tileCart.getPersistentDataContainer();
-            data.set(Lootin.getKey(key), DataType.ITEM_STACK_ARRAY,items.toArray(new ItemStack[0]));
-//            data.set(Lootin.getKey(key), PersistentDataType.STRING, ItemSerializer.serialize(items));
-
+        else if(minecart != null){
+            data = minecart.getPersistentDataContainer();
         }
-        else if(type == ContainerType.BARREL){
-            Barrel barrel = (Barrel) block;
-            data = barrel.getPersistentDataContainer();
-            data.set(Lootin.getKey(key), DataType.ITEM_STACK_ARRAY,items.toArray(new ItemStack[0]));
-//            data.set(Lootin.getKey(key),PersistentDataType.STRING,ItemSerializer.serialize(items));
-            barrel.update();
-        }
-        else if(type == ContainerType.DOUBLE_CHEST && isDoubleChest(block)){
-            DoubleChest doubleChest = getDoubleChest(block);
-            Chest c1 = ((Chest)doubleChest.getLeftSide());
-            Chest c2 = ((Chest)doubleChest.getRightSide());
-            setContainerItems(null, c1, ContainerType.CHEST, items.subList(0, 26), key);
-            setContainerItems(null, c2, ContainerType.CHEST, items.subList(26, 53), key);
+        if(data != null){
+            if(StorageConverterUtility.isValidUUID(key)){
+                PersistentDataHolder holder = minecart != null ? minecart : (PersistentDataHolder) block;
+                if(data.has(LConstants.STORAGE_DATA_KEY,DataType.UUID)){
+                    StorageConverterUtility.update(holder,key,items);
+                }
+                else{
+                    StorageConverterUtility.convert(holder);
+                    StorageConverterUtility.update(holder,key,items);
+                }
+            }
+            else{
+                data.set(Lootin.getKey(key), DataType.ITEM_STACK_ARRAY,items.toArray(new ItemStack[0]));
+                if(block != null){block.update();}
+            }
         }
     }
 

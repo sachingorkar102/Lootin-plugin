@@ -8,6 +8,7 @@ import com.github.sachin.lootin.gui.MinecartGui;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
+import com.github.sachin.lootin.utils.StorageConverterUtility;
 import com.github.sachin.lootin.utils.cooldown.Cooldown;
 
 import org.bukkit.GameMode;
@@ -30,6 +31,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
+import org.bukkit.persistence.PersistentDataHolder;
 
 public class InventoryListeners extends BaseListener {
 
@@ -65,12 +67,11 @@ public class InventoryListeners extends BaseListener {
             }
         }
 
-        if(ChestUtils.isLootinContainer(null,state,container)){
-            isLootin = true;
-        }
+        isLootin = ChestUtils.isLootinContainer(null,state,container);
 
         if (!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY
                 && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
+            plugin.debug("Loot Container at "+state.getX()+" "+state.getY()+" "+state.getZ()+" not a lootin container or player "+player.getName()+" is not allowed to open it");
             return;
         }
         if (player.isSneaking() || player.getGameMode() == GameMode.SPECTATOR) {
@@ -87,16 +88,19 @@ public class InventoryListeners extends BaseListener {
             case CHEST:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
+                plugin.debug("opened chest gui for "+player.getName());
                 new ChestGui(player, (Chest) state).open();
                 return;
             case DOUBLE_CHEST:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
-                new DoubleChestGui(player, (Chest) ((DoubleChest) ((Chest) state).getInventory().getHolder()).getLeftSide()).open();
+                plugin.debug("opened double chest gui for "+player.getName());
+                new DoubleChestGui(player, state).open();
                 return;
             case BARREL:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
+                plugin.debug("opened barrel gui for "+player.getName());
                 new BarrelGui(player, (Barrel) state).open();
                 return;
             default:

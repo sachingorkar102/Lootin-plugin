@@ -27,6 +27,7 @@ messages:
   elytra-itemframe-break-without-permission: "&cCan't break elytra item frame!"
   elytra-item-frame-removed: "&aElytra ItemFrame removed."
   cant-put-items-in-loot-container: "&cCan't put items in loot containers!!"
+  look-at-container: "&cLook at a container while executing command!"
 
 # weather or not to delete items when player breaks loot chest successfully
 delete-items-on-break: true  
@@ -68,11 +69,12 @@ default-worldguard-flag-value: true
 # when set to true, loot will be unique for each player opening the same chest
 reset-seed-on-fill: true
 
-# option to keep using new structure generate listener
-use-new-structure-generate-listener: true
-
 # if enabled, players will not be able to place items in lootin containers, meaning they can only take items out of it.
 # the permission lootin.preventfilling.bypass, bypasses this option and allows the player to put items in a lootin container
 prevent-filling-containers:
-  enabled: false
+  enabled: true
   send-warning-message: true
+
+# for how much time(in ticks) to keep the cached container data in memory
+# once the cached data is cleared from memory, it is stored in Lootin/data folder
+keep-in-memory: 6000
