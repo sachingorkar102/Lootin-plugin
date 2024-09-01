@@ -12,13 +12,15 @@ folia-supported: true
 permissions:
   lootin.breakchest.bypass:
     default: op
-  lootin.command.reload:
-    default: op  
   lootin.breakelytraitemframe.bypass:
-    default: op  
-  lootin.command.rwggive:
-    default: op 
-  lootin.command.set:
     default: op
   lootin.preventfilling.bypass:
     default: op
+  lootin.command.*:
+    default: op
+    children:
+      lootin.command.reload: true
+      lootin.command.rwggive: true
+      lootin.command.set: true
+      lootin.command.info: true
+      lootin.command.clear: true
