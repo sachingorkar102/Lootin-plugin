@@ -26,7 +26,7 @@ public class LootGenerateListener extends BaseListener{
         container.update(true);
         ChestUtils.setLootinContainer(null,state,containerType);
         plugin.getScheduler().runTaskLater(plugin,() -> {
-            ChestUtils.setContainerItems(null,state,containerType, Arrays.asList(container.getInventory().getContents()), LConstants.DATA_KEY_STRING);
+            ChestUtils.setContainerItems(null,state,containerType, Arrays.asList(container.getInventory().getContents()), LConstants.DATA_KEY.getKey());
             container.getInventory().clear();
             container.update(true);
         },state.getLocation(),1);
@@ -56,7 +56,7 @@ public class LootGenerateListener extends BaseListener{
             minecart.setLootTable(null);
             ChestUtils.setLootinContainer(minecart,null,ContainerType.MINECART);
             plugin.getScheduler().runTaskLater(plugin,() -> {
-                ChestUtils.setContainerItems(minecart,null,ContainerType.MINECART,Arrays.asList(minecart.getInventory().getContents()),LConstants.DATA_KEY_STRING);
+                ChestUtils.setContainerItems(minecart,null,ContainerType.MINECART,Arrays.asList(minecart.getInventory().getContents()),LConstants.DATA_KEY.getKey());
                 minecart.getInventory().clear();
             },minecart.getLocation(),1);
         }

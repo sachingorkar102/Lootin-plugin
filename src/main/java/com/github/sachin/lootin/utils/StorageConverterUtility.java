@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataHolder;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -28,9 +29,15 @@ public class StorageConverterUtility {
 
         for(NamespacedKey key : holder.getPersistentDataContainer().getKeys()){
             if(key.getNamespace().equals("lootin") && isValidUUID(key.getKey())){
-                ItemStack[] items = holder.getPersistentDataContainer().get(key, DataType.ITEM_STACK_ARRAY);
-                lootinContainer.getItemMap().put(UUID.fromString(key.getKey()),Arrays.asList(items));
-                holder.getPersistentDataContainer().remove(key);
+                if(holder.getPersistentDataContainer().has(key, PersistentDataType.STRING)){
+                    List<ItemStack> oldItems = ItemSerializer.deserialize(holder.getPersistentDataContainer().get(key,PersistentDataType.STRING));
+                    ChestUtils.updatePersistentStorageTypes(holder.getPersistentDataContainer(),((Container)holder).getInventory(),oldItems,key);
+                }
+                if(holder.getPersistentDataContainer().has(key,DataType.ITEM_STACK_ARRAY)){
+                    ItemStack[] items = holder.getPersistentDataContainer().get(key, DataType.ITEM_STACK_ARRAY);
+                    lootinContainer.getItemMap().put(UUID.fromString(key.getKey()),Arrays.asList(items));
+                    holder.getPersistentDataContainer().remove(key);
+                }
             }
         }
         holder.getPersistentDataContainer().set(LConstants.STORAGE_DATA_KEY,DataType.UUID,containerID);
@@ -73,6 +80,7 @@ public class StorageConverterUtility {
             byte[] decompressedData = decompress(compressedData);
             YamlConfiguration yaml = deserizeData(decompressedData);
             for(String key : yaml.getKeys(false)){
+
                 container.getItemMap().put(UUID.fromString(key),(List<ItemStack>) yaml.getList(key));
             }
             plugin.cachedContainers.put(containerID,container);

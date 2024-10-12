@@ -6,18 +6,20 @@ import org.bukkit.NamespacedKey;
 
 public class LConstants {
 
-    public static final String IDENTITY_KEY_STRING = "Lootin";
-    public static final String DATA_KEY_STRING = "loot-container";
-    public static final NamespacedKey IDENTITY_KEY = new NamespacedKey(Lootin.getPlugin(), IDENTITY_KEY_STRING);
+    public static final NamespacedKey STORAGE_DATA_KEY = Lootin.getKey("file-storage-key");
+    public static final NamespacedKey LOOTTABLE_KEY = Lootin.getKey("lotttable");
+    public static final NamespacedKey IDENTITY_KEY = new NamespacedKey(Lootin.getPlugin(), "Lootin");
+    public static final NamespacedKey DATA_KEY = new NamespacedKey(Lootin.getPlugin(),"loot-container");
+
+
+
     public static final NamespacedKey TRANSFORMER_CHEST_KEY = new NamespacedKey(Lootin.getPlugin(), "lootin-chest");
     public static final NamespacedKey TRANSFORMER_ITEMFRAME_KEY = new NamespacedKey(Lootin.getPlugin(), "lootin-itemframe");
     public static final NamespacedKey TRANSFORMER_MINECART_KEY = new NamespacedKey(Lootin.getPlugin(), "lootin-minecart");
-    public static final NamespacedKey DATA_KEY = new NamespacedKey(Lootin.getPlugin(), DATA_KEY_STRING);
     public static final NamespacedKey ITEM_FRAME_ELYTRA_KEY = Lootin.getKey("item-frame-elytra-key");
     public static final NamespacedKey RWG_LOOTTABLE_KEY = Lootin.getKey("rwg-loottable-key");
     public static final NamespacedKey RWG_IDENTITY_KEY = Lootin.getKey("rwg-identity-key");
 
-    public static final NamespacedKey LOOTTABLE_KEY = Lootin.getKey("lotttable");
 
     public static final NamespacedKey BETTER_STRUC_KEY = Lootin.getKey("better-structures-name-key");
     public static final NamespacedKey CUSTOM_STRUC_KEY = Lootin.getKey("custom-structures-name-key");
@@ -47,7 +49,6 @@ public class LConstants {
     public static final String PER_PLAYER_ELYTRA_ITEM_FRAME = "per-player-elytra-item-frame";
     public static final String PREVENT_ITEM_FILLING_ENABLED = "prevent-filling-containers.enabled";
     public static final String PREVENT_ITEM_FILLING_MSG = "prevent-filling-containers.send-warning-message";
-    public static final String DUMP_OUT_ITEMS = "dump-out-non-belonging-items";
     public static final String BYPASS_GREIF_PLUGINS = "bypass-grief-plugins";
 
     public static final String KEEP_IN_MEMORY = "keep-in-memory";
@@ -71,6 +72,5 @@ public class LConstants {
     public static final boolean SERVER_REMAPPED = LConstants.SERVER_MINOR_VERSION >= 17;
 
     public static final String WG_FLAG_NAME = "lootin-container-access";
-    public static final NamespacedKey STORAGE_DATA_KEY = Lootin.getKey("file-storage-key");
 
 }
