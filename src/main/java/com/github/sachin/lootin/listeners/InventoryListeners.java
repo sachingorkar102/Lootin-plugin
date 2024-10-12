@@ -13,11 +13,7 @@ import com.github.sachin.lootin.utils.cooldown.Cooldown;
 
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Barrel;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.event.Event;
@@ -71,7 +67,7 @@ public class InventoryListeners extends BaseListener {
 
         if (!isLootin || (e.useInteractedBlock() == PlayerInteractEvent.Result.DENY
                 && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS))) {
-            plugin.debug("Loot Container at "+state.getX()+" "+state.getY()+" "+state.getZ()+" not a lootin container or player "+player.getName()+" is not allowed to open it");
+//            plugin.debug("Loot Container at "+state.getX()+" "+state.getY()+" "+state.getZ()+" is not a lootin container or player "+player.getName()+" is not allowed to open it");
             return;
         }
         if (player.isSneaking() || player.getGameMode() == GameMode.SPECTATOR) {
