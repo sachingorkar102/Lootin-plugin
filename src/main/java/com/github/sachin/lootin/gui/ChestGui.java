@@ -29,9 +29,6 @@ public class ChestGui extends GuiHolder{
             inventory.setContents(contents.toArray(new ItemStack[0]));
             player.openInventory(inventory);
             chest.open();
-            if(plugin.isRunningProtocolLib){
-                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN,SoundCategory.PLAYERS,0.5F,1);
-            }
             plugin.currentChestviewers.add(chest.getLocation());
         }
     }
@@ -43,9 +40,6 @@ public class ChestGui extends GuiHolder{
             ChestUtils.setContainerItems(null, chest, type, contents, player.getUniqueId().toString());
         }
         chest.close();
-        if(plugin.isRunningProtocolLib){
-            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE,SoundCategory.PLAYERS,0.5F,1);
-        }
         plugin.currentChestviewers.remove(chest.getLocation());
     }
 
