@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.GameEvent;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Chest;
@@ -29,6 +30,7 @@ public class ChestGui extends GuiHolder{
             inventory.setContents(contents.toArray(new ItemStack[0]));
             player.openInventory(inventory);
             chest.open();
+            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,chest.getLocation());
             plugin.currentChestviewers.add(chest.getLocation());
         }
     }
@@ -40,6 +42,7 @@ public class ChestGui extends GuiHolder{
             ChestUtils.setContainerItems(null, chest, type, contents, player.getUniqueId().toString());
         }
         chest.close();
+        plugin.getPrilib().getNmsHandler().triggerGameEvent(player,GameEvent.CONTAINER_CLOSE,chest.getLocation());
         plugin.currentChestviewers.remove(chest.getLocation());
     }
 

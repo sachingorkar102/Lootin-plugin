@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.GameEvent;
 import org.bukkit.block.Barrel;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,7 @@ public class BarrelGui extends GuiHolder{
             inventory.setContents(contents.toArray(new ItemStack[0]));
             player.openInventory(inventory);
             barrel.open();
+            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,barrel.getLocation());
             plugin.currentChestviewers.add(barrel.getLocation());
         }
     }
@@ -38,6 +40,7 @@ public class BarrelGui extends GuiHolder{
             ChestUtils.setContainerItems(null, barrel, type, contents, player.getUniqueId().toString());
         }
         barrel.close();
+        plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_CLOSE,barrel.getLocation());
         plugin.currentChestviewers.remove(barrel.getLocation());
     }
     

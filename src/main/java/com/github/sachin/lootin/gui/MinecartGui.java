@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.GameEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,7 @@ public class MinecartGui extends GuiHolder{
         if(contents != null){
             inventory.setContents(contents.toArray(new ItemStack[0]));
             player.openInventory(inventory);
+            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,minecart.getLocation());
             plugin.currentMinecartviewers.add(minecart);
         }
         
@@ -37,6 +39,7 @@ public class MinecartGui extends GuiHolder{
         List<ItemStack> contents = Arrays.asList(inventory.getContents());
         if(contents != null){
             ChestUtils.setContainerItems(minecart, null, type, contents, player.getUniqueId().toString());
+            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_CLOSE,minecart.getLocation());
             plugin.currentMinecartviewers.remove(minecart);
         }
     }

@@ -9,12 +9,15 @@ import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 
 import com.github.sachin.lootin.compat.CustomStructuresListener;
+import com.github.sachin.lootin.utils.storage.ItemSerializer;
+import com.github.sachin.lootin.utils.storage.LootinContainer;
+import com.github.sachin.lootin.utils.storage.PlayerLootData;
+import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
@@ -129,13 +132,13 @@ public class ChestUtils{
 
         if(data.has(playerLootKey,PersistentDataType.STRING) || data.has(playerLootKey,DataType.ITEM_STACK_ARRAY)) return;
 
-        if(plugin.isRunningBetterStructures && plugin.getConfig().getBoolean(LConstants.RESET_SEED) && data.has(LConstants.BETTER_STRUC_KEY,PersistentDataType.STRING)){
+        if(plugin.isRunningBetterStructures && plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) && data.has(LConstants.BETTER_STRUC_KEY,PersistentDataType.STRING)){
 
             Chest chest = (Chest) container;
             BetterStructuresListener.refillChest(chest);
             return;
         }
-        if(plugin.isRunningCustomStructures && plugin.getConfig().getBoolean(LConstants.RESET_SEED) && data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
+        if(plugin.isRunningCustomStructures && plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) && data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
             CustomStructuresListener.reFillContainer((Container) container);
             return;
         }
@@ -152,7 +155,7 @@ public class ChestUtils{
         }
         if(lootTableKey != null){
             inventory.clear();
-            plugin.getPrilib().getNmsHandler().fill(player,container,lootTableKey,plugin.getConfig().getBoolean(LConstants.RESET_SEED));
+            plugin.getPrilib().getNmsHandler().fill(player,container,lootTableKey,plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()));
         }
     }
 
@@ -178,18 +181,19 @@ public class ChestUtils{
             PersistentDataHolder dataHolder = (PersistentDataHolder) container;
             InventoryHolder invHolder = (InventoryHolder) container;
             Inventory inventory = invHolder.getInventory();
+
             PersistentDataContainer data = dataHolder.getPersistentDataContainer();
             if(data.has(LConstants.DATA_KEY,PersistentDataType.STRING)){
                 items = ItemSerializer.deserialize(data.get(LConstants.DATA_KEY,PersistentDataType.STRING));
                 updatePersistentStorageTypes(data,inventory,items,LConstants.DATA_KEY);
-                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED,false) && !inventory.isEmpty()){
                     items = Arrays.asList(inventory.getContents());
                 }
                 inventory.clear();
                 return items;
             }
             else if(data.has(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY)){
-                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED,false) && !inventory.isEmpty()){
                     items = Arrays.asList(inventory.getContents());
                 }
                 else{
@@ -259,8 +263,29 @@ public class ChestUtils{
             List<ItemStack> items = new ArrayList<>();
             if(data.has(LConstants.STORAGE_DATA_KEY)){
                 LootinContainer lootinContainer = StorageConverterUtility.getContainerData(data.get(LConstants.STORAGE_DATA_KEY,DataType.UUID));
-                if(lootinContainer.getItemMap().containsKey(player.getUniqueId())){
-                    return lootinContainer.getItemMap().get(player.getUniqueId());
+                if(lootinContainer.getPlayerDataMap().containsKey(player.getUniqueId())){
+                    PlayerLootData playerLootData = lootinContainer.getPlayerDataMap().get(player.getUniqueId());
+                    if(playerLootData.isRefillRequired(System.currentTimeMillis(),player.getWorld())){
+                        if(!plugin.getWorldManager().shouldRefillCustomChests(player.getWorld().getName()) && data.has(LConstants.CUSTOM_CONTAINER_KEY)) return playerLootData.getItems();
+                        fillLoot(player,data,lootable,inventory);
+                        items = Arrays.asList(inventory.getContents());
+                        if(inventory.isEmpty()){
+                            if(data.has(LConstants.DATA_KEY,DataType.ITEM_STACK_ARRAY)){
+                                items = Arrays.asList(data.get(LConstants.DATA_KEY,DataType.ITEM_STACK_ARRAY));
+                            }
+                            else if(data.has(LConstants.DATA_KEY,PersistentDataType.STRING)){
+                                items = ItemSerializer.deserialize(data.get(LConstants.DATA_KEY,PersistentDataType.STRING));
+                                updatePersistentStorageTypes(data,inventory,items,LConstants.DATA_KEY);
+                            }
+                        }
+                        inventory.clear();
+                        if(block != null) block.update();
+                        playerLootData.setRefills(playerLootData.getRefills()+1);
+                        playerLootData.setLastLootTime(System.currentTimeMillis());
+                        return items;
+                    }else{
+                        return playerLootData.getItems();
+                    }
                 }
             }
             fillLoot(player,data,lootable,inventory);
@@ -275,14 +300,14 @@ public class ChestUtils{
             else if(data.has(LConstants.DATA_KEY,PersistentDataType.STRING)){
                 items = ItemSerializer.deserialize(data.get(LConstants.DATA_KEY,PersistentDataType.STRING));
                 updatePersistentStorageTypes(data,inventory,items,LConstants.DATA_KEY);
-                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                if(plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) && !inventory.isEmpty()){
                     items = Arrays.asList(inventory.getContents());
                 }
                 inventory.clear();
                 return items;
             }
             else if(data.has(LConstants.DATA_KEY, DataType.ITEM_STACK_ARRAY)){
-                if(plugin.getConfig().getBoolean(LConstants.RESET_SEED) && !inventory.isEmpty()){
+                if(plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) && !inventory.isEmpty()){
                     items = Arrays.asList(inventory.getContents());
                 }
                 else{
