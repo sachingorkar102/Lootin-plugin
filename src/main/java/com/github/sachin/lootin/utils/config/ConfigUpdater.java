@@ -1,4 +1,4 @@
-package com.github.sachin.lootin.utils;
+package com.github.sachin.lootin.utils.config;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

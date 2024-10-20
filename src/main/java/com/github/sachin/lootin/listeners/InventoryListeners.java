@@ -8,7 +8,6 @@ import com.github.sachin.lootin.gui.MinecartGui;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
-import com.github.sachin.lootin.utils.StorageConverterUtility;
 import com.github.sachin.lootin.utils.cooldown.Cooldown;
 
 import org.bukkit.GameMode;
@@ -16,7 +15,6 @@ import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -27,7 +25,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
-import org.bukkit.persistence.PersistentDataHolder;
 
 public class InventoryListeners extends BaseListener {
 
@@ -84,19 +81,16 @@ public class InventoryListeners extends BaseListener {
             case CHEST:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
-                plugin.debug("opened chest gui for "+player.getName());
                 new ChestGui(player, (Chest) state).open();
                 return;
             case DOUBLE_CHEST:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
-                plugin.debug("opened double chest gui for "+player.getName());
                 new DoubleChestGui(player, state).open();
                 return;
             case BARREL:
                 if (plugin.currentChestviewers.contains(block.getLocation()))
                     return;
-                plugin.debug("opened barrel gui for "+player.getName());
                 new BarrelGui(player, (Barrel) state).open();
                 return;
             default:

@@ -2,8 +2,8 @@ package com.github.sachin.lootin;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
 
 import com.github.sachin.lootin.commands.Commands;
 import com.github.sachin.lootin.compat.WGFlag;
@@ -17,8 +17,12 @@ import com.github.sachin.lootin.compat.BetterStructuresListener;
 import com.github.sachin.lootin.compat.CustomStructuresListener;
 import com.github.sachin.lootin.compat.OTDLootListener;
 import com.github.sachin.lootin.utils.*;
+import com.github.sachin.lootin.utils.config.ConfigUpdater;
+import com.github.sachin.lootin.utils.config.WorldManager;
 import com.github.sachin.lootin.utils.cooldown.CooldownContainer;
 
+import com.github.sachin.lootin.utils.storage.LootinContainer;
+import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.github.sachin.prilib.McVersion;
 import com.github.sachin.prilib.Prilib;
 import org.bukkit.*;
@@ -28,13 +32,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.LootTables;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import co.aikar.commands.PaperCommandManager;
 import me.clip.placeholderapi.PlaceholderAPI;
-import org.jetbrains.annotations.Nullable;
 
 
 public final class Lootin extends JavaPlugin {
@@ -54,6 +56,8 @@ public final class Lootin extends JavaPlugin {
     public Task cachedRunnable;
 
     public CooldownContainer interactCooldown;
+
+    private WorldManager worldManager;
 
     public boolean isRunningPurpur;
     public boolean isRunningProtocolLib;
@@ -195,6 +199,8 @@ public final class Lootin extends JavaPlugin {
         },1,10*20);
     }
 
+
+
     @Override
     public void onDisable() {
         if(interactCooldown != null) {
@@ -212,6 +218,8 @@ public final class Lootin extends JavaPlugin {
         // Clear reflections
 //        VersionProvider.PROVIDER.deleteAll();
     }
+
+
     
     public static Lootin getPlugin() {
         return plugin;
@@ -304,6 +312,11 @@ public final class Lootin extends JavaPlugin {
         return WGflag;
     }
 
+    public WorldManager getWorldManager() {
+        if(worldManager == null) worldManager = new WorldManager();
+        return worldManager;
+    }
+
     public int getBarrelRowCount(){
         if(isRunningPurpur){
             File file = new File("purpur.yml");
@@ -321,6 +334,7 @@ public final class Lootin extends JavaPlugin {
             e.printStackTrace();
         }
         reloadConfig();
+        getWorldManager().saveAndReloadWorldConfigFile();
         getLogger().info("Config file reloaded");
     }
 
@@ -352,4 +366,5 @@ public final class Lootin extends JavaPlugin {
     public Scheduler getScheduler() {
         return scheduler;
     }
+
 }

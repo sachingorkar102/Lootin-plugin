@@ -4,12 +4,15 @@ import com.github.sachin.lootin.Lootin;
 
 import org.bukkit.NamespacedKey;
 
+import java.util.regex.Pattern;
+
 public class LConstants {
 
     public static final NamespacedKey STORAGE_DATA_KEY = Lootin.getKey("file-storage-key");
     public static final NamespacedKey LOOTTABLE_KEY = Lootin.getKey("lotttable");
     public static final NamespacedKey IDENTITY_KEY = new NamespacedKey(Lootin.getPlugin(), "Lootin");
     public static final NamespacedKey DATA_KEY = new NamespacedKey(Lootin.getPlugin(),"loot-container");
+    public static final NamespacedKey CUSTOM_CONTAINER_KEY = new NamespacedKey(Lootin.getPlugin(),"custom-lootin-container");
 
 
 
@@ -72,5 +75,7 @@ public class LConstants {
     public static final boolean SERVER_REMAPPED = LConstants.SERVER_MINOR_VERSION >= 17;
 
     public static final String WG_FLAG_NAME = "lootin-container-access";
+
+    public static final Pattern TIME_UNITS_PATTERN = Pattern.compile("(\\d+)([dhms])");
 
 }

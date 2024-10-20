@@ -16,6 +16,8 @@ permissions:
     default: op
   lootin.preventfilling.bypass:
     default: op
+  lootin.autoreplenish:
+    default: true
   lootin.command.*:
     default: op
     children:

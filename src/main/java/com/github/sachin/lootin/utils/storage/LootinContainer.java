@@ -1,20 +1,20 @@
-package com.github.sachin.lootin.utils;
+package com.github.sachin.lootin.utils.storage;
 
 import com.github.sachin.lootin.Lootin;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import com.github.sachin.lootin.utils.LConstants;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class LootinContainer implements ConfigurationSerializable {
+public class LootinContainer{
 
 
     private final UUID containerID;
     private int closingTimer;
     private String loottable;
     private List<ItemStack> defaultLoot = new ArrayList<>();
-    private final Map<UUID, List<ItemStack>> itemMap = new HashMap<>();
+
+    private final Map<UUID, PlayerLootData> playerDataMap = new HashMap<>();
 
 
     public LootinContainer(UUID containerID){
@@ -30,9 +30,6 @@ public class LootinContainer implements ConfigurationSerializable {
     }
 
 
-    public Map<UUID, List<ItemStack>> getItemMap() {
-        return itemMap;
-    }
 
     public UUID getContainerID() {
         return containerID;
@@ -66,31 +63,7 @@ public class LootinContainer implements ConfigurationSerializable {
         this.defaultLoot = defaultLoot;
     }
 
-    @Override
-    public @NotNull Map<String, Object> serialize() {
-        Map<String, Object> map = new HashMap<>();
-        for(UUID uuid : itemMap.keySet()){
-            map.put(uuid.toString(),itemMap.get(uuid));
-        }
-        map.put("other-data.default-loot",defaultLoot);
-        map.put("other-data.loottable",loottable);
-        return map;
+    public Map<UUID, PlayerLootData> getPlayerDataMap() {
+        return playerDataMap;
     }
-
-
-    public static LootinContainer deserialize(Map<String,Object> map){
-
-        Map<UUID,List<ItemStack>> itemMap = new HashMap<>();
-
-        for(String s : map.keySet()){
-            if(StorageConverterUtility.isValidUUID(s)){
-                itemMap.put(UUID.fromString(s),(List<ItemStack>) map.get(s));
-            }
-            if(s.equals("other-data.default-loot")){
-
-            }
-        }
-        return null;
-    }
-
 }

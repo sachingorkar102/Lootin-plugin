@@ -1,0 +1,20 @@
+# Configuration file for the AUTO REPLENISH feature for individual worlds.
+# By default, all worlds will use the settings defined in "default-configuration" for auto-replenishment.
+# To customize settings for a specific world, duplicate the "default-configuration" section and
+# rename it to match your world’s name, and adjust the settings as needed.
+# NOTE: The "max-refills" and "refill-time" options are applied on a per-player basis.
+#       Player requires "lootin.autoreplenish" permission for their auto replenish to work.
+
+default-configuration:
+  # Enables automatic replenishment of loot containers for individual players after a set period.
+  auto-replenish-enabled: false
+  # If false, custom loot containers created with the "/lootin set" command will not auto-replenish.
+  replenish-custom-containers: false
+  # The maximum number of times a loot container can refill.
+  # Set to -1 for unlimited refills.
+  max-refills: -1
+  # The time interval between loot container refills.
+  # Supported units are days (d), hours (h), minutes (m), and seconds (s).
+  refill-time: 10d
+  # Resets the loot seed each time a container is refilled, randomizing the items for each refill.
+  reset-seed-on-fill: true

@@ -1,11 +1,16 @@
-package com.github.sachin.lootin.utils;
+package com.github.sachin.lootin.utils.storage;
 
 import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.utils.ChestUtils;
+import com.github.sachin.lootin.utils.LConstants;
+import com.github.sachin.lootin.utils.storage.ItemSerializer;
+import com.github.sachin.lootin.utils.storage.LootinContainer;
+import com.github.sachin.lootin.utils.storage.PlayerLootData;
 import com.jeff_media.morepersistentdatatypes.DataType;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Container;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
@@ -35,7 +40,9 @@ public class StorageConverterUtility {
                 }
                 if(holder.getPersistentDataContainer().has(key,DataType.ITEM_STACK_ARRAY)){
                     ItemStack[] items = holder.getPersistentDataContainer().get(key, DataType.ITEM_STACK_ARRAY);
-                    lootinContainer.getItemMap().put(UUID.fromString(key.getKey()),Arrays.asList(items));
+                    UUID uuid = UUID.fromString(key.getKey());
+                    PlayerLootData playerData = new PlayerLootData(uuid,Arrays.asList(items),System.currentTimeMillis(),0);
+                    lootinContainer.getPlayerDataMap().put(uuid,playerData);
                     holder.getPersistentDataContainer().remove(key);
                 }
             }
@@ -52,17 +59,26 @@ public class StorageConverterUtility {
 
     public static void update(PersistentDataHolder holder, String key,List<ItemStack> items){
         UUID containerID = holder.getPersistentDataContainer().get(LConstants.STORAGE_DATA_KEY,DataType.UUID);
-
+        UUID playerID = UUID.fromString(key);
         LootinContainer lootinContainer = getContainerData(containerID);
-        lootinContainer.getItemMap().put(UUID.fromString(key),items);
+        PlayerLootData playerData = lootinContainer.getPlayerDataMap().get(playerID);
+        if(playerData != null){
+            playerData.setItems(items);
+        }else{
+            playerData = new PlayerLootData(playerID,items,System.currentTimeMillis(),0);
+        }
+        lootinContainer.getPlayerDataMap().put(playerID,playerData);
         lootinContainer.resetClosingTimer();
         plugin.cachedContainers.put(containerID,lootinContainer);
     }
 
     public static void save(LootinContainer lootinContainer){
         YamlConfiguration yaml = new YamlConfiguration();
-        for(UUID key : lootinContainer.getItemMap().keySet()){
-            yaml.set(key.toString(),lootinContainer.getItemMap().get(key));
+        for(UUID key : lootinContainer.getPlayerDataMap().keySet()){
+            PlayerLootData playerData = lootinContainer.getPlayerDataMap().get(key);
+            yaml.set(key.toString()+".items",playerData.getItems());
+            yaml.set(key.toString()+".last-loot-time",playerData.getLastLootTime());
+            yaml.set(key.toString()+".refills",playerData.getRefills());
         }
         saveToFile(yaml,lootinContainer.getContainerID());
 
@@ -80,8 +96,20 @@ public class StorageConverterUtility {
             byte[] decompressedData = decompress(compressedData);
             YamlConfiguration yaml = deserizeData(decompressedData);
             for(String key : yaml.getKeys(false)){
-
-                container.getItemMap().put(UUID.fromString(key),(List<ItemStack>) yaml.getList(key));
+                UUID uuid = UUID.fromString(key);
+                PlayerLootData playerData = new PlayerLootData(uuid);
+                if(yaml.isList(key)){
+                    playerData.setItems((List<ItemStack>) yaml.getList(key));
+                    playerData.setLastLootTime(System.currentTimeMillis());
+                    playerData.setRefills(0);
+                }
+                else if(yaml.isConfigurationSection(key)){
+                    ConfigurationSection subConfig = yaml.getConfigurationSection(key);
+                    playerData.setItems((List<ItemStack>) subConfig.getList("items"));
+                    playerData.setLastLootTime(subConfig.getLong("last-loot-time"));
+                    playerData.setRefills(subConfig.getInt("refills"));
+                }
+                container.getPlayerDataMap().put(uuid,playerData);
             }
             plugin.cachedContainers.put(containerID,container);
 //            file.delete();

@@ -5,17 +5,25 @@ import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.compat.rwg.util.inventory.RwgInventory;
 import com.github.sachin.lootin.utils.*;
 
+import com.github.sachin.lootin.utils.storage.LootinContainer;
+import com.github.sachin.lootin.utils.storage.PlayerLootData;
+import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.jeff_media.morepersistentdatatypes.DataType;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Barrel;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.block.Container;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataHolder;
@@ -52,60 +60,65 @@ public class Commands extends BaseCommand{
 
     @Subcommand("set")
     @CommandCompletion("CHEST|BARREL|MINECART")
-    public void onSet(Player player,String[] args){
-        if(args.length<1) return;
-        if(!player.hasPermission("lootin.command.set")){
-            plugin.sendPlayerMessage(LConstants.NO_PERMISSION,player);
+    public void onSet(Player player, String[] args) {
+        if (args.length < 1) return;
+
+        if (!player.hasPermission("lootin.command.set")) {
+            plugin.sendPlayerMessage(LConstants.NO_PERMISSION, player);
             return;
         }
+
         String type = args[0];
         RayTraceResult ray = player.rayTraceBlocks(4);
-        if(type.equals("CHEST")){
-            if(ray != null && (ray.getHitBlock().getType()==Material.CHEST || ray.getHitBlock().getType()==Material.TRAPPED_CHEST)){
-                Chest chest = (Chest) ray.getHitBlock().getState();
-                if(!chest.getInventory().isEmpty()){
-                    ChestUtils.setLootinContainer(null, chest, ContainerType.CHEST);
-                    plugin.sendPlayerMessage("&aChest set as lootin container successfully, the contents of chest are per player now!", player);
-                }
-                else{
-                    plugin.sendPlayerMessage("&cChest is empty!", player);
-                }
-                
-            }
-            else{
-                plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);
-            }
+
+        switch (type.toUpperCase()) {
+            case "CHEST":
+            case "TRAPPED_CHEST":
+                handleBlockContainer(player, ray, Material.CHEST, Material.TRAPPED_CHEST, ContainerType.CHEST);
+                break;
+            case "BARREL":
+                handleBlockContainer(player, ray, Material.BARREL, null, ContainerType.BARREL);
+                break;
+            case "MINECART":
+                handleMinecartContainer(player);
+                break;
+            default:
+                plugin.sendPlayerMessage("&cInvalid container type!", player);
+                break;
         }
-        else if(type.equals("BARREL")){
-            if(ray != null && ray.getHitBlock().getType()==Material.BARREL){
-                Barrel barrel = (Barrel) ray.getHitBlock().getState();
-                if(!barrel.getInventory().isEmpty()){
-                    ChestUtils.setLootinContainer(null, barrel, ContainerType.BARREL);
-                    plugin.sendPlayerMessage("&aBarrel set as lootin container successfully, the contents of barrel are per player now!", player);
-                }
-                else{
-                    plugin.sendPlayerMessage("&cBarrel is empty!", player);
-                }
+    }
+
+    private void handleBlockContainer(Player player, RayTraceResult ray, Material mainType, Material altType, ContainerType containerType) {
+        if (ray != null && (ray.getHitBlock().getType() == mainType || (altType != null && ray.getHitBlock().getType() == altType))) {
+            BlockState blockState = ray.getHitBlock().getState();
+            Inventory inventory = (blockState instanceof Chest) ? ((Chest) blockState).getInventory() : ((Barrel) blockState).getInventory();
+
+            if (!inventory.isEmpty()) {
+                ChestUtils.setLootinContainer(null, blockState, containerType);
+                ((PersistentDataHolder)blockState).getPersistentDataContainer().set(LConstants.CUSTOM_CONTAINER_KEY,PersistentDataType.INTEGER,1);
+                blockState.update();
+                plugin.sendPlayerMessage("&a" + containerType.name() + " set as lootin container successfully, the contents are per player now!", player);
+            } else {
+                plugin.sendPlayerMessage("&c" + containerType.name() + " is empty!", player);
             }
-            else{
-                plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);
-            }
+        } else {
+            plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);
         }
-        else if(type.equals("MINECART")){
-            RayTraceResult raytrace = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 4,(en) -> en.getType()==EntityType.MINECART_CHEST);
-            if(raytrace != null && raytrace.getHitEntity() != null){
-                StorageMinecart minecart = (StorageMinecart) raytrace.getHitEntity();
-                if(!minecart.getInventory().isEmpty()){
-                    ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
-                    plugin.sendPlayerMessage("&aChest Minecart set as lootin container successfully, the contents of minecart are per player now!", player);
-                }
-                else{
-                    plugin.sendPlayerMessage("&cMinecart is empty!", player);
-                }
+    }
+
+    private void handleMinecartContainer(Player player) {
+        RayTraceResult raytrace = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 4, (en) -> en.getType() == EntityType.MINECART_CHEST);
+        if (raytrace != null && raytrace.getHitEntity() != null) {
+            StorageMinecart minecart = (StorageMinecart) raytrace.getHitEntity();
+            if (!minecart.getInventory().isEmpty()) {
+                ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);
+                minecart.getPersistentDataContainer().set(LConstants.CUSTOM_CONTAINER_KEY,PersistentDataType.INTEGER,1);
+                plugin.sendPlayerMessage("&aMinecart set as lootin container successfully, the contents are per player now!", player);
+            } else {
+                plugin.sendPlayerMessage("&cMinecart is empty!", player);
             }
-            else{
-                plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);
-            }
+        } else {
+            plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);
         }
     }
 
@@ -120,9 +133,9 @@ public class Commands extends BaseCommand{
         LootinContainer lootinContainer = getTargetContainer(player);
         if(lootinContainer != null){
             if(args[0].equalsIgnoreCase("all")){
-                if(!lootinContainer.getItemMap().isEmpty()){
-                    plugin.sendPlayerMessage("&aCleared data of &e"+lootinContainer.getItemMap().size()+"&a players from the container",player);
-                    lootinContainer.getItemMap().clear();
+                if(!lootinContainer.getPlayerDataMap().isEmpty()){
+                    plugin.sendPlayerMessage("&aCleared data of &e"+lootinContainer.getPlayerDataMap() .size()+"&a players from the container",player);
+                    lootinContainer.getPlayerDataMap().clear();
                     plugin.cachedContainers.put(lootinContainer.getContainerID(),lootinContainer);
                 }
                 else{
@@ -130,9 +143,9 @@ public class Commands extends BaseCommand{
                 }
             }
             else if(args[0].equalsIgnoreCase("player") && args.length>=2){
-                Iterator<Map.Entry<UUID, List<ItemStack>>> iterator = lootinContainer.getItemMap().entrySet().iterator();
+                Iterator<Map.Entry<UUID, PlayerLootData>> iterator = lootinContainer.getPlayerDataMap().entrySet().iterator();
                 while (iterator.hasNext() ){
-                    Map.Entry<UUID, List<ItemStack>> entry = iterator.next();
+                    Map.Entry<UUID, PlayerLootData> entry = iterator.next();
                     if(args[1].equals(Bukkit.getOfflinePlayer(entry.getKey()).getName())){
                         iterator.remove();
                         plugin.sendPlayerMessage("&aCleared data of &e"+args[1]+"&a from the container.",player);
@@ -157,9 +170,47 @@ public class Commands extends BaseCommand{
 
         if(lootinContainer != null){
             List<String> playerNames = new ArrayList<>();
-            lootinContainer.getItemMap().keySet().forEach(i -> playerNames.add(Bukkit.getOfflinePlayer(i).getName()));
+            lootinContainer.getPlayerDataMap().keySet().forEach(i -> playerNames.add(Bukkit.getOfflinePlayer(i).getName()));
+            TextComponent baseMsg = Component.text("Players: [",NamedTextColor.GOLD);
+            TextComponent separator = Component.text(", ",NamedTextColor.WHITE);
+            int maxRefills = plugin.getWorldManager().getMaxRefills(player.getWorld().getName());
+            for (PlayerLootData playerLootData : lootinContainer.getPlayerDataMap().values()) {
+                double timeLeftMillis = ((double) ((playerLootData.getLastLootTime() + plugin.getWorldManager().getRefillTime(player.getWorld().getName())) - System.currentTimeMillis()));
+                if (timeLeftMillis < 0) timeLeftMillis = 0;
+                String timeLeftString;
+                if (timeLeftMillis >= 86400000) {
+                    double timeLeftD = timeLeftMillis / 86400000;
+                    timeLeftString = String.format("%.2f", timeLeftD) + " Days";
+                }
+                else if (timeLeftMillis >= 3600000) {
+                    double timeLeftD = timeLeftMillis / 3600000;
+                    timeLeftString = String.format("%.2f", timeLeftD) + " Hours";
+                }
+                else if (timeLeftMillis >= 60000) {
+                    double timeLeftD = timeLeftMillis / 60000;
+                    timeLeftString = String.format("%.2f", timeLeftD) + " Minutes";
+                }
+                else {
+                    double timeLeftD = timeLeftMillis / 1000;
+                    timeLeftString = String.format("%.2f", timeLeftD) + " Seconds";
+                }
+                TextComponent refillComponent;
+                TextComponent timeLeftComponent = Component.text("TimeLeft: " + timeLeftString,NamedTextColor.GREEN);
+                if(maxRefills!=-1 && playerLootData.getRefills()>=maxRefills){
+                    refillComponent = Component.text("Refills: "+playerLootData.getRefills(),NamedTextColor.RED);
+                }else{
+                    refillComponent = Component.text("Refills: "+playerLootData.getRefills(),NamedTextColor.GREEN);
+                }
+                TextComponent playerComponent = Component.text(Bukkit.getOfflinePlayer(playerLootData.getPlayerID()).getName(), NamedTextColor.YELLOW)
+                        .hoverEvent(HoverEvent.showText(refillComponent.append(Component.text("\n").append(timeLeftComponent))));
+                baseMsg = baseMsg.append(playerComponent);
+                if(lootinContainer.getPlayerDataMap().size()>1){
+                    baseMsg = baseMsg.append(separator);
+                }
+            }
+            baseMsg = baseMsg.append(Component.text("]",NamedTextColor.GOLD));
             plugin.sendPlayerMessage("&aContainerID: &e"+lootinContainer.getContainerID(),player);
-            plugin.sendPlayerMessage("&aPlayers: &e"+playerNames,player);
+            player.sendMessage(baseMsg);
         }
         else{
             plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);

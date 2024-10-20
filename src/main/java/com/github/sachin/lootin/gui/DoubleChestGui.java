@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 
+import org.bukkit.GameEvent;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockState;
@@ -32,7 +33,9 @@ public class DoubleChestGui extends GuiHolder{
         if(items != null){
             inventory.setContents(items.toArray(new ItemStack[0]));
             player.openInventory(inventory);
+
             ((Chest)block).open();
+            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,((Chest)doubleChest.getLeftSide()).getLocation());
             plugin.currentChestviewers.add(((Chest)doubleChest.getLeftSide()).getLocation());
             plugin.currentChestviewers.add(((Chest)doubleChest.getRightSide()).getLocation());
         }
@@ -43,8 +46,9 @@ public class DoubleChestGui extends GuiHolder{
         List<ItemStack> contents = Arrays.asList(inventory.getContents());
         if(contents != null){
             ChestUtils.setContainerItems(null, block, type, contents, player.getUniqueId().toString());
-        }
+        };
         ((Chest)block).close();
+        plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_CLOSE,((Chest)doubleChest.getLeftSide()).getLocation());
         plugin.currentChestviewers.remove(((Chest)doubleChest.getLeftSide()).getLocation());
         plugin.currentChestviewers.remove(((Chest)doubleChest.getRightSide()).getLocation());
     }

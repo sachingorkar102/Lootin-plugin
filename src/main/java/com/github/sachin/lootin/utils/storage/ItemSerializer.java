@@ -1,4 +1,4 @@
-package com.github.sachin.lootin.utils;
+package com.github.sachin.lootin.utils.storage;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
