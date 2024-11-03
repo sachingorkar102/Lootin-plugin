@@ -53,7 +53,7 @@ public class InventoryListeners extends BaseListener {
             Lootable lootable = (Lootable) state;
             LootTable lootTable = lootable.getLootTable();
             if (lootTable != null) {
-                if (plugin.isBlackListedLootable(lootTable)) {
+                if (plugin.isBlackListedLootable(lootTable,player.getWorld())) {
                     return;
                 }
                 ChestUtils.setLootinContainer(null, state, container);
@@ -107,7 +107,7 @@ public class InventoryListeners extends BaseListener {
         StorageMinecart minecart = (StorageMinecart) e.getRightClicked();
         if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(e.getPlayer(),minecart.getLocation())) return;
         if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-            if(minecart.getLootTable() == null || plugin.isBlackListedLootable(minecart.getLootTable())) {
+            if(minecart.getLootTable() == null || plugin.isBlackListedLootable(minecart.getLootTable(),e.getPlayer().getWorld())) {
                 return;
             }
             ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);

@@ -271,8 +271,9 @@ public final class Lootin extends JavaPlugin {
         return getBlackListWorlds().contains(world.getName());
     }
 
-    public boolean isBlackListedLootable(String lootable){
-        List<String> list = plugin.getConfig().getStringList(LConstants.BLACK_LIST_STRUCTURES);
+    public boolean isBlackListedLootable(String lootable,World world){
+        List<String> list = plugin.getWorldManager().getBlackListStructures(world.getName());
+        if(list.contains("ALL")) return true;
         for(String s : list){
             if(s.startsWith("^") && lootable.startsWith(s.replace("^", ""))){
                 return true;
@@ -286,8 +287,8 @@ public final class Lootin extends JavaPlugin {
         return false;
     }
 
-    public boolean isBlackListedLootable(LootTable lootable){
-        return isBlackListedLootable(lootable.getKey().toString());
+    public boolean isBlackListedLootable(LootTable lootable,World world){
+        return isBlackListedLootable(lootable.getKey().toString(),world);
     }
 
     public List<NamespacedKey> getBlackListStructures(){

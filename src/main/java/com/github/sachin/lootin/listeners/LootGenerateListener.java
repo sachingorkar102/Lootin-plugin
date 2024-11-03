@@ -37,7 +37,7 @@ public class LootGenerateListener extends BaseListener{
     public void onLootGenerate(LootGenerateEvent e){
         if(e.getEntity() != null) return;
 
-        if(plugin.isBlackListedLootable(e.getLootTable())) return;
+        if(plugin.isBlackListedLootable(e.getLootTable(),e.getWorld())) return;
         String loottable = e.getLootTable().getKey().toString();
         if(e.getInventoryHolder() instanceof DoubleChest){
             DoubleChest doubleChest = ChestUtils.getDoubleChest(((BlockState)e.getInventoryHolder()));

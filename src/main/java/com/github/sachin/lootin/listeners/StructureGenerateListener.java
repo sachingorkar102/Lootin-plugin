@@ -43,7 +43,7 @@ public class StructureGenerateListener extends BaseListener {
         if(block instanceof Lootable){
             Lootable lootable = (Lootable) block;
 
-            if(lootable.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(lootable.getLootTable())) {
+            if(lootable.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(lootable.getLootTable(),block.getWorld())) {
                 return block;
             }
             boolean isLootin = false;
@@ -75,7 +75,7 @@ public class StructureGenerateListener extends BaseListener {
         if(entity.getType()==EntityType.MINECART_CHEST){
             StorageMinecart minecart = (StorageMinecart) entity;
             if (!ChestUtils.isLootinContainer(minecart, null, ContainerType.MINECART)){
-                if(minecart.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(minecart.getLootTable())) {
+                if(minecart.getLootTable() == null || Lootin.getPlugin().isBlackListedLootable(minecart.getLootTable(),minecart.getWorld())) {
                     return allowedToSpawn;
                 }
                 ChestUtils.setLootinContainer(minecart, null, ContainerType.MINECART);

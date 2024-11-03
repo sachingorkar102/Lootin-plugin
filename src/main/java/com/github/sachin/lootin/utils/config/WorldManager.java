@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 
@@ -34,7 +35,9 @@ public class WorldManager {
                                             subSection.getBoolean("replenish-custom-containers",true),
                                             subSection.getInt("max-refills",-1),
                                             parseRefillTime(subSection.getString("refill-time","10d")),
-                                            subSection.getBoolean("reset-seed-on-fill",true)));
+                                            subSection.getBoolean("reset-seed-on-fill",true),
+                                            subSection.getStringList(LConstants.BLACK_LIST_STRUCTURES))
+                );
 
             }
         }
@@ -60,6 +63,8 @@ public class WorldManager {
     public boolean shouldRefillCustomChests(String world){
         return getConfig(world).shouldRefillCustomChests;
     }
+
+    public List<String> getBlackListStructures(String world){return getConfig(world).blacklistStructures;}
 
     private WorldConfig getConfig(String world){
         return  worldConfigMap.getOrDefault(world,worldConfigMap.get(DEFAULT));
