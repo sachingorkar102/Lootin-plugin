@@ -92,7 +92,7 @@ public class ChestEvents extends BaseListener{
     }
 
 
-    @EventHandler
+//    @EventHandler
     public void onItemMove(InventoryMoveItemEvent e){
 //        if(plugin.isBlackListWorld(e.ge)) return;
         if(e.getDestination().getHolder() instanceof HopperMinecart || e.getSource().getHolder() instanceof HopperMinecart){
