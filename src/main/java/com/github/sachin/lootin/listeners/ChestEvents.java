@@ -11,6 +11,7 @@ import com.github.sachin.lootin.utils.LConstants;
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.TreeType;
 import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,6 +30,7 @@ import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
+import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.Lootable;
@@ -133,15 +135,9 @@ public class ChestEvents extends BaseListener{
         List<Block> chestBlocks = new ArrayList<>();
         for(Block block : e.blockList()){
             BlockState state = (BlockState) block.getState();
-            if(state instanceof Chest){
-                Chest chest = (Chest) state;
-                if(ChestUtils.isLootinContainer(null, state, ContainerType.CHEST) || chest.getLootTable() != null){
-                    chestBlocks.add(block);
-                }
-            }
-            else if(state instanceof Barrel){
-                Barrel barrel = (Barrel) state;
-                if(ChestUtils.isLootinContainer(null, state, ContainerType.BARREL) || barrel.getLootTable() != null){
+            if(state instanceof Chest || state instanceof Barrel){
+                Lootable lootable = (Lootable) state;
+                if(lootable.getLootTable() != null || ChestUtils.isLootinContainer(null,state,state instanceof Chest ? ContainerType.CHEST : ContainerType.BARREL)){
                     chestBlocks.add(block);
                 }
             }
@@ -150,6 +146,26 @@ public class ChestEvents extends BaseListener{
             e.blockList().remove(block);
         }
     }
+
+    @EventHandler
+    public void onMushroomGrowEvent(StructureGrowEvent e){
+        if((e.getSpecies() == TreeType.BROWN_MUSHROOM || e.getSpecies() == TreeType.RED_MUSHROOM) && e.isFromBonemeal()){
+            List<BlockState> chestBlocks = new ArrayList<>();
+            for(BlockState b : e.getBlocks()){
+                Block currentBlock = b.getWorld().getBlockAt(b.getLocation());
+                BlockState blockState = currentBlock.getState();
+                if(blockState instanceof Chest || blockState instanceof Barrel){
+                    Lootable lootable = (Lootable) blockState;
+                    if(lootable.getLootTable() != null || ChestUtils.isLootinContainer(null,blockState,blockState instanceof Chest ? ContainerType.CHEST : ContainerType.BARREL)){
+                        chestBlocks.add(blockState);
+                    }
+                }
+            }
+            if(!chestBlocks.isEmpty()) e.setCancelled(true);
+        }
+    }
+
+
 
 
     @EventHandler
