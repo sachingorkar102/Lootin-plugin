@@ -25,6 +25,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -129,42 +130,47 @@ public class ChestEvents extends BaseListener{
         }
     }
 
+//    For Creepers and Ignited TNT
     @EventHandler
-    public void onBlockExplode(EntityExplodeEvent e){
-        if(!plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS) || plugin.isBlackListWorld(e.getEntity().getWorld())) return;
-        List<Block> chestBlocks = new ArrayList<>();
-        for(Block block : e.blockList()){
-            BlockState state = (BlockState) block.getState();
-            if(state instanceof Chest || state instanceof Barrel){
-                Lootable lootable = (Lootable) state;
-                if(lootable.getLootTable() != null || ChestUtils.isLootinContainer(null,state,state instanceof Chest ? ContainerType.CHEST : ContainerType.BARREL)){
-                    chestBlocks.add(block);
-                }
-            }
-        }
-        for (Block block : chestBlocks) {
-            e.blockList().remove(block);
+    public void onEntityExplode(EntityExplodeEvent e) {
+        if (!plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS) || plugin.isBlackListWorld(e.getEntity().getWorld())) return;
+        removeLootContainersFromList(e.blockList());
+    }
+
+//    For Respawn_Anchors and Beds
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent e) {
+        if (!plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS) || plugin.isBlackListWorld(e.getBlock().getWorld())) return;
+        BlockState explodedBlock = e.getExplodedBlockState();
+        if (explodedBlock != null && (explodedBlock.getType() == Material.RESPAWN_ANCHOR || explodedBlock.getType().toString().endsWith("BED"))) {
+            removeLootContainersFromList(e.blockList());
         }
     }
 
     @EventHandler
-    public void onMushroomGrowEvent(StructureGrowEvent e){
-        if((e.getSpecies() == TreeType.BROWN_MUSHROOM || e.getSpecies() == TreeType.RED_MUSHROOM) && e.isFromBonemeal()){
-            List<BlockState> chestBlocks = new ArrayList<>();
-            for(BlockState b : e.getBlocks()){
-                Block currentBlock = b.getWorld().getBlockAt(b.getLocation());
-                BlockState blockState = currentBlock.getState();
-                if(blockState instanceof Chest || blockState instanceof Barrel){
-                    Lootable lootable = (Lootable) blockState;
-                    if(lootable.getLootTable() != null || ChestUtils.isLootinContainer(null,blockState,blockState instanceof Chest ? ContainerType.CHEST : ContainerType.BARREL)){
-                        chestBlocks.add(blockState);
-                    }
-                }
-            }
-            if(!chestBlocks.isEmpty()) e.setCancelled(true);
+    public void onMushroomGrowEvent(StructureGrowEvent e) {
+        if ((e.getSpecies() == TreeType.BROWN_MUSHROOM || e.getSpecies() == TreeType.RED_MUSHROOM) && e.isFromBonemeal()) {
+            boolean hasLootContainer = e.getBlocks().stream().anyMatch(blockState -> isLootContainer(blockState.getWorld().getBlockAt(blockState.getLocation())));
+            if (hasLootContainer) e.setCancelled(true);
         }
     }
 
+    private void removeLootContainersFromList(List<Block> blocks) {
+        blocks.removeIf(this::isLootContainer);
+    }
+
+    private boolean isLootContainer(Block block) {
+        BlockState state = block.getState();
+        if (state instanceof Chest || state instanceof Barrel) {
+            Lootable lootable = (Lootable) state;
+            return lootable.getLootTable() != null || ChestUtils.isLootinContainer(
+                    null,
+                    state,
+                    state instanceof Chest ? ContainerType.CHEST : ContainerType.BARREL
+            );
+        }
+        return false;
+    }
 
 
 

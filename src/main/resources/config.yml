@@ -32,7 +32,7 @@ messages:
 # weather or not to delete items when player breaks loot chest successfully
 delete-items-on-break: true  
 
-# weather or not to prevent lootin chest from being exploded by tnt or creeper
+# weather or not to prevent lootin chest from being exploded by tnt,creepers,respawn_anchor or bed
 prevent-explosions: true
 
 # list of worlds where lootin will not modify loot chests
