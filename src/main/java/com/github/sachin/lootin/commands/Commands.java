@@ -1,6 +1,7 @@
 package com.github.sachin.lootin.commands;
 
 import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.compat.PaperCompat;
 import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.compat.rwg.util.inventory.RwgInventory;
 import com.github.sachin.lootin.utils.*;
@@ -9,10 +10,7 @@ import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.PlayerLootData;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.jeff_media.morepersistentdatatypes.DataType;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -169,48 +167,9 @@ public class Commands extends BaseCommand{
         LootinContainer lootinContainer = getTargetContainer(player);
 
         if(lootinContainer != null){
-            List<String> playerNames = new ArrayList<>();
-            lootinContainer.getPlayerDataMap().keySet().forEach(i -> playerNames.add(Bukkit.getOfflinePlayer(i).getName()));
-            TextComponent baseMsg = Component.text("Players: [",NamedTextColor.GOLD);
-            TextComponent separator = Component.text(", ",NamedTextColor.WHITE);
-            int maxRefills = plugin.getWorldManager().getMaxRefills(player.getWorld().getName());
-            for (PlayerLootData playerLootData : lootinContainer.getPlayerDataMap().values()) {
-                double timeLeftMillis = ((double) ((playerLootData.getLastLootTime() + plugin.getWorldManager().getRefillTime(player.getWorld().getName())) - System.currentTimeMillis()));
-                if (timeLeftMillis < 0) timeLeftMillis = 0;
-                String timeLeftString;
-                if (timeLeftMillis >= 86400000) {
-                    double timeLeftD = timeLeftMillis / 86400000;
-                    timeLeftString = String.format("%.2f", timeLeftD) + " Days";
-                }
-                else if (timeLeftMillis >= 3600000) {
-                    double timeLeftD = timeLeftMillis / 3600000;
-                    timeLeftString = String.format("%.2f", timeLeftD) + " Hours";
-                }
-                else if (timeLeftMillis >= 60000) {
-                    double timeLeftD = timeLeftMillis / 60000;
-                    timeLeftString = String.format("%.2f", timeLeftD) + " Minutes";
-                }
-                else {
-                    double timeLeftD = timeLeftMillis / 1000;
-                    timeLeftString = String.format("%.2f", timeLeftD) + " Seconds";
-                }
-                TextComponent refillComponent;
-                TextComponent timeLeftComponent = Component.text("TimeLeft: " + timeLeftString,NamedTextColor.GREEN);
-                if(maxRefills!=-1 && playerLootData.getRefills()>=maxRefills){
-                    refillComponent = Component.text("Refills: "+playerLootData.getRefills(),NamedTextColor.RED);
-                }else{
-                    refillComponent = Component.text("Refills: "+playerLootData.getRefills(),NamedTextColor.GREEN);
-                }
-                TextComponent playerComponent = Component.text(Bukkit.getOfflinePlayer(playerLootData.getPlayerID()).getName(), NamedTextColor.YELLOW)
-                        .hoverEvent(HoverEvent.showText(refillComponent.append(Component.text("\n").append(timeLeftComponent))));
-                baseMsg = baseMsg.append(playerComponent);
-                if(lootinContainer.getPlayerDataMap().size()>1){
-                    baseMsg = baseMsg.append(separator);
-                }
+            if(plugin.isRunningPaper){
+                PaperCompat.sendPlayerMessage(lootinContainer,player);
             }
-            baseMsg = baseMsg.append(Component.text("]",NamedTextColor.GOLD));
-            plugin.sendPlayerMessage("&aContainerID: &e"+lootinContainer.getContainerID(),player);
-            player.sendMessage(baseMsg);
         }
         else{
             plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);

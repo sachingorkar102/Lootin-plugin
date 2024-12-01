@@ -38,12 +38,6 @@ prevent-explosions: true
 # list of worlds where lootin will not modify loot chests
 black-list-worlds: []
 
-# list of loottables lootin will ignore, in other words containers with these loottables will not turn into lootin chests
-# list of vanilla loottables can be found here https://github.com/sachingorkar102/Lootin-plugin/blob/main/vanilla-loottables.txt
-# Pro tip:
-  # use NAME$ to take those loottables into account which end with "NAME" eg. "_treasure$"
-  # use ^NAME to take those loottables into acccount which start with "NAME" eg. "^minecraft:chests/" (this will black list all chest loottables from minecraft namespace)
-black-list-structures: []
 
 # Note: does not work with already looted end ships
 # if set to true, the elytra present in item frame in end city ships will be per player
