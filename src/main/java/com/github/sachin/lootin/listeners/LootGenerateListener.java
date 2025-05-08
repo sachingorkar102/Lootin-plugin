@@ -21,14 +21,15 @@ public class LootGenerateListener extends BaseListener{
     private void setLootinContainer(BlockState state, String loottable){
         ContainerType containerType = state.getType()== Material.BARREL ? ContainerType.BARREL : ContainerType.CHEST;
         Container container = (Container) state;
-        container.getPersistentDataContainer().set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,loottable);
-        ((Lootable)container).setLootTable(null);
-        container.update(true);
-        ChestUtils.setLootinContainer(null,state,containerType);
         plugin.getScheduler().runTaskLater(plugin,() -> {
-            ChestUtils.setContainerItems(null,state,containerType, Arrays.asList(container.getInventory().getContents()), LConstants.DATA_KEY.getKey());
-            container.getInventory().clear();
-            container.update(true);
+            if(!state.getWorld().getBlockAt(state.getLocation()).isEmpty()){
+                container.getPersistentDataContainer().set(LConstants.LOOTTABLE_KEY,PersistentDataType.STRING,loottable);
+                ((Lootable)container).setLootTable(null);
+                ChestUtils.setLootinContainer(null,state,containerType);
+                ChestUtils.setContainerItems(null,state,containerType, Arrays.asList(container.getInventory().getContents()), LConstants.DATA_KEY.getKey());
+                container.getInventory().clear();
+                container.update(true);
+            }
         },state.getLocation(),1);
     }
 
@@ -36,7 +37,6 @@ public class LootGenerateListener extends BaseListener{
     @EventHandler
     public void onLootGenerate(LootGenerateEvent e){
         if(e.getEntity() != null) return;
-
         if(plugin.isBlackListedLootable(e.getLootTable(),e.getWorld())) return;
         String loottable = e.getLootTable().getKey().toString();
         if(e.getInventoryHolder() instanceof DoubleChest){
@@ -48,6 +48,7 @@ public class LootGenerateListener extends BaseListener{
         }
         if(e.getInventoryHolder() instanceof Chest || e.getInventoryHolder() instanceof Barrel){
             setLootinContainer((BlockState) e.getInventoryHolder(),loottable);
+
         }
 
         else if(e.getInventoryHolder() instanceof StorageMinecart){
@@ -56,8 +57,10 @@ public class LootGenerateListener extends BaseListener{
             minecart.setLootTable(null);
             ChestUtils.setLootinContainer(minecart,null,ContainerType.MINECART);
             plugin.getScheduler().runTaskLater(plugin,() -> {
-                ChestUtils.setContainerItems(minecart,null,ContainerType.MINECART,Arrays.asList(minecart.getInventory().getContents()),LConstants.DATA_KEY.getKey());
-                minecart.getInventory().clear();
+                if(!minecart.isDead()){
+                    ChestUtils.setContainerItems(minecart,null,ContainerType.MINECART,Arrays.asList(minecart.getInventory().getContents()),LConstants.DATA_KEY.getKey());
+                    minecart.getInventory().clear();
+                }
             },minecart.getLocation(),1);
         }
     }

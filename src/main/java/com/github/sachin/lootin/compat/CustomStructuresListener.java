@@ -9,6 +9,7 @@ import com.ryandw11.structure.api.LootPopulateEvent;
 
 import com.ryandw11.structure.loottables.LootTable;
 import com.ryandw11.structure.loottables.LootTableType;
+import com.ryandw11.structure.loottables.MinecraftLootTable;
 import com.ryandw11.structure.schematic.LootTableReplacer;
 import com.ryandw11.structure.structure.Structure;
 import com.ryandw11.structure.utils.RandomCollection;
@@ -38,15 +39,25 @@ public class CustomStructuresListener extends BaseListener{
     }
 
     public static void reFillContainer(Container container){
-        String strucName = container.getPersistentDataContainer().get(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING);
-        if(strucName == null) return;
-        Structure structure = CustomStructures.getInstance().getStructureHandler().getStructure(strucName);
-        if(structure==null) return;
-        RandomCollection<LootTable> loottables = structure.getLootTables(container instanceof Chest ? LootTableType.CHEST : LootTableType.BARREL);
+        RandomCollection<LootTable> loottables = getLoottables(container);
         if(loottables != null && !loottables.isEmpty()){
             container.getSnapshotInventory().clear();
             LootTableReplacer.replaceChestContent(loottables.next(),new Random(),container.getSnapshotInventory());
         }
+    }
+
+    public static boolean isMinecraftLoottable(Container container){
+        RandomCollection<LootTable> loottables = getLoottables(container);
+        return loottables != null && loottables.next() instanceof MinecraftLootTable;
+    }
+
+    public static RandomCollection<LootTable> getLoottables(Container container){
+        String strucName = container.getPersistentDataContainer().get(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING);
+        if(strucName == null) return null;
+        Structure structure = CustomStructures.getInstance().getStructureHandler().getStructure(strucName);
+        if(structure==null) return null;
+        RandomCollection<LootTable> loottables = structure.getLootTables(container instanceof Chest ? LootTableType.CHEST : LootTableType.BARREL);
+        return loottables;
     }
 
 

@@ -10,14 +10,10 @@ import com.github.sachin.lootin.utils.LConstants;
 
 import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeType;
-import org.bukkit.block.Barrel;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.HopperMinecart;
 import org.bukkit.entity.minecart.StorageMinecart;
@@ -47,50 +43,91 @@ public class ChestEvents extends BaseListener{
         if (plugin.isBlackListWorld(player.getWorld())) return;
 
         BlockState state = block.getState();
-        ContainerType containerType = null;
+        ContainerType containerType = getContainerType(state);
+        if (containerType == null) return;
 
-        if (state instanceof Chest) {
-            containerType = ContainerType.CHEST;
-        } else if (state instanceof Barrel) {
-            containerType = ContainerType.BARREL;
+        Lootable lootable = (Lootable) state;
+        if (!ChestUtils.isLootinContainer(null, state, containerType) && lootable.getLootTable() == null) return;
+
+
+
+        if (plugin.currentChestviewers.contains(state.getLocation())) {
+            player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED, player));
+            e.setCancelled(true);
+            return;
         }
 
-        if (containerType != null) {
-            Lootable lootable = (Lootable) state;
-            if(ChestUtils.isLootinContainer(null,state,containerType) || lootable.getLootTable() != null){
-                if (plugin.currentChestviewers.contains(state.getLocation())) {
-                    player.sendMessage(plugin.getMessage(LConstants.CHEST_EDITED, player));
-                    e.setCancelled(true);
-                    return;
-                }
+        if (!player.hasPermission("lootin.breakchest.bypass")) {
+            e.setCancelled(true);
+            player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP, player));
+            return;
+        }
 
-                if (player.hasPermission("lootin.breakchest.bypass")) {
-                    if (player.isSneaking()) {
-                        ((InventoryHolder) state).getInventory().clear();
+        if (!player.isSneaking()) {
+            player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP, player));
+            e.setCancelled(true);
+            return;
+        }
 
-                        if (!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) &&
-                                ChestUtils.hasPlayerLoot(null, state, player, containerType)) {
+        ((InventoryHolder) state).getInventory().clear();
+        state.update(true);
 
-                            List<ItemStack> items = ChestUtils.getContainerItems(null, state, containerType, player);
-                            if (items != null) {
-                                for (ItemStack item : items) {
-                                    if (item != null) {
-                                        player.getWorld().dropItemNaturally(block.getLocation(), item);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP, player));
-                        e.setCancelled(true);
-                    }
-                } else {
-                    e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP, player));
-                }
+        if (!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG)) {
+            dropContainerItems(null, state, containerType, player, block.getLocation());
+        }
+    }
 
+    @EventHandler
+    public void onMinecartDestroy(VehicleDestroyEvent e) {
+        if (!(e.getVehicle() instanceof StorageMinecart)) return;
+        StorageMinecart cart = (StorageMinecart) e.getVehicle();
+        if (plugin.isBlackListWorld(cart.getWorld())) return;
+
+        if (!ChestUtils.isLootinContainer(cart, null, ContainerType.MINECART) && cart.getLootTable() == null) return;
+
+        if (plugin.currentMinecartviewers.contains(cart)) {
+            e.setCancelled(true);
+            return;
+        }
+
+        if (e.getAttacker() instanceof Player) {
+            Player player = (Player) e.getAttacker();
+            if (!player.hasPermission("lootin.breakchest.bypass")) {
+                e.setCancelled(true);
+                player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP, player));
+                return;
             }
 
+            if (!player.isSneaking()) {
+                e.setCancelled(true);
+                player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP, player));
+                return;
+            }
+
+            cart.getInventory().clear();
+            if (!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG)) {
+                dropContainerItems(cart, null, ContainerType.MINECART, player, cart.getLocation());
+            }
+        } else if (plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS)) {
+            e.setCancelled(true);
+        }
+    }
+
+    private ContainerType getContainerType(BlockState state) {
+        if (state instanceof Chest) return ContainerType.CHEST;
+        if (state instanceof Barrel) return ContainerType.BARREL;
+        return null;
+    }
+
+    private void dropContainerItems(StorageMinecart cart, BlockState state, ContainerType containerType, Player player, Location dropLocation) {
+        List<ItemStack> items = ChestUtils.getContainerItems(cart, state, containerType, player);
+        if (items == null) return;
+
+        Location drop = dropLocation.clone().add(0.5, 0.5, 0.5);
+        for (ItemStack item : items) {
+            if (item != null) {
+                player.getWorld().dropItemNaturally(drop, item);
+            }
         }
     }
 
@@ -174,49 +211,7 @@ public class ChestEvents extends BaseListener{
 
 
 
-    @EventHandler
-    public void onMinecartDestroy(VehicleDestroyEvent e){
-        if(!(e.getVehicle() instanceof StorageMinecart) || plugin.isBlackListWorld(e.getVehicle().getWorld())) return;
-        StorageMinecart chest = (StorageMinecart) e.getVehicle();
-        if(ChestUtils.isLootinContainer(e.getVehicle(), null, ContainerType.MINECART) || chest.getLootTable() != null){
-            if(plugin.currentMinecartviewers.contains(chest)){
-                e.setCancelled(true);
-                return;
-            }
-            if(e.getAttacker() instanceof Player){
-                Player player = (Player) e.getAttacker();
-                if(player.hasPermission("lootin.breakchest.bypass")){
-                    if(player.isSneaking()){
-                        chest.getInventory().clear();
-    
-                        if(!plugin.getConfig().getBoolean(LConstants.DELETE_ITEMS_CONFIG) && ChestUtils.hasPlayerLoot(chest, null, player, ContainerType.MINECART)){
-                            List<ItemStack> items = ChestUtils.getContainerItems(chest, null, ContainerType.MINECART, player);
-                            if(items != null){
-                                items.forEach(i -> {
-                                    if(i != null){
-                                        player.getWorld().dropItemNaturally(chest.getLocation(), i);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                    else{
-                        player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHP,player));
-                        e.setCancelled(true);
-                    }
-                }
-                else{
-                    e.setCancelled(true);
-                    player.sendMessage(plugin.getMessage(LConstants.BLOCK_BREAK_WITHOUTP,player));
-                }
-            }
-            else {
-                if(plugin.getConfig().getBoolean(LConstants.PREVENT_EXPLOSIONS)){
-                    e.setCancelled(true);
-                }
-            }
-        }
-    }
+
 
     @EventHandler
     public void onChestPlace(PlayerInteractEvent e){

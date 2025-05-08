@@ -39,29 +39,40 @@ public class ChestUtils{
     private static final Lootin plugin = Lootin.getPlugin();
 
     public static boolean hasPlayerLoot(@Nullable Entity minecart,@Nullable BlockState block,@NotNull Player player,@NotNull ContainerType type){
-        NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
-        if(type == ContainerType.CHEST){
-            Chest chest = (Chest) block;
-            PersistentDataContainer data = chest.getPersistentDataContainer();
-            return data.has(key,PersistentDataType.STRING) || data.has(key, DataType.ITEM_STACK_ARRAY);
+        PersistentDataHolder holder = minecart != null ? minecart : ((TileState)block);
+        LootinContainer lootinContainer = null;
+        if(holder==null) return false;
+        if(holder.getPersistentDataContainer().has(LConstants.STORAGE_DATA_KEY)){
+            lootinContainer = StorageConverterUtility.getContainerData(holder.getPersistentDataContainer().get(LConstants.STORAGE_DATA_KEY,DataType.UUID));
         }
-        else if(type == ContainerType.BARREL){
-            Barrel barrel = (Barrel) block;
-            PersistentDataContainer data = barrel.getPersistentDataContainer();
-            return data.has(key,PersistentDataType.STRING) || data.has(key, DataType.ITEM_STACK_ARRAY);
+        else{
+            lootinContainer = StorageConverterUtility.convert(holder);
         }
-        else if(type == ContainerType.MINECART){
-            StorageMinecart tileCart = (StorageMinecart) minecart;
-            PersistentDataContainer data = tileCart.getPersistentDataContainer();
-            return data.has(key,PersistentDataType.STRING) || data.has(key, DataType.ITEM_STACK_ARRAY);
-        }
-        else if(type == ContainerType.DOUBLE_CHEST){
-            DoubleChest doubleChest = getDoubleChest(block);
-            PersistentDataContainer d1 = ((Chest)doubleChest.getLeftSide()).getPersistentDataContainer();
-            PersistentDataContainer d2 = ((Chest)doubleChest.getRightSide()).getPersistentDataContainer();
-            return (d1.has(key,PersistentDataType.STRING) || d1.has(key, DataType.ITEM_STACK_ARRAY)) && (d2.has(key,PersistentDataType.STRING) || d2.has(key, DataType.ITEM_STACK_ARRAY));
-        }
-        return false;
+        return lootinContainer.getPlayerDataMap().containsKey(player.getUniqueId());
+
+
+//        NamespacedKey key = Lootin.getKey(player.getUniqueId().toString());
+//        if(type == ContainerType.CHEST){
+//            Chest chest = (Chest) block;
+//            PersistentDataContainer data = chest.getPersistentDataContainer();
+//            return data.has(key,PersistentDataType.STRING) || data.has(key, DataType.ITEM_STACK_ARRAY);
+//        }
+//        else if(type == ContainerType.BARREL){
+//            Barrel barrel = (Barrel) block;
+//            PersistentDataContainer data = barrel.getPersistentDataContainer();
+//            return data.has(key,PersistentDataType.STRING) || data.has(key, DataType.ITEM_STACK_ARRAY);
+//        }
+//        else if(type == ContainerType.MINECART){
+//            StorageMinecart tileCart = (StorageMinecart) minecart;
+//            PersistentDataContainer data = tileCart.getPersistentDataContainer();
+//            return data.has(key,PersistentDataType.STRING) || data.has(key, DataType.ITEM_STACK_ARRAY);
+//        }
+//        else if(type == ContainerType.DOUBLE_CHEST){
+//            DoubleChest doubleChest = getDoubleChest(block);
+//            PersistentDataContainer d1 = ((Chest)doubleChest.getLeftSide()).getPersistentDataContainer();
+//            PersistentDataContainer d2 = ((Chest)doubleChest.getRightSide()).getPersistentDataContainer();
+//            return (d1.has(key,PersistentDataType.STRING) || d1.has(key, DataType.ITEM_STACK_ARRAY)) && (d2.has(key,PersistentDataType.STRING) || d2.has(key, DataType.ITEM_STACK_ARRAY));
+//        }
     }
 
 
@@ -138,9 +149,16 @@ public class ChestUtils{
             BetterStructuresListener.refillChest(chest);
             return;
         }
-        if(plugin.isRunningCustomStructures && plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) && data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
-            CustomStructuresListener.reFillContainer((Container) container);
-            return;
+        if(plugin.isRunningCustomStructures &&
+           plugin.getWorldManager().shouldResetSeed(player.getWorld().getName()) &&
+           data.has(LConstants.CUSTOM_STRUC_KEY,PersistentDataType.STRING)){
+            if(CustomStructuresListener.isMinecraftLoottable((Container) container)){
+                lootTableKey = CustomStructuresListener.getLoottables((Container) container).next().getName();
+            }
+            else{
+                CustomStructuresListener.reFillContainer((Container) container);
+                return;
+            }
         }
         if(container.getLootTable() != null){
             lootTableKey = container.getLootTable().getKey().toString();
@@ -208,7 +226,7 @@ public class ChestUtils{
 
 
     /**
-     * Retrives list of items unique to player or the default loot from lootable if there isnt any loot uique to player yet
+     * Retrives list of items unique to player or the default loot from lootable if there isnt any loot unique to player yet
      * @param minecart only StorageMinecart if container is a Entity or can be null
      * @param block Blockstate of container or can be null if using minecart
      * @param type ContainerType {@link com.github.sachin.lootin.utils.ContainerType}

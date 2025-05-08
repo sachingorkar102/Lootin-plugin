@@ -29,7 +29,8 @@ messages:
   cant-put-items-in-loot-container: "&cCan't put items in loot containers!!"
   look-at-container: "&cLook at a container while executing command!"
 
-# weather or not to delete items when player breaks loot chest successfully
+# when set to false, on breaking any lootin container by a player, the contents that belong to player's unique loot will drop.
+# when set to true, on breaking any lootin container nothing will drop.
 delete-items-on-break: true  
 
 # weather or not to prevent lootin chest from being exploded by tnt,creepers,respawn_anchor or bed
