@@ -167,8 +167,13 @@ public final class Lootin extends JavaPlugin {
             pm.registerEvents(new BetterStructuresListener(),plugin);
         }
         if(isRunningProtocolLib){
-            getLogger().info("Found ProtocolLib, registering meta data packet listener...");
-            new EntityMetaDataPacketListener();
+            try{
+                getLogger().info("Found ProtocolLib, trying to register meta data packet listener...");
+                new EntityMetaDataPacketListener();
+            }catch (NoClassDefFoundError ignore) {
+                isRunningProtocolLib = false;
+                getLogger().severe("Error registering meta data packet listner from protocollib");
+            }
         }
         if(getConfig().getBoolean("metrics",true)){
             getLogger().info("Enabling bstats...");

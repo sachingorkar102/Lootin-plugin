@@ -220,6 +220,7 @@ public class ChestEvents extends BaseListener{
         if(!ChestUtils.isChest(e.getMaterial())) return;
         Block b = e.getClickedBlock().getRelative(e.getBlockFace());
         Player player = e.getPlayer();
+        ItemStack item = e.getItem().clone();
         if(plugin.isBlackListWorld(player.getWorld())) return;
 
 
@@ -236,7 +237,8 @@ public class ChestEvents extends BaseListener{
                     Chest chest = (Chest) block.getState();
                     if(ChestUtils.isLootinContainer(null, chest, ContainerType.CHEST)){
                         b.setType(Material.AIR);
-                        player.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(e.getMaterial()));
+                        item.setAmount(1);
+                        player.getWorld().dropItemNaturally(b.getLocation().add(0.5,0.5,0.5), item);
                         player.sendMessage(plugin.getMessage(LConstants.CANT_PLACE_DCHEST, player));
                         break;
                     }
