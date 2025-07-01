@@ -11,12 +11,8 @@ import com.github.sachin.lootin.utils.storage.PlayerLootData;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.jeff_media.morepersistentdatatypes.DataType;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Barrel;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Chest;
+import org.bukkit.*;
+import org.bukkit.block.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -24,6 +20,8 @@ import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.loot.LootTable;
+import org.bukkit.loot.LootTables;
 import org.bukkit.persistence.PersistentDataHolder;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.RayTraceResult;
@@ -174,7 +172,41 @@ public class Commands extends BaseCommand{
         else{
             plugin.sendPlayerMessage(LConstants.LOOK_AT_CONTAINER, player);
         }
+    }
 
+    @Subcommand("test")
+    @CommandCompletion("@loottables")
+    public void onTestCommand(Player player,String[] args){
+        if(args.length < 1){
+            plugin.sendPlayerMessage("Specify the type of loot table",player);
+            return;
+        }
+        Block targetBlock = player.getTargetBlockExact(5);
+        if (targetBlock == null) {
+            plugin.sendPlayerMessage("&cYou're not looking at a block.",player);
+            return;
+        }
+        Location chestLocation = targetBlock.getRelative(BlockFace.UP).getLocation();
+        chestLocation.getBlock().setType(Material.CHEST);
+        Block block = chestLocation.getBlock();
+        if (block.getState() instanceof Chest) {
+            Chest chest = (Chest) block.getState();
+            LootTable lootTable = LootTables.DESERT_PYRAMID.getLootTable();
+            if(args[0].split(":").length==2){
+                NamespacedKey key = NamespacedKey.fromString(args[0],null);
+                if(key != null) {
+                    LootTable l = Bukkit.getLootTable(key);
+                    if(l != null) {
+                        lootTable = l;
+                    }
+                }
+            }
+            chest.setLootTable(lootTable);
+            chest.update();
+            plugin.sendPlayerMessage("&eSpawned desert pyramid chest!",player);
+        } else {
+            plugin.sendPlayerMessage("&cFailed to create chest.",player);
+        }
     }
 
     private LootinContainer getTargetContainer(Player player){

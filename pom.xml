@@ -6,7 +6,7 @@
 
     <groupId>com.github.sachin.lootin</groupId>
     <artifactId>Lootin</artifactId>
-    <version>12.2</version>
+    <version>13.0</version>
     <packaging>jar</packaging>
 
 
@@ -201,6 +201,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>repsy</id>
+            <url>https://repo.repsy.io/mvn/athlaeos/valhallammo</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -237,6 +241,13 @@
             <systemPath>${project.basedir}/lib/CustomStructures-1.9.0.1.jar</systemPath>
             <scope>system</scope>
             
+        </dependency>
+<!--        Vallhalla MMO-->
+        <dependency>
+            <groupId>me.athlaeos</groupId>
+            <artifactId>valhallammo-dist</artifactId>
+            <version>dev-0.4</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- BetterStructures -->

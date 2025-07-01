@@ -6,16 +6,13 @@ import java.util.*;
 import java.util.regex.Matcher;
 
 import com.github.sachin.lootin.commands.Commands;
-import com.github.sachin.lootin.compat.WGFlag;
+import com.github.sachin.lootin.compat.*;
 import com.github.sachin.lootin.compat.rwg.RWGCompat;
 import com.github.sachin.lootin.compat.scheduler.BukkitScheduler;
 import com.github.sachin.lootin.compat.scheduler.PaperScheduler;
 import com.github.sachin.lootin.compat.scheduler.Scheduler;
 import com.github.sachin.lootin.compat.scheduler.Task;
 import com.github.sachin.lootin.listeners.*;
-import com.github.sachin.lootin.compat.BetterStructuresListener;
-import com.github.sachin.lootin.compat.CustomStructuresListener;
-import com.github.sachin.lootin.compat.OTDLootListener;
 import com.github.sachin.lootin.utils.*;
 import com.github.sachin.lootin.utils.config.ConfigUpdater;
 import com.github.sachin.lootin.utils.config.WorldManager;
@@ -67,6 +64,7 @@ public final class Lootin extends JavaPlugin {
     public boolean isRunningBetterStructures = false;
     public boolean isRunningCustomStructures = false;
 
+    public boolean isRunningValhallaMMO = false;
     public boolean isRunningWG;
 
     private WGFlag WGflag;
@@ -124,6 +122,9 @@ public final class Lootin extends JavaPlugin {
 
         this.isRunningProtocolLib = getServer().getPluginManager().getPlugin("ProtocolLib") != null;
         this.commandManager = new PaperCommandManager(plugin);
+        List<String> loottables = new ArrayList<>();
+        for(LootTables l : LootTables.values()) loottables.add(l.getKey().toString());
+        commandManager.getCommandCompletions().registerCompletion("loottables",c -> loottables);
         commandManager.registerCommand(new Commands(plugin));
         reloadConfigs();
         // register listeners
@@ -166,6 +167,10 @@ public final class Lootin extends JavaPlugin {
             getLogger().info("Found BetterStructures, registering listeners...");
             pm.registerEvents(new BetterStructuresListener(),plugin);
         }
+//        if(pm.isPluginEnabled("ValhallaMMO")){
+//            this.isRunningValhallaMMO = true;
+//            pm.registerEvents(new ValhallaMMOListner(),plugin);
+//        }
         if(isRunningProtocolLib){
             try{
                 getLogger().info("Found ProtocolLib, trying to register meta data packet listener...");

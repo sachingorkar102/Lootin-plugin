@@ -9,11 +9,14 @@ import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 
 import com.github.sachin.lootin.compat.CustomStructuresListener;
+import com.github.sachin.lootin.utils.cooldown.Cooldown;
 import com.github.sachin.lootin.utils.storage.ItemSerializer;
 import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.PlayerLootData;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.jeff_media.morepersistentdatatypes.DataType;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.*;
@@ -23,6 +26,7 @@ import org.bukkit.entity.minecart.StorageMinecart;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataHolder;
@@ -404,6 +408,35 @@ public class ChestUtils{
         }
     }
 
+    public static boolean openLootinInventory(Lootable lootable, Player player, Location location, @Nullable List<ItemStack> overrideItems){
+        Lootin plugin = Lootin.getPlugin();
+        if(plugin.isRunningWG && !plugin.getWGflag().queryFlag(player,location)) return false;
+        if(plugin.isBlackListWorld(player.getWorld())) return false;
+        ContainerType containerType = ChestUtils.getContainerType(lootable);
+        if(containerType==null) return false;
+        LootTable lootTable = lootable.getLootTable();
+        System.out.println(lootTable);
+        if(lootTable != null){
+            if(plugin.isBlackListedLootable(lootTable,player.getWorld())) return false;
+            ChestUtils.setLootinContainer(lootable,containerType);
+        }
+        if(!ChestUtils.isLootinContainer(lootable,containerType) && overrideItems == null) return false;
+
+        if (player.isSneaking() || player.getGameMode() == GameMode.SPECTATOR) return false;
+
+        Cooldown cooldown = plugin.interactCooldown.get(player.getUniqueId());
+        if (!cooldown.isTriggerable()) return false;
+        cooldown.trigger();
+        if(containerType==ContainerType.MINECART){
+            if(plugin.currentMinecartviewers.contains((StorageMinecart) lootable)) return false;
+            new LootinGui(player,containerType,lootable,overrideItems).open();
+            return true;
+        }
+        if(plugin.currentChestviewers.contains(location)) return false;
+        new LootinGui(player,containerType,lootable,overrideItems).open();
+        return true;
+    }
+
     public static DoubleChest getDoubleChest(BlockState block){
         Chest chest = (Chest) block;
         return ((DoubleChest)chest.getInventory().getHolder());
@@ -413,6 +446,28 @@ public class ChestUtils{
         return (block instanceof Chest) && (((Chest)block).getInventory().getHolder() instanceof DoubleChest);
     }
 
+    public static ContainerType getContainerType(Lootable lootable){
+        if(lootable instanceof BlockState){
+            BlockState block = (BlockState) lootable;
+            if(isDoubleChest(block)) return ContainerType.DOUBLE_CHEST;
+            else if(block.getType()==Material.CHEST || block.getType()==Material.TRAPPED_CHEST) return ContainerType.CHEST;
+            else if(block.getType()==Material.BARREL) return ContainerType.BARREL;
+            else return null;
+        } else if (lootable instanceof StorageMinecart) {
+            return ContainerType.MINECART;
+        }
+        return null;
+    }
+
+
+
+    public static void setLootinContainer(Lootable lootable, ContainerType type){
+        setLootinContainer((type==ContainerType.MINECART) ? ((Entity) lootable) : null,(type!=ContainerType.MINECART) ? ((BlockState)lootable) : null,type);
+    }
+
+    public static boolean isLootinContainer(Lootable lootable, ContainerType type){
+        return isLootinContainer((type==ContainerType.MINECART) ? ((Entity) lootable) : null,(type!=ContainerType.MINECART) ? ((BlockState)lootable) : null,type);
+    }
 
     private static boolean hasKey(PersistentDataContainer data){
         return data.has(LConstants.IDENTITY_KEY, PersistentDataType.STRING);
