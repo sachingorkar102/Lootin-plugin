@@ -55,7 +55,8 @@ public class InventoryListeners extends BaseListener {
         if (e.isCancelled() && !plugin.getConfig().getBoolean(LConstants.BYPASS_GREIF_PLUGINS)) {
             return;
         }
-        ChestUtils.openLootinInventory(minecart,e.getPlayer(),minecart.getLocation(),null);
+        boolean denyInteraction = ChestUtils.openLootinInventory(minecart,e.getPlayer(),minecart.getLocation(),null);
+        if(denyInteraction) e.setCancelled(true);
     }
 
 

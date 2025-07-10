@@ -415,7 +415,6 @@ public class ChestUtils{
         ContainerType containerType = ChestUtils.getContainerType(lootable);
         if(containerType==null) return false;
         LootTable lootTable = lootable.getLootTable();
-        System.out.println(lootTable);
         if(lootTable != null){
             if(plugin.isBlackListedLootable(lootTable,player.getWorld())) return false;
             ChestUtils.setLootinContainer(lootable,containerType);

@@ -67,7 +67,10 @@ public class LootinGui implements InventoryHolder {
         if(isDoubleChest){
             Location l1 = ((Chest)doubleChest.getLeftSide()).getLocation();
             Location l2 = ((Chest)doubleChest.getRightSide()).getLocation();
-            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,l1);
+            if(plugin.isRunningPaper){
+                player.getWorld().sendGameEvent(player,GameEvent.CONTAINER_OPEN,l1.toVector());
+            }
+//            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,l1);
             if(((Chest)lootable).getLocation().equals(l2)){
                 player.playSound(l2, Sound.BLOCK_CHEST_OPEN,0.5F,1F);
             }
@@ -75,7 +78,10 @@ public class LootinGui implements InventoryHolder {
             plugin.currentChestviewers.add(l2);
 
         }else{
-            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,getLocation());
+            if(plugin.isRunningPaper){
+                player.getWorld().sendGameEvent(player,GameEvent.CONTAINER_OPEN,player.getLocation().toVector());
+            }
+//            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_OPEN,getLocation());
 
             if(isBlock){
                 plugin.currentChestviewers.add(getLocation());
@@ -98,7 +104,10 @@ public class LootinGui implements InventoryHolder {
             DoubleChest doubleChest = ChestUtils.getDoubleChest((BlockState)lootable);
             Location l1 = ((Chest)doubleChest.getLeftSide()).getLocation();
             Location l2 = ((Chest)doubleChest.getRightSide()).getLocation();
-            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_CLOSE,l1);
+            if(plugin.isRunningPaper){
+                player.getWorld().sendGameEvent(player,GameEvent.CONTAINER_CLOSE,l1.toVector());
+            }
+//            plugin.getPrilib().getNmsHandler().triggerGameEvent(player, GameEvent.CONTAINER_CLOSE,l1);
             if(((Chest)lootable).getLocation().equals(l2)){
                 player.playSound(l2, Sound.BLOCK_CHEST_CLOSE,0.5F,1F);
             }
@@ -106,7 +115,10 @@ public class LootinGui implements InventoryHolder {
             plugin.currentChestviewers.remove(l2);
 
         }else{
-            plugin.getPrilib().getNmsHandler().triggerGameEvent(player,GameEvent.CONTAINER_CLOSE,getLocation());
+            if(plugin.isRunningPaper){
+                player.getWorld().sendGameEvent(player,GameEvent.CONTAINER_CLOSE,getLocation().toVector());
+            }
+//            plugin.getPrilib().getNmsHandler().triggerGameEvent(player,GameEvent.CONTAINER_CLOSE,getLocation());
             if(isBlock){
                 plugin.currentChestviewers.remove(getLocation());
             }

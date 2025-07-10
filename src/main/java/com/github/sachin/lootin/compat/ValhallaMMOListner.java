@@ -44,7 +44,7 @@ public class ValhallaMMOListner extends BaseListener {
     @EventHandler
     public void onValhallaLootPopulate(ValhallaLootPopulateEvent e){
         Lootable lootable = getLootable(e.getContext());
-        System.out.println(e.getContext().getLocation());
+//        System.out.println(e.getContext().getLocation());
         if(lootable !=null){
             Location location = e.getContext().getLocation();
             firstTimerChests.add(location);
@@ -76,7 +76,7 @@ public class ValhallaMMOListner extends BaseListener {
                 e.setUseInteractedBlock(PlayerInteractEvent.Result.DENY);
                 ChestUtils.openLootinInventory(lootable,player,state.getLocation(),null);
                 firstTimerChests.add(state.getLocation());
-                System.out.println("a");
+//                System.out.println("a");
             }
         }
     }
