@@ -17,6 +17,7 @@ import com.github.sachin.lootin.Lootin;
 import com.github.sachin.lootin.utils.LConstants;
 
 import com.github.sachin.prilib.Prilib;
+import com.github.sachin.prilib.McVersion;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -58,7 +59,7 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
             }
             List<WrappedWatchableObject> objects = packet.getWatchableCollectionModifier().readSafely(0);
             for(WrappedWatchableObject object : objects){
-                if(object.getIndex()==8){
+                if(object.getIndex()==9){
                     if(entity.getPersistentDataContainer().has(key,PersistentDataType.INTEGER)){
                         object.setValue(new ItemStack(Material.AIR));
                     }
