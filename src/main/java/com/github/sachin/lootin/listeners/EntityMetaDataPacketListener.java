@@ -39,6 +39,8 @@ public class EntityMetaDataPacketListener extends PacketAdapter{
         PacketContainer packet = event.getPacket();
         Player player = event.getPlayer();
         if(Lootin.getPlugin().is1_16()) return;
+//        Temporary
+        if(Lootin.getPlugin().getPrilib().getMcVersion().isAtLeast(1,21,7)) return;
         if(Lootin.getPlugin().isBlackListWorld(player.getWorld())) return;
         Entity entity = null;
         try {
