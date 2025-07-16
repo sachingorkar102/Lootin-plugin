@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.sachin.lootin.Lootin;
+import com.github.sachin.lootin.api.LootinInventoryOpenEvent;
 import com.github.sachin.lootin.compat.BetterStructuresListener;
 
 import com.github.sachin.lootin.compat.CustomStructuresListener;
@@ -15,10 +16,7 @@ import com.github.sachin.lootin.utils.storage.LootinContainer;
 import com.github.sachin.lootin.utils.storage.PlayerLootData;
 import com.github.sachin.lootin.utils.storage.StorageConverterUtility;
 import com.jeff_media.morepersistentdatatypes.DataType;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -287,6 +285,7 @@ public class ChestUtils{
                 LootinContainer lootinContainer = StorageConverterUtility.getContainerData(data.get(LConstants.STORAGE_DATA_KEY,DataType.UUID));
                 if(lootinContainer.getPlayerDataMap().containsKey(player.getUniqueId())){
                     PlayerLootData playerLootData = lootinContainer.getPlayerDataMap().get(player.getUniqueId());
+                    boolean isRefill = false;
                     if(playerLootData.isRefillRequired(System.currentTimeMillis(),player.getWorld())){
                         if(!plugin.getWorldManager().shouldRefillCustomChests(player.getWorld().getName()) && data.has(LConstants.CUSTOM_CONTAINER_KEY)) return playerLootData.getItems();
                         fillLoot(player,data,lootable,inventory);
@@ -304,10 +303,14 @@ public class ChestUtils{
                         if(block != null) block.update();
                         playerLootData.setRefills(playerLootData.getRefills()+1);
                         playerLootData.setLastLootTime(System.currentTimeMillis());
-                        return items;
+                        isRefill = true;
                     }else{
-                        return playerLootData.getItems();
+                        items = playerLootData.getItems();
                     }
+                    LootinInventoryOpenEvent event = new LootinInventoryOpenEvent(player,lootable,items,isRefill);
+                    Bukkit.getServer().getPluginManager().callEvent(event);
+                    if(event.isCancelled()) return null;
+                    return event.getItems();
                 }
             }
             fillLoot(player,data,lootable,inventory);
@@ -341,9 +344,12 @@ public class ChestUtils{
         }
         ArrayList<ItemStack> chestContents = new ArrayList<>();
         Collections.addAll(chestContents, inventory.getContents());
-        setContainerItems(minecart, block, type, chestContents, LConstants.DATA_KEY.getKey());
+        LootinInventoryOpenEvent event = new LootinInventoryOpenEvent(player,lootable,chestContents,true);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if(event.isCancelled()) return null;
+        setContainerItems(minecart, block, type, event.getItems(), LConstants.DATA_KEY.getKey());
         inventory.clear();
-        return chestContents;
+        return event.getItems();
     }
 
 //    this is used to change from old way to store items as String to new way of storing them as ConfigurationSection

@@ -1,11 +1,13 @@
 package com.github.sachin.lootin.listeners;
 
+import com.github.sachin.lootin.api.LootinInventoryOpenEvent;
 import com.github.sachin.lootin.compat.ValhallaMMOListner;
 import com.github.sachin.lootin.utils.ChestUtils;
 import com.github.sachin.lootin.utils.ContainerType;
 import com.github.sachin.lootin.utils.LConstants;
 import com.github.sachin.lootin.utils.LootinGui;
 
+import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.StorageMinecart;
@@ -17,8 +19,11 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.loot.LootTable;
 import org.bukkit.loot.Lootable;
+
+import java.util.List;
 
 public class InventoryListeners extends BaseListener {
 

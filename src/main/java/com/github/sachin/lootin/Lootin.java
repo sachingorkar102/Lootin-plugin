@@ -137,6 +137,7 @@ public final class Lootin extends JavaPlugin {
 //            pm.registerEvents(new ChunkLoadListener(), plugin);
 //        }
 //        pm.registerEvents(new StructureGenerateTempFix(),plugin);
+
         pm.registerEvents(new ChunkLoadListener(), plugin);
         pm.registerEvents(new InventoryListeners(), plugin);
         pm.registerEvents(new ChestEvents(), plugin);
