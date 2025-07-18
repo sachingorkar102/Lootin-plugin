@@ -17,12 +17,12 @@ metrics: true
 
 messages:
   prefix: "&e[&6Lootin&e] "
-  no-permission: "&cYou dont have permission to execute command"
+  no-permission: "&cYou dont have permission to the execute command."
   chestbreak-with-permission: "&aBreaking the chest will delete your unique loot and items! In order to break, &2you must sneak while doing so..&a As loot is &2per player per chest&a, only break if really needed."
-  chestbreak-without-permission: "&cYou dont have permission to break loot chests"
-  chest-edited: "&cChest is being edited, cant break it"
-  reloaded: "&aConfig file reloaded"
-  cant-place-double-chest: "&cCan't place normal chest near loot chest"
+  chestbreak-without-permission: "&cYou don't have permission to break loot containers."
+  chest-edited: "&cAnother player is viewing this loot container. You can't open it!"
+  reloaded: "&aConfig file reloaded."
+  cant-place-double-chest: "&cCan't place normal chest near loot containers."
   elytra-itemframe-break-with-permission: "&cLeft click with stick in main hand to break the special elytra item frame."
   elytra-itemframe-break-without-permission: "&cCan't break elytra item frame!"
   elytra-item-frame-removed: "&aElytra ItemFrame removed."
