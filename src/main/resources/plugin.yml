@@ -26,3 +26,4 @@ permissions:
       lootin.command.set: true
       lootin.command.info: true
       lootin.command.clear: true
+      lootin.command.test: true

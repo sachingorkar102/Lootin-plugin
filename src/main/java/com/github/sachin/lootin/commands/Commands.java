@@ -177,6 +177,10 @@ public class Commands extends BaseCommand{
     @Subcommand("test")
     @CommandCompletion("@loottables")
     public void onTestCommand(Player player,String[] args){
+        if(!player.hasPermission("lootin.command.test")){
+            plugin.sendPlayerMessage(LConstants.NO_PERMISSION,player);
+            return;
+        }
         if(args.length < 1){
             plugin.sendPlayerMessage("Specify the type of loot table",player);
             return;
